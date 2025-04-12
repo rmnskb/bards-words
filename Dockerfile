@@ -7,6 +7,7 @@ RUN apt-get update && \
         sudo \
         curl \
         vim \
+        zip \
         unzip \
         rsync \
         openjdk-11-jdk \
