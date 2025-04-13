@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
 
 def get_conn_uri(db: str, collection: str) -> str:
