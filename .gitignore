@@ -3,6 +3,7 @@ __pycache__
 /.idea/
 
 /data/
+/db/
 
 .env
 .env.spark

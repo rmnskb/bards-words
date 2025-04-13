@@ -33,5 +33,19 @@ services:
       - ./data:/opt/spark/data
       - spark-logs:/opt/spark/spark-events
 
+  mongodb:
+    # Access mongosh from inside the container: docker exec -it mongodb bash mongosh
+    container_name: mongodb
+    image: mongo:8.0.6
+    env_file: .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./db:/db/data
+
 volumes:
   spark-logs:
+  db:
