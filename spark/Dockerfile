@@ -34,8 +34,8 @@ RUN mkdir -p ${SPARK_HOME} \
 
 
 # Install Python dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY requirements.spark.txt .
+RUN pip install -r requirements.spark.txt
 
 # Environment variables for Spark
 ENV PATH="/opt/spark/sbin:/opt/spark/bin:${PATH}"

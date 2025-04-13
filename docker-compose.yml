@@ -2,7 +2,9 @@ services:
   spark-master:
     # Access running Spark master: docker exec -it spark-master bash
     container_name: spark-master
-    build: .
+    build:
+      context: ./spark
+      dockerfile: Dockerfile
     image: spark-image
     entrypoint: [ './entrypoint.sh', 'master' ]
     healthcheck:
@@ -15,7 +17,7 @@ services:
       - ./data:/opt/spark/data
       - spark-logs:/opt/spark/spark-events
     env_file:
-      - .env.spark
+      - "./spark/.env.spark"
       - .env
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
@@ -31,7 +33,7 @@ services:
     depends_on:
       - spark-master
     env_file:
-      - .env.spark
+      - "./spark/.env.spark"
       - .env
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
@@ -53,6 +55,16 @@ services:
       - '27017:27017'
     volumes:
       - "./db:/data/db:rw"
+
+  fast-api:
+    container_name: fast-api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - '8000:80'
+    depends_on:
+      - mongodb
 
 volumes:
   spark-logs:
