@@ -1,3 +1,5 @@
+dotenv==0.9.9
 py4j==0.10.9.7
 pyspark==3.5.5
+python-dotenv==1.1.0
 stop-words==2018.7.23

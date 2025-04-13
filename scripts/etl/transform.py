@@ -16,8 +16,8 @@ class DataTransformer:
     Takes SparkContext object as a constructor argument.
     """
 
-    def __init__(self, spark: SparkContext):
-        self._stopwords_broadcast = spark.broadcast(set(get_stop_words('english')))
+    def __init__(self, sc: SparkContext):
+        self._stopwords_broadcast = sc.broadcast(set(get_stop_words('english')))
 
     def transform(self, data: RDD[DocumentTextType]) -> RDD[InvertedIndexType]:
         return (
