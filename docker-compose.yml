@@ -17,7 +17,7 @@ services:
       - ./data:/opt/spark/data
       - spark-logs:/opt/spark/spark-events
     env_file:
-      - "./spark/.env.spark"
+      - ./spark/.env.spark
       - .env
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
@@ -33,7 +33,7 @@ services:
     depends_on:
       - spark-master
     env_file:
-      - "./spark/.env.spark"
+      - ./spark/.env.spark
       - .env
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
