@@ -36,39 +36,50 @@ def main():
     # T from ETL
     transformer = DataTransformer(sc=sc)
     tokens: RDD = transformer.transform(to='tokens', data=raw_data)
-
-    print(tokens.take(1))  # TODO: remove side effect
-
     inverted_idx: RDD = transformer.transform(to='inverted_index', data=tokens)
 
-    print(inverted_idx.take(5))  # TODO: remove side effect
-
     # L from ETL
-    # Predefine the RDD schema for conversion to DataFrame
-    # TODO: redefine the schema to include index array
-    schema = StructType([
-        StructField('word', StringType(), False)
-        , StructField('occurrences', ArrayType(
-            StructType([
-                StructField('document_name', StringType(), False)
-                , StructField('count', IntegerType(), False)
-            ])
+    # Predefine the RDD schemas for conversion to DataFrames
+    tokens_schema = StructType([
+        StructField('document', StringType())
+        , StructField('occurrences', ArrayType(StringType()))
+    ])
+
+    document_freq_structure = StructType([
+        StructField('document', StringType(), False)
+        , StructField('frequency', IntegerType(), False)
+        , StructField('indices', ArrayType(
+            IntegerType(), False
         ), False)
     ])
 
-    df: DataFrame = spark.createDataFrame(inverted_idx, schema=schema)
+    inverted_idx_schema = StructType([
+        StructField('word', StringType(), False)
+        , StructField('occurrences', ArrayType(document_freq_structure), False)
+    ])
+
+    tokens_df: DataFrame = spark.createDataFrame(tokens, schema=tokens_schema)
+    inverted_idx_df: DataFrame = spark.createDataFrame(inverted_idx, schema=inverted_idx_schema)
 
     # Side Effects from ETL
-    print(df.show(n=50, truncate=False))
+    print(tokens_df.printSchema())
+    print(inverted_idx_df.printSchema())
 
-    # loader = DataLoader(spark=spark)
-    #
-    # loader.load(
-    #     data=df
-    #     , database='shakespeare'
-    #     , collection='words'
-    #     , write_mode='overwrite'
-    # )
+    loader = DataLoader(spark=spark)
+
+    loader.load(
+        data=tokens_df
+        , database='shakespeare'
+        , collection='tokens'
+        , write_mode='overwrite'
+    )
+
+    loader.load(
+        data=inverted_idx_df
+        , database='shakespeare'
+        , collection='indices'
+        , write_mode='overwrite'
+    )
 
 
 if __name__ == "__main__":
