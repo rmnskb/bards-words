@@ -35,10 +35,17 @@ def main():
 
     # T from ETL
     transformer = DataTransformer(sc=sc)
-    data: RDD = transformer.transform(data=raw_data)
+    tokens: RDD = transformer.transform(to='tokens', data=raw_data)
+
+    print(tokens.take(1))  # TODO: remove side effect
+
+    inverted_idx: RDD = transformer.transform(to='inverted_index', data=tokens)
+
+    print(inverted_idx.take(5))  # TODO: remove side effect
 
     # L from ETL
     # Predefine the RDD schema for conversion to DataFrame
+    # TODO: redefine the schema to include index array
     schema = StructType([
         StructField('word', StringType(), False)
         , StructField('occurrences', ArrayType(
@@ -49,19 +56,19 @@ def main():
         ), False)
     ])
 
-    df: DataFrame = spark.createDataFrame(data, schema=schema)
+    df: DataFrame = spark.createDataFrame(inverted_idx, schema=schema)
 
     # Side Effects from ETL
     print(df.show(n=50, truncate=False))
 
-    loader = DataLoader(spark=spark)
-
-    loader.load(
-        data=df
-        , database='shakespeare'
-        , collection='words'
-        , write_mode='overwrite'
-    )
+    # loader = DataLoader(spark=spark)
+    #
+    # loader.load(
+    #     data=df
+    #     , database='shakespeare'
+    #     , collection='words'
+    #     , write_mode='overwrite'
+    # )
 
 
 if __name__ == "__main__":
