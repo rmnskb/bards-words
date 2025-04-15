@@ -105,7 +105,7 @@ class DataTransformer:
     @staticmethod
     def _remove_punctuation(word: str) -> str:
         """Remove all special characters from a word:"""
-        return re.sub(r'[\W_]]', '', word)
+        return re.sub(r'[\W_]*', '', word)
 
     @staticmethod
     def _remove_suffix(word: str) -> str:
