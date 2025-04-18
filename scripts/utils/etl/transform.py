@@ -1,7 +1,9 @@
 import re
-from typing import TypeAlias, Literal
+from typing import TypeAlias, Literal, overload
 
 from pyspark import SparkContext, RDD
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import col, explode
 from stop_words import get_stop_words
 
 DocumentTextType: TypeAlias = tuple[str, str]
@@ -12,7 +14,7 @@ WordDocumentType: TypeAlias = tuple[str, str]
 InvertedIndexType: TypeAlias = tuple[str, list[tuple[str, int, list[int]]]]
 
 
-class DataTransformer:
+class BronzeDataTransformer:
     """
     This class handles the actual data transformations in a functional manner.
     Takes SparkContext object as a constructor argument.
@@ -21,6 +23,22 @@ class DataTransformer:
     def __init__(self, sc: SparkContext):
         # Broadcast all the stop words across worker nodes
         self._stopwords_broadcast = sc.broadcast(set(get_stop_words('english')))
+
+    @overload
+    def transform(
+            self
+            , to: Literal['tokens']
+            , data: RDD[DocumentTextType]
+    ) -> RDD[DocumentTokensType]:
+        ...
+
+    @overload
+    def transform(
+            self
+            , to: Literal['inverted_index']
+            , data: RDD[DocumentTokensType]
+    ) -> RDD[InvertedIndexType]:
+        ...
 
     def transform(
             self
@@ -134,3 +152,20 @@ class DataTransformer:
         words = entry[1]
 
         return [((document, word), [idx]) for idx, word in enumerate(words)]
+
+
+class SilverDataTransformer:
+
+    @staticmethod
+    def transform(data: DataFrame) -> DataFrame:
+        return (
+            data
+            .select(col('word'), explode(col('occurrences')).alias('occurrences'))  # Flatten the array of occurrences
+            .select(  # Flatten the struct with three fields inside
+                col('word')
+                , col("occurrences").getField("document").alias("document")
+                , col("occurrences").getField("frequency").alias("frequency")
+                , col("occurrences").getField("indices").alias("indices")
+            )  # Finally flatten the array with position indices
+            .select(col("word"), col("document"), col("frequency"), explode(col("indices")).alias("positionIdx"))
+        )
