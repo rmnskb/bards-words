@@ -1,7 +1,9 @@
 # ETL utils
-from .etl.extract import DataExtractor
-from .etl.transform import DataTransformer
+from .etl.base import SparkBase
+from .etl.extract import BronzeDataExtractor, SilverDataExtractor
+from .etl.transform import BronzeDataTransformer, SilverDataTransformer
 from .etl.load import DataLoader
+from .etl.schemas import TokensSchema, InvertedIndexSchema, NormalisedIndexSchema
 
 # MongoDB utils
 from .mongodb.config import get_conn_uri
