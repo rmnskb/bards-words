@@ -10,7 +10,7 @@ from .base import SparkDataAbstract
 class DataLoader:
 
     def __init__(self, spark: SparkSession):
-        self.spark = spark
+        self._spark = spark
 
     def load(
             self
@@ -20,7 +20,7 @@ class DataLoader:
             , schema: Optional[StructType] = None
             , write_mode: Literal['overwrite', 'append'] = 'overwrite'
     ) -> None:
-        spark = self.spark
+        spark = self._spark
 
         if isinstance(data, RDD):
             data = spark.createDataFrame(data=data, schema=schema)
