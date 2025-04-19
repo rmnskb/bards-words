@@ -1,19 +1,19 @@
 from pyspark.sql import SparkSession
 
 from utils import (
-    get_conn_uri, SilverDataExtractor, SilverDataTransformer, DataLoader, SparkBase
+    get_etl_conn_uri, SilverDataExtractor, SilverDataTransformer, DataLoader, SparkBase
 )
 
 
 def main() -> None:
-    conn = get_conn_uri(db='shakespeare', collection='words')
+    conn = get_etl_conn_uri()
 
     sb = SparkBase(conn=conn, spark_name='silver-etl')
 
     spark: SparkSession = sb.spark
 
     # E
-    extractor = SilverDataExtractor(spark=spark, database='shakespeare', collection='indices')
+    extractor = SilverDataExtractor(spark=spark, database='shakespeare', collection='bronzeIndices')
     raw_data = extractor.extract().drop('_id')
 
     # T
@@ -24,7 +24,7 @@ def main() -> None:
     DataLoader(spark=spark).load(
         data=data
         , database='shakespeare'
-        , collection='words'
+        , collection='silverWords'
         , write_mode='overwrite'
     )
 

@@ -6,12 +6,12 @@ from pyspark.sql import SparkSession, DataFrame
 # and then submitting them along with the actual job as a dependency
 # via spark-submit --py-files <dependency>.zip shakespeare_etl.py
 from utils import (
-    get_conn_uri, BronzeDataExtractor, BronzeDataTransformer, DataLoader, SparkBase, TokensSchema, InvertedIndexSchema
+    get_etl_conn_uri, BronzeDataExtractor, BronzeDataTransformer, DataLoader, SparkBase, TokensSchema, InvertedIndexSchema
 )
 
 
 def main():
-    conn = get_conn_uri(db='shakespeare', collection='words')
+    conn = get_etl_conn_uri()
 
     sb = SparkBase(conn=conn, sc_name='shakespeare-et-from-etl', spark_name='shakespeare-l-from-etl')
 
@@ -42,14 +42,14 @@ def main():
     loader.load(
         data=tokens_df
         , database='shakespeare'
-        , collection='tokens'
+        , collection='bronzeTokens'
         , write_mode='overwrite'
     )
 
     loader.load(
         data=inverted_idx_df
         , database='shakespeare'
-        , collection='indices'
+        , collection='bronzeIndices'
         , write_mode='overwrite'
     )
 

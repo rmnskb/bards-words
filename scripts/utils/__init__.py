@@ -6,4 +6,4 @@ from .etl.load import DataLoader
 from .etl.schemas import TokensSchema, InvertedIndexSchema, NormalisedIndexSchema
 
 # MongoDB utils
-from .mongodb.config import get_conn_uri
+from .mongodb.config import get_etl_conn_uri
