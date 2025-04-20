@@ -65,6 +65,8 @@ services:
     environment:
       DB_API_USER: ${DB_API_USER}
       DB_API_PWD: ${DB_API_PWD}
+    volumes:
+      - ./api:/api
     ports:
       - '8000:80'
     depends_on:

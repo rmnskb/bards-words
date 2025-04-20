@@ -30,6 +30,7 @@ pyarrow==19.0.1
 pydantic==2.11.3
 pydantic_core==2.33.1
 Pygments==2.19.1
+pymongo==4.12.0
 pyspark==3.5.5
 pytest==8.3.5
 python-dateutil==2.9.0.post0
