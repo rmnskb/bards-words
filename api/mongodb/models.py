@@ -9,6 +9,11 @@ class MongoQueryResult(BaseModel):
         arbitrary_types_allowed = True
 
 
+class TokensItem(MongoQueryResult):
+    document: str
+    occurrences: list[str]
+
+
 class _OccurrenceElement(BaseModel):
     document: str
     frequency: int

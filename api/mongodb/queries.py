@@ -43,6 +43,15 @@ class ShakespeareRepository(_MongoRepository):
         regexp = re.compile(rf".*{word}.*", re.IGNORECASE)
 
         result = await self._db.bronzeIndices.find_one({"word": regexp})
-        item = InvertedIndexItem(**result)
 
-        return item
+        if result:
+            return InvertedIndexItem(**result)
+
+    async def find_words(self, words: list[str]) -> list[InvertedIndexItem]:
+        results: list[InvertedIndexItem] = []
+
+        for word in words:
+            if item := await self.find_word(word):
+                results.append(item)
+
+        return results
