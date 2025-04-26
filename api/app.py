@@ -46,10 +46,14 @@ async def find_phrase(words: list[str] = Query(None)):
     if words is None or len(words) == 0:
         raise HTTPException(status_code=400, detail='Query parameter is required')
 
-    indices: dict[str, list[int]] = await repo.find_phrase_indices(words)
-    document = list(indices.keys())[0]
-    start = min(indices[document])
+    document_indices: dict[str, list[list[int]]] = await repo.find_phrase_indices(words)
+    phrases: list[dict[str, list[str]]] = []
 
-    phrase_tokens = await repo.find_tokens(document=document, start=start - 25, limit=50)
+    for document, indices in document_indices.items():
+        for sequence in indices:
+            start = min(sequence)
+            limit = len(sequence)
+            phrase_tokens = await repo.find_tokens(document=document, start=start - 1, limit=limit + 3)
+            phrases.append(phrase_tokens.model_dump())
 
-    return phrase_tokens
+    return phrases

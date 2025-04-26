@@ -1,12 +1,15 @@
 import os
 import re
-from typing import Optional
+from typing import Optional, TypeVar
 from collections import defaultdict
+from itertools import groupby
 
 import asyncio
 from pymongo import AsyncMongoClient
 
 from .models import InvertedIndexItem, TokensItem
+
+T = TypeVar('T')
 
 
 class _MongoRepository:
@@ -16,7 +19,7 @@ class _MongoRepository:
         self._client = AsyncMongoClient(uri)
 
     @staticmethod
-    def _get_conn_uri():
+    def _get_conn_uri() -> str:
         user = os.getenv("DB_API_USER")
         pwd = os.getenv("DB_API_PWD")
         host = "mongodb"
@@ -43,7 +46,7 @@ class ShakespeareRepository(_MongoRepository):
         :param word: the search criteria
         :return: BSON match output
         """
-        regexp = re.compile(rf".*{word}.*", re.IGNORECASE)
+        regexp = re.compile(rf"^{word}$", re.IGNORECASE)
 
         result = await self._db.bronzeIndices.find_one({"word": regexp})
 
@@ -75,7 +78,7 @@ class ShakespeareRepository(_MongoRepository):
         if result:
             return TokensItem(**result)
 
-    async def find_phrase_indices(self, words: list[str]) -> dict[str, list[int]]:
+    async def find_phrase_indices(self, words: list[str]) -> dict[str, list[list[int]]]:
         """
         Find in what documents and where in particular given words appear together
         :param words: a list of words, i.e a phrase (e.g. "All that glisters is not gold")
@@ -101,10 +104,44 @@ class ShakespeareRepository(_MongoRepository):
 
             return docs
 
-        def get_adjacent_indices(docs_occur: dict[str, list[int]]) -> dict[str, list[int]]:
+        def get_consecutive_subsequences(sequence: list[T], length: int) -> list[list[T]]:
+            """
+            Divide the list into subsequences of length n, if there are no subsequences, return an empty list
+            :param sequence: a list to draw the subsequences from
+            :param length: the length of the subsequences to return
+            :return: a list of subsequences of the given length
+            """
+            sorted_seq = sorted(sequence)
+
+            runs = []
+            current_run = [sorted_seq[0]]
+
+            for i in range(1, len(sorted_seq)):
+                if sorted_seq[i] == sorted_seq[i - 1] + 1:
+                    current_run.append(sorted_seq[i])
+                else:
+                    if len(current_run) >= length:
+                        runs.append(current_run[:])
+                    current_run = [sorted_seq[i]]
+
+            if len(current_run) >= length:
+                runs.append(current_run)
+
+            if not runs:
+                return []
+
+            outcome = []
+            for run in runs:
+                for i in range(len(run) - length + 1):
+                    outcome.append(run[i: i + length])
+
+            return outcome
+
+        def get_adjacent_indices(docs_occur: dict[str, list[int]], n: int) -> dict[str, list[list[int]]]:
             """
             Get the indices of words that are adjacent in the given documents
             :param docs_occur: a dictionary mapping words indices to documents
+            :param n: number of words to check against
             :return:
             """
             # Yes, a lambda function as a variable, mentally preparing myself for TS + React frontend part
@@ -113,20 +150,29 @@ class ShakespeareRepository(_MongoRepository):
             adjacent_indices = {}
 
             for document, occurs in docs_occur.items():
-                adjacent_diff = calculate_adjacent_diff(sorted(occurs))
+                unique_occurs = sorted(list(set(occurs)))
+                adjacent_diff = calculate_adjacent_diff(unique_occurs)
 
-                if -1 not in adjacent_diff and -2 not in adjacent_diff:
+                # To avoid partial matches,
+                # the number of adjacent words must match with the number of words in the query,
+                # and they must be consecutive
+                no_adjacent_elems = -1 not in adjacent_diff
+                diffs_not_consecutive = [-1] * (n - 1) not in [list(group[1]) for group in groupby(adjacent_diff)]
+
+                if no_adjacent_elems or diffs_not_consecutive:
                     continue
 
                 # Get the list of indices of the words that are adjacent
                 indices = [(i, i + 1) for i, val in enumerate(adjacent_diff) if val == -1]
                 flat_indices = list(sum(indices, ()))  # Flatten the list of indices
-                adjacent_indices[document] = sorted([occurs[i] for i in flat_indices])
+                adjacent_occurrences = list(set([unique_occurs[i] for i in flat_indices]))
+                adjacent_indices[document] = get_consecutive_subsequences(adjacent_occurrences, length=n)
 
             return adjacent_indices
 
         results_raw = await self.find_words(words=words)
         results = [item.model_dump() for item in results_raw]  # Convert the pydantic models to Python dicts
+        words_num = len(words) if isinstance(words, list) else 1
 
         common_docs = find_docs_intersection(attributes=results)
         document_occurrences: dict[str, list[int]] = defaultdict(list)
@@ -137,7 +183,7 @@ class ShakespeareRepository(_MongoRepository):
                     occurrence['indices'] if occurrence['document'] in common_docs else []
                 )
 
-        return get_adjacent_indices(docs_occur=document_occurrences)
+        return get_adjacent_indices(docs_occur=document_occurrences, n=words_num)
 
 
 if __name__ == "__main__":
