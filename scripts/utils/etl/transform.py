@@ -85,9 +85,10 @@ class BronzeDataTransformer:
         return (
             data
             .flatMap(self._create_index_pairs)  # => RDD[list[tuple[tuple[str, str], list[int]]]]
-            .filter(lambda entry: not self._is_stopword(entry[0][1]))
             .map(lambda entry: ((entry[0][0], self._remove_punctuation(entry[0][1])), entry[1]))
             .map(lambda entry: ((entry[0][0], self._remove_suffix(entry[0][1])), entry[1]))
+            .map(lambda entry: ((entry[0][0], entry[0][1].strip()), entry[1]))
+            .map(lambda entry: ((entry[0][0], entry[0][1].lower()), entry[1]))
             .filter(lambda entry: bool(entry[0][1]))  # check if the word is not an empty string
             # Concatenate the lists of indices
             .reduceByKey(lambda x, y: x + y)  # => RDD[tuple[str, str], list[int]]
