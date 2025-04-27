@@ -1,10 +1,23 @@
 from fastapi import FastAPI, Query, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from api.mongodb import ShakespeareRepository, InvertedIndexItem, TokensItem
 from .enums import ShakespeareWork
 
 app = FastAPI()
 repo = ShakespeareRepository()
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['GET'],
+    allow_headers=["*"],
+)
 
 
 @app.get('/api/v1')
