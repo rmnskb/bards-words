@@ -78,6 +78,16 @@ services:
     depends_on:
       - mongodb
 
+  web:
+    container_name: react-ts
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    depends_on:
+      - fast-api
+
 volumes:
   spark-logs:
   db:

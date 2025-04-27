@@ -1,0 +1,19 @@
+# Git
+.git
+.gitattributes
+.gitignore
+
+# Docker
+docker-compose.yml
+Dockerfile
+.docker
+.dockerignore
+
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+
+# Virtual environment
+.venv/
+
+# PyCharm
+.idea
