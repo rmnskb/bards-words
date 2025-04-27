@@ -14,7 +14,6 @@ services:
       retries: 3
     volumes:
       - ./scripts:/opt/spark/scripts
-      - ./data:/opt/spark/data
       - spark-logs:/opt/spark/spark-events
     env_file:
       - ./spark/.env.spark
@@ -22,6 +21,9 @@ services:
     environment:
       DB_ETL_USER: ${DB_ETL_USER}
       DB_ETL_PWD: ${DB_ETL_PWD}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
     ports:
       - '8080:8080'
       - '7077:7077'
@@ -38,9 +40,11 @@ services:
     environment:
       DB_ETL_USER: ${DB_ETL_USER}
       DB_ETL_PWD: ${DB_ETL_PWD}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
     volumes:
       - ./scripts:/opt/spark/scripts
-      - ./data:/opt/spark/data
       - spark-logs:/opt/spark/spark-events
 
   mongodb:
