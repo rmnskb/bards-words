@@ -5,8 +5,8 @@ import os
 
 
 def get_etl_conn_uri() -> str:
-    user = os.getenv("MONGO_INITDB_ROOT_USERNAME")
-    pwd = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
+    user = os.getenv("DB_ETL_USER")
+    pwd = os.getenv("DB_ETL_PWD")
     host = "mongodb"
     port = 27017
 

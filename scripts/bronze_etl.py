@@ -6,7 +6,8 @@ from pyspark.sql import SparkSession, DataFrame
 # and then submitting them along with the actual job as a dependency
 # via spark-submit --py-files <dependency>.zip shakespeare_etl.py
 from utils import (
-    get_etl_conn_uri, BronzeDataExtractor, BronzeDataTransformer, DataLoader, SparkBase, TokensSchema, InvertedIndexSchema
+    get_etl_conn_uri, BronzeDataExtractor, BronzeDataTransformer, DataLoader, SparkBase, TokensSchema,
+    InvertedIndexSchema
 )
 
 
@@ -20,8 +21,8 @@ def main():
     spark: SparkSession = sb.spark
 
     # E from ETL
-    BronzeDataExtractor.extract()
-    raw_data = sc.wholeTextFiles(str(BronzeDataExtractor.data_folder))
+    BronzeDataExtractor.extract(target='aws')
+    raw_data = sc.wholeTextFiles(f"s3a://{BronzeDataExtractor.s3_bucket}/*.txt")
 
     # T from ETL
     transformer = BronzeDataTransformer(sc=sc)
