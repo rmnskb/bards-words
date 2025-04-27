@@ -7,12 +7,17 @@ app = FastAPI()
 repo = ShakespeareRepository()
 
 
-@app.get('/')
-async def index():
-    return {'message': 'Hello World'}
+@app.get('/api/v1')
+async def index() -> dict[str, str]:
+    return {'message': 'Shakespeare API'}
 
 
-@app.get('/find-one')
+@app.get('/api/v1/health')
+async def health() -> dict[str, str]:
+    return {'status': 'healthy'}
+
+
+@app.get('/api/v1/find-one')
 async def find_one(word: str = Query(None)) -> InvertedIndexItem:
     if not word:
         raise HTTPException(status_code=400, detail='Query parameter is required')
@@ -20,7 +25,7 @@ async def find_one(word: str = Query(None)) -> InvertedIndexItem:
     return await repo.find_word(word)
 
 
-@app.get('/find-many')
+@app.get('/api/v1/find-many')
 async def find_many(words: list[str] = Query(None)) -> list[InvertedIndexItem]:
     if not words:
         raise HTTPException(status_code=400, detail='Query parameter is required')
@@ -28,7 +33,7 @@ async def find_many(words: list[str] = Query(None)) -> list[InvertedIndexItem]:
     return await repo.find_words(words)
 
 
-@app.get('/get-tokens')
+@app.get('/api/v1/get-tokens')
 async def get_tokens(work: str = Query(None), start: int = Query(None), end: int = Query(None)) -> TokensItem:
     if work is None or start is None or end is None:
         raise HTTPException(status_code=400, detail='All query parameters (work, start, end) are required')
@@ -41,7 +46,7 @@ async def get_tokens(work: str = Query(None), start: int = Query(None), end: int
     return await repo.find_tokens(work, start, limit)
 
 
-@app.get('/find-phrase')
+@app.get('/api/v1/find-phrase')
 async def find_phrase(words: list[str] = Query(None)):
     if words is None or len(words) == 0:
         raise HTTPException(status_code=400, detail='Query parameter is required')
