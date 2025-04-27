@@ -1,5 +1,8 @@
 FROM node:lts-alpine AS node
 
+## Install curl for healthcheck
+RUN apk add --no-cache curl
+
 WORKDIR app/
 
 COPY package*.json ./
