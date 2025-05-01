@@ -199,7 +199,7 @@ class ShakespeareRepository(_MongoRepository):
         async for result in self._db.bronzeIndices.find(
                 {"$text": {"$search": word}},
                 {"score": {"$meta": "textScore"}}
-        ).sort("score", pymongo.DESCENDING):
+        ).sort("score", pymongo.ASCENDING):
             if result is not None:
                 results.append(InvertedIndexItem(**result))
 
