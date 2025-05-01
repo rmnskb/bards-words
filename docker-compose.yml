@@ -16,6 +16,8 @@ services:
       - '27017:27017'
     volumes:
       - "./db:/data/db:rw"
+    networks:
+      - web-spark-ntwrk
 
   fast-api:
     container_name: fast-api
@@ -40,6 +42,8 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+    networks:
+      - web-spark-ntwrk
 
   react-ts:
     container_name: react-ts
@@ -63,8 +67,15 @@ services:
     depends_on:
       fast-api:
         condition: service_healthy
+    networks:
+      - web-spark-ntwrk
 
 volumes:
   db:
     driver: local
     name: db
+
+networks:
+  web-spark-ntwrk:
+    name: web-spark-ntwrk
+    driver: bridge
