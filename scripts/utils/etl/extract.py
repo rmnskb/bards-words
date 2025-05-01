@@ -18,11 +18,11 @@ class BronzeDataExtractor:
     s3_bucket = os.environ['AWS_S3_BUCKET']
 
     @classmethod
-    def extract(cls, target: Literal['local', 'aws']) -> None:
-        match target:
+    def extract(cls, source: Literal['local', 'aws']) -> None:
+        match source:
             case 'local':
                 if not os.listdir(cls.data_folder):  # Check if the directory is empty
-                    subprocess.call(['sh', './acquire-data.sh', target])
+                    subprocess.call(['sh', './acquire-data.sh', source])
                     print(f'Empty directory {cls.data_folder} was populated successfully.')
                     return
 
@@ -31,16 +31,17 @@ class BronzeDataExtractor:
                 client = boto3.client('s3')
                 results = client.list_objects(Bucket=cls.s3_bucket)
                 if not results.get('Contents'):
-                    subprocess.call(['sh', './acquire-data.sh', target, cls.s3_bucket])
+                    subprocess.call(['sh', './acquire-data.sh', source, cls.s3_bucket])
                     print(f'Empty bucket {cls.s3_bucket} was populated successfully.')
                     return
 
                 print(f'The bucket {cls.s3_bucket} has {len(results["Contents"])} files')
             case _:
-                raise ValueError(f"Invalid target: {target}; Possible values are local, aws.")
+                raise ValueError(f"Invalid target: {source}; Possible values are local, aws.")
 
 
 class SilverDataExtractor:
+    s3_bucket = os.environ['AWS_S3_BUCKET']
 
     def __init__(
             self
@@ -52,9 +53,17 @@ class SilverDataExtractor:
         self._database = database
         self._collection = collection
 
-    def extract(self) -> DataFrame:
-        return self._spark.read \
-            .format("mongodb") \
-            .option("database", self._database) \
-            .option("collection", self._collection) \
-            .load()
+    def extract(self, source: Literal['mongo', 's3'] = 'mongo') -> DataFrame:
+        match source:
+            case 'mongo':
+                return self._spark.read \
+                    .format("mongodb") \
+                    .option("database", self._database) \
+                    .option("collection", self._collection) \
+                    .load()
+            case 's3':
+                return self._spark.read \
+                    .option("multiline", True) \
+                    .json(f's3a://{self.s3_bucket}/worksYears.json')
+            case _:
+                raise ValueError(f"Invalid destination: {source}; Possible values are mongo, s3.")

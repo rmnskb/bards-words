@@ -162,11 +162,9 @@ class SilverDataTransformer:
         return (
             data
             .select(col('word'), explode(col('occurrences')).alias('occurrences'))  # Flatten the array of occurrences
-            .select(  # Flatten the struct with three fields inside
+            .select(  # Flatten the struct with three fields inside, retain only document and the freq in it
                 col('word')
                 , col("occurrences").getField("document").alias("document")
                 , col("occurrences").getField("frequency").alias("frequency")
-                , col("occurrences").getField("indices").alias("indices")
-            )  # Finally flatten the array with position indices
-            .select(col("word"), col("document"), col("frequency"), explode(col("indices")).alias("positionIdx"))
+            )
         )

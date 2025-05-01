@@ -21,7 +21,7 @@ def main():
     spark: SparkSession = sb.spark
 
     # E from ETL
-    BronzeDataExtractor.extract(target='aws')
+    BronzeDataExtractor.extract(source='aws')
     raw_data = sc.wholeTextFiles(f"s3a://{BronzeDataExtractor.s3_bucket}/*.txt")
 
     # T from ETL
