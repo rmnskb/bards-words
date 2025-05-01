@@ -15,7 +15,7 @@ class BronzeDataExtractor:
     This object is not supposed to be instantiated.
     """
     data_folder = Path.cwd().parent.joinpath('data')
-    s3_bucket = os.environ['S3_BUCKET']
+    s3_bucket = os.environ['AWS_S3_BUCKET']
 
     @classmethod
     def extract(cls, target: Literal['local', 'aws']) -> None:
