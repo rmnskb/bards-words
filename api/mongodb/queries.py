@@ -139,6 +139,7 @@ class ShakespeareRepository(_MongoRepository):
 
             return outcome
 
+        # TODO: define local-scope type aliases for this mess
         def get_adjacent_indices(docs_occur: dict[str, list[int]], n: int) -> dict[str, list[list[int]]]:
             """
             Get the indices of words that are adjacent in the given documents

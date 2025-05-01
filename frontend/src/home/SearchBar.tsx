@@ -16,7 +16,7 @@ interface InvertedIndex {
 
 const SearchBar: React.FC = () => {
     const [search, setSearch] = useState("");
-    const [result, setResult] = useState<InvertedIndex | null>(null);
+    const [results, setResults] = useState<InvertedIndex[] | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const apiUrl = "//localhost:8000/api/v1"
@@ -30,9 +30,9 @@ const SearchBar: React.FC = () => {
             setSearch(event.target.value);
         }
 
-    const fetchSearch = async (search: string): Promise<InvertedIndex | null> => {
+    const fetchSearch = async (search: string): Promise<InvertedIndex[] | null> => {
         try {
-            const response: AxiosResponse<InvertedIndex> = await axios.get(`${apiUrl}/find-one?word=${search}`);
+            const response: AxiosResponse<InvertedIndex[]> = await axios.get(`${apiUrl}/find-matches?word=${search}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching search', error);
@@ -43,11 +43,11 @@ const SearchBar: React.FC = () => {
     const handleSearchResult = async (): Promise<void> => {
         setLoading(true);
         setError(null);
-        const response: InvertedIndex | null = await fetchSearch(search);
+        const response: InvertedIndex[] | null = await fetchSearch(search);
         setLoading(false);
 
         if (response) {
-            setResult(response);
+            setResults(response);
         } else {
             setError('Failed to fetch search results :(');
         }
@@ -93,27 +93,36 @@ const SearchBar: React.FC = () => {
                 {loading && (<p>Loading...</p>)}
                 {error && <p>{error}</p>}
                 {
-                    result && (
+                    results && (
                         <div>
-                            <h2>Result:</h2>
-                            <h3>Word: {result.word}</h3>
-                            <h3>Occurrences:</h3>
+                            <ol>
+                                {results.map((result: InvertedIndex, index) => (
+                                    <li key={index}>
+                                        <div>
+                                            <h3>Result:</h3>
+                                            <h4>Word: {result.word}</h4>
+                                            <h4>Occurrences:</h4>
 
-                            <ul>
-                                {result.occurrences.map((occurrence, idx) => (
-                                    <li key={idx}>
-                                        <div><strong>Document: </strong> {occurrence.document}</div>
-                                        <div><strong>Frequency: </strong> {occurrence.frequency}</div>
-                                        <div><strong>Indices: </strong> {occurrence.indices.join(', ')}</div>
+                                            <ul>
+                                                {result.occurrences.map((occurrence: OccurrenceElement, idx) => (
+                                                    <li key={idx}>
+                                                        <div><strong>Document: </strong> {occurrence.document}</div>
+                                                        <div><strong>Frequency: </strong> {occurrence.frequency}</div>
+                                                        <div><strong>Indices: </strong> {occurrence.indices.join(', ')}
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
                                     </li>
                                 ))}
-                            </ul>
+                            </ol>
                         </div>
                     )
                 }
             </div>
         </div>
-    );
+    )
 };
 
 export default SearchBar;
