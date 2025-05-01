@@ -3,7 +3,8 @@ from typing import TypeAlias, Literal, overload
 
 from pyspark import SparkContext, RDD
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, explode
+from pyspark.sql.functions import col, explode, broadcast, struct, collect_list
+from pyspark.sql.types import IntegerType
 from stop_words import get_stop_words
 
 DocumentTextType: TypeAlias = tuple[str, str]
@@ -167,4 +168,39 @@ class SilverDataTransformer:
                 , col("occurrences").getField("document").alias("document")
                 , col("occurrences").getField("frequency").alias("frequency")
             )
+        )
+
+
+class GoldDataTransformer:
+
+    @classmethod
+    def transform(cls, words: DataFrame, chronology: DataFrame) -> DataFrame:
+        joined_df = (
+            words
+            .join(broadcast(chronology), on='document', how='left')
+        )
+
+        distinct_words = words.select(col('word')).distinct()
+        doc_freq = cls._get_freq_per_dimension(df=joined_df, dimension='document')
+        year_freq = cls._get_freq_per_dimension(df=joined_df, dimension='year')
+
+        return (
+            distinct_words
+            .join(doc_freq, on='word', how='left')
+            .join(year_freq, on='word', how='left')
+        )
+
+    @staticmethod
+    def _get_freq_per_dimension(df: DataFrame, dimension: Literal['document', 'year']) -> DataFrame:
+        return (
+            df
+            .groupBy([col('word'), col(dimension)])
+            .agg(
+                {'frequency': 'sum'}
+            )
+            .select(col('word'), col(dimension), col('sum(frequency)').cast(IntegerType()).alias('frequency'))
+            .select(col('word'), struct(col(dimension), col('frequency')).alias(f'{dimension}_freq'))
+            .groupBy(col('word'))
+            # Implode the struct, so there is only one array entry per word
+            .agg(collect_list(col(f'{dimension}_freq')).alias(f'{dimension}Frequencies'))
         )

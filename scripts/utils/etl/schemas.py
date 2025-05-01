@@ -50,3 +50,21 @@ class NormalisedIndexSchema(SparkSchema):
         , StructField('frequency', IntegerType(), True)
         , StructField('positionIdx', IntegerType(), True)
     ])
+
+
+class WordDimensionsFrequencies(SparkSchema):
+    _schema = StructType([
+        StructField('word', StringType(), False)
+        , StructField('documentFrequencies', ArrayType(
+            StructType([
+                StructField('document', StringType(), False)
+                , StructField('frequency', IntegerType(), False)
+            ])
+        ), False)
+        , StructField('yearFrequencies', ArrayType(
+            StructType([
+                StructField('year', StringType(), False)
+                , StructField('frequency', IntegerType(), False)
+            ])
+        ), False)
+    ])

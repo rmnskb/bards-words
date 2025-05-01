@@ -1,11 +1,32 @@
 import os
 import subprocess
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 import boto3
 
 from pyspark.sql import DataFrame, SparkSession
+
+
+class _MongoDataExtractor:
+
+    def __init__(
+            self
+            , spark: SparkSession
+            , collection: str
+            , database: Optional[str] = None
+    ) -> None:
+        self._spark = spark
+        self._collection = collection
+        self._database = database if database else 'shakespeare'
+
+    @property
+    def data(self) -> DataFrame:
+        return self._spark.read \
+            .format("mongodb") \
+            .option("database", self._database) \
+            .option("collection", self._collection) \
+            .load()
 
 
 class BronzeDataExtractor:
@@ -56,14 +77,22 @@ class SilverDataExtractor:
     def extract(self, source: Literal['mongo', 's3'] = 'mongo') -> DataFrame:
         match source:
             case 'mongo':
-                return self._spark.read \
-                    .format("mongodb") \
-                    .option("database", self._database) \
-                    .option("collection", self._collection) \
-                    .load()
+                return _MongoDataExtractor(spark=self._spark, collection=self._collection).data
             case 's3':
                 return self._spark.read \
                     .option("multiline", True) \
                     .json(f's3a://{self.s3_bucket}/worksYears.json')
             case _:
                 raise ValueError(f"Invalid destination: {source}; Possible values are mongo, s3.")
+
+
+class GoldDataExtractor:
+
+    def __init__(self, spark: SparkSession, collections: list[str]) -> None:
+        self._spark = spark
+        self._collections = collections
+
+    def extract(self) -> list[DataFrame]:
+        return [
+            _MongoDataExtractor(spark=self._spark, collection=collection).data for collection in self._collections
+        ]
