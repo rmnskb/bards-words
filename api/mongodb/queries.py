@@ -5,6 +5,8 @@ from collections import defaultdict
 from itertools import groupby
 
 import asyncio
+
+import pymongo
 from pymongo import AsyncMongoClient
 
 from .models import InvertedIndexItem, TokensItem
@@ -184,6 +186,24 @@ class ShakespeareRepository(_MongoRepository):
                 )
 
         return get_adjacent_indices(docs_occur=document_occurrences, n=words_num)
+
+    async def find_matches(self, word: str) -> list[InvertedIndexItem]:
+        """
+        Find matches for a given word using mongo's built-in text search
+        :param word: a textual representation of human sounds, what do you think it might be
+        :return: a list of InvertedIndexItem objects containing the matches
+        """
+        results: list[InvertedIndexItem] = []
+
+        async for result in self._db.bronzeIndices.find(
+                {"$text": {"$search": word}},
+                {"score": {"$meta": "textScore"}}
+        ).sort("score", pymongo.DESCENDING):
+            if result is not None:
+                results.append(InvertedIndexItem(**result))
+
+        if results:
+            return results
 
 
 if __name__ == "__main__":

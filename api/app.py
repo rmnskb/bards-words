@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.mongodb import ShakespeareRepository, InvertedIndexItem, TokensItem
 from .enums import ShakespeareWork
 
+# TODO: handle empty responses either in the api or in the repo
 app = FastAPI()
 repo = ShakespeareRepository()
 
@@ -22,7 +23,7 @@ app.add_middleware(
 
 @app.get('/api/v1')
 async def index() -> dict[str, str]:
-    return {'message': 'Shakespeare API'}
+    return {'name': 'Shakespeare API'}
 
 
 @app.get('/api/v1/health')
@@ -75,3 +76,11 @@ async def find_phrase(words: list[str] = Query(None)):
             phrases.append(phrase_tokens.model_dump())
 
     return phrases
+
+
+@app.get('/api/v1/find-matches')
+async def find_matches(word: str = Query(None)) -> list[InvertedIndexItem]:
+    if word is None:
+        raise HTTPException(status_code=400, detail='Query parameter is required')
+
+    return await repo.find_matches(word)
