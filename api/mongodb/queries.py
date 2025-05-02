@@ -9,7 +9,7 @@ import asyncio
 import pymongo
 from pymongo import AsyncMongoClient
 
-from .models import InvertedIndexItem, TokensItem
+from .models import InvertedIndexItem, TokensItem, WordDimensionsItem
 
 T = TypeVar('T')
 
@@ -205,6 +205,17 @@ class ShakespeareRepository(_MongoRepository):
 
         if results:
             return results
+
+    async def get_stats(self, word: str) -> WordDimensionsItem:
+        """
+        Get statistics (frequencies per document or per year) for a given word
+        :param word: a word that you think Shakespeare might have used
+        :return: dimensions (freq per year, freq per document) per word
+        """
+        result = await self._db.goldWords.find_one({"word": word})
+
+        if result:
+            return WordDimensionsItem(**result)
 
 
 if __name__ == "__main__":

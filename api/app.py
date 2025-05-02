@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.mongodb import ShakespeareRepository, InvertedIndexItem, TokensItem
+from api.mongodb import ShakespeareRepository, InvertedIndexItem, TokensItem, WordDimensionsItem
 from .enums import ShakespeareWork
 
 # TODO: handle empty responses either in the api or in the repo
@@ -84,3 +84,11 @@ async def find_matches(word: str = Query(None)) -> list[InvertedIndexItem]:
         raise HTTPException(status_code=400, detail='Query parameter is required')
 
     return await repo.find_matches(word)
+
+
+@app.get('/api/v1/get-stats')
+async def get_stats(word: str = Query(None)) -> WordDimensionsItem:
+    if word is None:
+        raise HTTPException(status_code=400, detail='Query parameter is required')
+
+    return await repo.get_stats(word)
