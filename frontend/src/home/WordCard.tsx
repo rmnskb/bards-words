@@ -1,6 +1,6 @@
 import {Link} from "react-router";
 
-import IWordIndex from "../WordIndex.ts";
+import {IWordIndex} from "../WordInterfaces.ts";
 
 interface WordCardProps {
     word: IWordIndex;

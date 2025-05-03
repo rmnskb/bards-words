@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import axios, {AxiosResponse} from "axios";
 
-import IWordIndex from "../WordIndex.ts";
+import {IWordIndex} from "../WordInterfaces.ts";
 import WordCard from "./WordCard.tsx";
 
 

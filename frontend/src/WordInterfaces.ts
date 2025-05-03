@@ -4,12 +4,12 @@ interface OccurrenceElement {
     indices: number[];
 }
 
-interface DocumentFrequencyElement {
+export interface DocumentFrequencyElement {
     document: string;
     frequency: number;
 }
 
-interface YearFrequencyElement {
+export interface YearFrequencyElement {
     year: number;
     frequency: number;
 }
