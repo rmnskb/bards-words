@@ -3,6 +3,8 @@ import {useParams} from "react-router";
 import axios, {AxiosResponse} from "axios";
 
 import {IWordDimensions, YearFrequencyElement} from "../WordInterfaces.ts";
+import FreqPerYearChart from "./LineChart.tsx";
+import FreqPerDocChart from "./BarChart.tsx";
 
 const WordPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -66,6 +68,12 @@ const WordPage = () => {
                     </div>
                 )
             }
+            <div style={{width: '50%', height: '300px'}}>
+                {wordDimensions?.yearFrequencies && (<FreqPerYearChart stats={wordDimensions.yearFrequencies}/>)}
+            </div>
+            <div style={{width: '50%', height: '300px'}}>
+                {wordDimensions?.documentFrequencies && (<FreqPerDocChart stats={wordDimensions.documentFrequencies}/>)}
+            </div>
         </>
     )
 }
