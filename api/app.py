@@ -61,19 +61,19 @@ async def get_tokens(work: str = Query(None), start: int = Query(None), end: int
 
 
 @app.get('/api/v1/find-phrase')
-async def find_phrase(words: list[str] = Query(None)):
+async def find_phrase(words: list[str] = Query(None)) -> list[TokensItem]:
     if words is None or len(words) == 0:
         raise HTTPException(status_code=400, detail='Query parameter is required')
 
     document_indices: dict[str, list[list[int]]] = await repo.find_phrase_indices(words)
-    phrases: list[dict[str, list[str]]] = []
+    phrases: list[TokensItem] = []
 
     for document, indices in document_indices.items():
         for sequence in indices:
             start = min(sequence)
             limit = len(sequence)
-            phrase_tokens = await repo.find_tokens(document=document, start=start - 1, limit=limit + 3)
-            phrases.append(phrase_tokens.model_dump())
+            phrase_tokens = await repo.find_tokens(document=document, start=start - 10, limit=limit + 15)
+            phrases.append(phrase_tokens)
 
     return phrases
 
