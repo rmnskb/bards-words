@@ -38,7 +38,7 @@ class _DocumentFrequencyElement(BaseModel):
 
 
 class _YearFrequencyElement(BaseModel):
-    year: str
+    year: int
     frequency: int
 
 
