@@ -24,3 +24,8 @@ export interface IWordDimensions {
     documentFrequencies: DocumentFrequencyElement[];
     yearFrequencies: YearFrequencyElement[];
 }
+
+export interface IDocumentTokens {
+    document: string;
+    occurrences: string[];
+}

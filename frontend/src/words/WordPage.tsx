@@ -75,7 +75,7 @@ const WordPage = () => {
                 {wordDimensions?.documentFrequencies && (<FreqPerDocChart stats={wordDimensions.documentFrequencies}/>)}
             </div>
         </>
-    )
+    );
 }
 
 export default WordPage;

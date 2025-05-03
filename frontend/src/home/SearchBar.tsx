@@ -1,15 +1,17 @@
 import React, {useState} from "react";
 import axios, {AxiosResponse} from "axios";
 
-import {IWordIndex} from "../WordInterfaces.ts";
+import {IWordIndex, IDocumentTokens} from "../WordInterfaces.ts";
 import WordCard from "./WordCard.tsx";
 
 
 const SearchBar: React.FC = () => {
+    type SearchResult = IWordIndex[] | IDocumentTokens[];
     const [search, setSearch] = useState("");
-    const [results, setResults] = useState<IWordIndex[] | null>(null);
+    const [results, setResults] = useState<SearchResult | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [domain, setDomain] = useState<string>("word");
     const apiUrl = "//localhost:8000/api/v1"
 
     const resetSearch = () => {
@@ -21,9 +23,27 @@ const SearchBar: React.FC = () => {
             setSearch(event.target.value);
         }
 
-    const fetchSearch = async (search: string): Promise<IWordIndex[] | null> => {
+    const fetchSearch
+        = async (search: string): Promise<SearchResult | null> => {
         try {
-            const response: AxiosResponse<IWordIndex[]> = await axios.get(`${apiUrl}/find-matches?word=${search}`);
+            let response: AxiosResponse<SearchResult>;
+
+            if (domain === "word") {
+                response = await axios.get<IWordIndex[]>(`${apiUrl}/find-matches?word=${search}`);
+            } else if (domain === "phrase") {
+                const params = new URLSearchParams();
+                const tokens = search.split(" ");
+                tokens.forEach((token: string) => {
+                    params.append("words", token);
+                });
+                const url = `${apiUrl}/find-phrase?${params.toString()}`;
+
+                response = await axios.get<IDocumentTokens[]>(url);
+            } else {
+                console.error("Invalid parameter, select either word or phrase");
+                return null;
+            }
+
             return response.data;
         } catch (error) {
             console.error('Error fetching search', error);
@@ -34,7 +54,7 @@ const SearchBar: React.FC = () => {
     const handleSearchResult = async (): Promise<void> => {
         setLoading(true);
         setError(null);
-        const response: IWordIndex[] | null = await fetchSearch(search);
+        const response: SearchResult | null = await fetchSearch(search);
         setLoading(false);
 
         if (response) {
@@ -65,8 +85,19 @@ const SearchBar: React.FC = () => {
             }
         }
 
+    // TODO: Move the search results into separate component
     return (
         <div>
+            <label>
+                Search for:
+                <select
+                    name="selectedDomain"
+                    onChange={event => setDomain(event.target.value)}
+                >
+                    <option value="word">Word</option>
+                    <option value="phrase">Phrase</option>
+                </select>
+            </label>
             <form>
                 <label htmlFor={"search"}> Search </label>
                 <div>
@@ -87,11 +118,22 @@ const SearchBar: React.FC = () => {
                     results && (
                         <div>
                             <ol>
-                                {results.map((result: IWordIndex, index) => (
-                                    <li key={index}>
-                                        <WordCard word={result}></WordCard>
-                                    </li>
-                                ))}
+                                {domain === "word" ? (
+                                    (results as IWordIndex[]).map((result: IWordIndex, index) => (
+                                        <li key={index}>
+                                            <WordCard word={result}></WordCard>
+                                        </li>
+                                    ))
+                                ) : (
+                                    // TODO: Create a separate component for the document context
+                                    (results as IDocumentTokens[])
+                                        .map((result: IDocumentTokens, index) => (
+                                            <li key={index}>
+                                                <h3>Shakespeare's work: {result.document}</h3>
+                                                <p><strong>Context:</strong> {result.occurrences.join(' ')}</p>
+                                            </li>
+                                        ))
+                                )}
                             </ol>
                         </div>
                     )
