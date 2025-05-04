@@ -5,6 +5,7 @@ import axios, {AxiosResponse} from "axios";
 import {IWordDimensions, YearFrequencyElement} from "../WordInterfaces.ts";
 import FreqPerYearChart from "./LineChart.tsx";
 import FreqPerDocChart from "./BarChart.tsx";
+import WorksExamples from "./WorksExamples.tsx";
 
 const WordPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -14,7 +15,8 @@ const WordPage = () => {
     const word = String(params.word);
     const apiUrl = "//localhost:8000/api/v1"
 
-    const fetchWord = async (word: string): Promise<IWordDimensions | null> => {
+    const fetchWordDimensions
+        = async (word: string): Promise<IWordDimensions | null> => {
         try {
             const response: AxiosResponse<IWordDimensions> = await axios.get(`${apiUrl}/get-stats?word=${word}`);
             return response.data;
@@ -26,7 +28,7 @@ const WordPage = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetchWord(word)
+        fetchWordDimensions(word)
             .then((response) => {
                 setWordDimensions(response);
                 setLoading(false);
@@ -59,23 +61,28 @@ const WordPage = () => {
         <>
             {loading && (<p>Loading...</p>)}
             {error && (<p>{error}</p>)}
-            {
-                wordDimensions && (
+            {wordDimensions && (
+                <div>
                     <div>
                         <h1>{wordDimensions.word}</h1>
                         <p>First Appearance: {findFirstAppearance(wordDimensions.yearFrequencies)}</p>
                         <p>Total Frequency: {calculateTotalFrequency(wordDimensions.yearFrequencies)}</p>
                     </div>
-                )
-            }
-            <div style={{width: '50%', height: '300px'}}>
-                {wordDimensions?.yearFrequencies && (<FreqPerYearChart stats={wordDimensions.yearFrequencies}/>)}
-            </div>
-            <div style={{width: '50%', height: '300px'}}>
-                {wordDimensions?.documentFrequencies && (<FreqPerDocChart stats={wordDimensions.documentFrequencies}/>)}
-            </div>
+                    <div style={{width: '50%', height: '300px'}}>
+                        {wordDimensions?.yearFrequencies && (
+                            <FreqPerYearChart stats={wordDimensions.yearFrequencies}/>)}
+                    </div>
+                    <div style={{width: '50%', height: '300px'}}>
+                        {wordDimensions?.documentFrequencies && (
+                            <FreqPerDocChart stats={wordDimensions.documentFrequencies}/>)}
+                    </div>
+                    <div>
+                        <WorksExamples word={word}/>
+                    </div>
+                </div>
+            )}
         </>
     );
-}
+};
 
 export default WordPage;
