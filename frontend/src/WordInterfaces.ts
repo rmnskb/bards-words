@@ -1,4 +1,4 @@
-interface OccurrenceElement {
+export interface OccurrenceElement {
     document: string;
     frequency: number;
     indices: number[];
