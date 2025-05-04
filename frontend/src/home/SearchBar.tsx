@@ -3,6 +3,7 @@ import axios, {AxiosResponse} from "axios";
 
 import {IWordIndex, IDocumentTokens} from "../WordInterfaces.ts";
 import {SearchResultType} from "./HomePage.tsx";
+import {apiUrl} from "../Constants.ts";
 
 interface SearchBarProps {
     setResults: Dispatch<SetStateAction<SearchResultType | null>>;
@@ -23,7 +24,6 @@ const SearchBar = (
     }: SearchBarProps
 ) => {
     const [search, setSearch] = useState<string>("");
-    const apiUrl = "//localhost:8000/api/v1"
 
     const resetSearch = () => {
         setSearch("");
