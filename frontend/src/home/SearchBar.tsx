@@ -1,17 +1,28 @@
-import React, {useState} from "react";
+import React, {useState, Dispatch, SetStateAction} from "react";
 import axios, {AxiosResponse} from "axios";
 
 import {IWordIndex, IDocumentTokens} from "../WordInterfaces.ts";
-import WordCard from "./WordCard.tsx";
+import {SearchResultType} from "./HomePage.tsx";
+
+interface SearchBarProps {
+    setResults: Dispatch<SetStateAction<SearchResultType | null>>;
+    setLoading: Dispatch<SetStateAction<boolean>>;
+    setError: Dispatch<SetStateAction<string | null>>;
+    domain: string;
+    setDomain: Dispatch<SetStateAction<string>>;
+}
 
 
-const SearchBar: React.FC = () => {
-    type SearchResult = IWordIndex[] | IDocumentTokens[];
-    const [search, setSearch] = useState("");
-    const [results, setResults] = useState<SearchResult | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [domain, setDomain] = useState<string>("word");
+const SearchBar = (
+    {
+        setResults
+        , setLoading
+        , setError
+        , domain
+        , setDomain
+    }: SearchBarProps
+) => {
+    const [search, setSearch] = useState<string>("");
     const apiUrl = "//localhost:8000/api/v1"
 
     const resetSearch = () => {
@@ -24,9 +35,9 @@ const SearchBar: React.FC = () => {
         }
 
     const fetchSearch
-        = async (search: string): Promise<SearchResult | null> => {
+        = async (search: string): Promise<SearchResultType | null> => {
         try {
-            let response: AxiosResponse<SearchResult>;
+            let response: AxiosResponse<SearchResultType>;
 
             if (domain === "word") {
                 response = await axios.get<IWordIndex[]>(`${apiUrl}/find-matches?word=${search}`);
@@ -54,7 +65,7 @@ const SearchBar: React.FC = () => {
     const handleSearchResult = async (): Promise<void> => {
         setLoading(true);
         setError(null);
-        const response: SearchResult | null = await fetchSearch(search);
+        const response: SearchResultType | null = await fetchSearch(search);
         setLoading(false);
 
         if (response) {
@@ -85,7 +96,6 @@ const SearchBar: React.FC = () => {
             }
         }
 
-    // TODO: Move the search results into separate component
     return (
         <div>
             <label>
@@ -111,34 +121,6 @@ const SearchBar: React.FC = () => {
                     />
                 </div>
             </form>
-            <div>
-                {loading && (<p>Loading...</p>)}
-                {error && <p>{error}</p>}
-                {
-                    results && (
-                        <div>
-                            <ol>
-                                {domain === "word" ? (
-                                    (results as IWordIndex[]).map((result: IWordIndex, index) => (
-                                        <li key={index}>
-                                            <WordCard word={result}></WordCard>
-                                        </li>
-                                    ))
-                                ) : (
-                                    // TODO: Create a separate component for the document context
-                                    (results as IDocumentTokens[])
-                                        .map((result: IDocumentTokens, index) => (
-                                            <li key={index}>
-                                                <h3>Shakespeare's work: {result.document}</h3>
-                                                <p><strong>Context:</strong> {result.occurrences.join(' ')}</p>
-                                            </li>
-                                        ))
-                                )}
-                            </ol>
-                        </div>
-                    )
-                }
-            </div>
         </div>
     )
 };

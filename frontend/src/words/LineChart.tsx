@@ -10,6 +10,7 @@ const FreqPerYearChart = ({stats}: LineChartData) => {
     const sortedStats =
         [...stats].sort((a, b) => a.year - b.year)
 
+    // TODO: Add zeroes to missing years
     return (
         <ResponsiveContainer width={"100%"} height={"100%"}>
             <LineChart
@@ -32,6 +33,6 @@ const FreqPerYearChart = ({stats}: LineChartData) => {
             </LineChart>
         </ResponsiveContainer>
     );
-}
+};
 
 export default FreqPerYearChart;
