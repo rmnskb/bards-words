@@ -4,6 +4,7 @@ import axios, {AxiosResponse} from "axios";
 import {IDocumentTokens} from "../WordInterfaces.ts";
 import getShakespeareWorkCode from "../WorksEnum.ts";
 import {apiUrl} from "../Constants.ts";
+import {Link} from "react-router";
 
 interface WordContextCardProps {
     document: string;
@@ -89,7 +90,9 @@ const WordContextCard
             {error && (<p>{error}</p>)}
             {tokens && (
                 <div>
-                    <h4>Work: {document}</h4>
+                    <Link to={"/plays/" + getShakespeareWorkCode(document)}>
+                        <h4>Work: {document}</h4>
+                    </Link>
                     <ul>
                         {tokens.map((token, index) => (
                             <li key={index}>
