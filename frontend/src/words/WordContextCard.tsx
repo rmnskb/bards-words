@@ -26,7 +26,7 @@ const WordContextCard
             try {
                 const response: AxiosResponse<IDocumentTokens> =
                     await axios.get<IDocumentTokens>(
-                        `${apiUrl}/get-tokens?work=${work}&start=${startIndex}&end=${endIndex}`
+                        `${apiUrl}/tokens?document=${work}&start=${startIndex}&end=${endIndex}`
                     )
                 return response.data;
             } catch (e) {

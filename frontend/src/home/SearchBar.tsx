@@ -40,14 +40,14 @@ const SearchBar = (
             let response: AxiosResponse<SearchResultType>;
 
             if (domain === "word") {
-                response = await axios.get<IWordIndex[]>(`${apiUrl}/find-matches?word=${search}`);
+                response = await axios.get<IWordIndex[]>(`${apiUrl}/matches?search=${search}`);
             } else if (domain === "phrase") {
                 const params = new URLSearchParams();
                 const tokens = search.split(" ");
                 tokens.forEach((token: string) => {
                     params.append("words", token);
                 });
-                const url = `${apiUrl}/find-phrase?${params.toString()}`;
+                const url = `${apiUrl}/phrase?${params.toString()}`;
 
                 response = await axios.get<IDocumentTokens[]>(url);
             } else {

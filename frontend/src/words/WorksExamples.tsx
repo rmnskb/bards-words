@@ -18,7 +18,7 @@ const WorksExamples = ({word}: WordExamplesProps) => {
         = async (word: string): Promise<IWordIndex | null> => {
         try {
             const response: AxiosResponse<IWordIndex> =
-                await axios.get<IWordIndex>(`${apiUrl}/find-one?word=${word}`)
+                await axios.get<IWordIndex>(`${apiUrl}/word?search=${word}`)
             return response.data;
         } catch (e) {
             console.error(e);

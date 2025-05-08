@@ -31,36 +31,36 @@ async def health() -> dict[str, str]:
     return {'status': 'healthy'}
 
 
-@app.get('/api/v1/find-one')
-async def find_one(word: str = Query(None)) -> InvertedIndexItem:
-    if not word:
+@app.get('/api/v1/word')
+async def find_one(search: str = Query(None)) -> InvertedIndexItem:
+    if not search:
         raise HTTPException(status_code=400, detail='Query parameter is required')
 
-    return await repo.find_word(word)
+    return await repo.find_word(search)
 
 
-@app.get('/api/v1/find-many')
-async def find_many(words: list[str] = Query(None)) -> list[InvertedIndexItem]:
-    if not words:
+@app.get('/api/v1/words')
+async def find_many(search: list[str] = Query(None)) -> list[InvertedIndexItem]:
+    if not search:
         raise HTTPException(status_code=400, detail='Query parameter is required')
 
-    return await repo.find_words(words)
+    return await repo.find_words(search)
 
 
-@app.get('/api/v1/get-tokens')
-async def get_tokens(work: str = Query(None), start: int = Query(None), end: int = Query(None)) -> TokensItem:
-    if work is None or start is None or end is None:
+@app.get('/api/v1/tokens')
+async def get_tokens(document: str = Query(None), start: int = Query(None), end: int = Query(None)) -> TokensItem:
+    if document is None or start is None or end is None:
         raise HTTPException(status_code=400, detail='All query parameters (work, start, end) are required')
     elif start > end:
         raise HTTPException(status_code=400, detail='Start index is greater than end index')
 
     limit = end - start
-    work = str(ShakespeareWork[work])
+    document = str(ShakespeareWork[document])
 
-    return await repo.find_tokens(work, start, limit)
+    return await repo.find_tokens(document, start, limit)
 
 
-@app.get('/api/v1/find-phrase')
+@app.get('/api/v1/phrase')
 async def find_phrase(words: list[str] = Query(None)) -> list[TokensItem]:
     if words is None or len(words) == 0:
         raise HTTPException(status_code=400, detail='Query parameter is required')
@@ -78,15 +78,15 @@ async def find_phrase(words: list[str] = Query(None)) -> list[TokensItem]:
     return phrases
 
 
-@app.get('/api/v1/find-matches')
-async def find_matches(word: str = Query(None)) -> list[InvertedIndexItem]:
-    if word is None:
+@app.get('/api/v1/matches')
+async def find_matches(search: str = Query(None)) -> list[InvertedIndexItem]:
+    if search is None:
         raise HTTPException(status_code=400, detail='Query parameter is required')
 
-    return await repo.find_matches(word)
+    return await repo.find_matches(search)
 
 
-@app.get('/api/v1/get-stats')
+@app.get('/api/v1/stats')
 async def get_stats(word: str = Query(None)) -> WordDimensionsItem:
     if word is None:
         raise HTTPException(status_code=400, detail='Query parameter is required')

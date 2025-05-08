@@ -6,6 +6,7 @@ import {IWordDimensions, YearFrequencyElement} from "../WordInterfaces.ts";
 import FreqPerYearChart from "./LineChart.tsx";
 import FreqPerDocChart from "./BarChart.tsx";
 import WorksExamples from "./WorksExamples.tsx";
+import {apiUrl} from "../Constants.ts";
 
 const WordPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -13,12 +14,11 @@ const WordPage = () => {
     const [wordDimensions, setWordDimensions] = useState<IWordDimensions | null>(null);
     const params = useParams();
     const word = String(params.word);
-    const apiUrl = "//localhost:8000/api/v1"
 
     const fetchWordDimensions
         = async (word: string): Promise<IWordDimensions | null> => {
         try {
-            const response: AxiosResponse<IWordDimensions> = await axios.get(`${apiUrl}/get-stats?word=${word}`);
+            const response: AxiosResponse<IWordDimensions> = await axios.get(`${apiUrl}/stats?word=${word}`);
             return response.data;
         } catch (errorMsg) {
             console.error('Error fetching search', errorMsg);
