@@ -217,6 +217,12 @@ class ShakespeareRepository(_MongoRepository):
         if result:
             return WordDimensionsItem(**result)
 
+    async def get_document(self, document: str) -> TokensItem:
+        result = await self._db.bronzeTokens.find_one({"document": document})
+
+        if result:
+            return TokensItem(**result)
+
 
 if __name__ == "__main__":
     repo = ShakespeareRepository()

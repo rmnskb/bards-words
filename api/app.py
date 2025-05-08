@@ -92,3 +92,13 @@ async def get_stats(word: str = Query(None)) -> WordDimensionsItem:
         raise HTTPException(status_code=400, detail='Query parameter is required')
 
     return await repo.get_stats(word)
+
+
+@app.get('/api/v1/document')
+async def get_document(search: str = Query(None)) -> TokensItem:
+    if search is None:
+        raise HTTPException(status_code=400, detail='Query parameter is required')
+
+    document = str(ShakespeareWork[search])
+
+    return await repo.get_document(document)
