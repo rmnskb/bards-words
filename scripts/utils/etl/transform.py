@@ -108,7 +108,9 @@ class BronzeDataTransformer:
         name: str = entry[0]
         text: str = entry[1]
 
-        tokens: list[str] = re.split(r'\s', text)
+        marked_text: str = text.replace('\n', '\n\n')
+
+        tokens: list[str] = re.split(r'\s', marked_text)
 
         return name, tokens
 
