@@ -11,7 +11,7 @@ function App() {
                 <Route path="/" element={<HomePage/>}/>
                 <Route path="/words/:word" element={<WordPage/>}></Route>
                 <Route
-                    path="/plays/:document"
+                    path="/plays/:document/:indices?"
                     element={<PlayPage/>}
                 ></Route>
             </Routes>

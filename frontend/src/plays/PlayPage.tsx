@@ -11,8 +11,9 @@ const PlayPage = () => {
     const [tokens, setTokens] = useState<string[] | null>();
     const params = useParams();
     const document = String(params.document);
-    // TODO: Add highlighting for given indices
-    // const highlight = Number(params.highlight);
+    const indices = params.indices
+        ? params.indices.split(',').map(num => parseInt(num, 10))
+        : [];
 
     const fetchTokens
         = async (document: string): Promise<IDocumentTokens | null> => {
@@ -45,6 +46,8 @@ const PlayPage = () => {
     const formattedText = tokens ? tokens.map((token, index) => {
         if (token === "") {
             return <br key={index}/>;
+        } else if (indices.includes(index)) {
+            return <span key={index}> <strong>{token}</strong> </span>;
         }
         return <span key={index}> {token} </span>;
     }) : null;
