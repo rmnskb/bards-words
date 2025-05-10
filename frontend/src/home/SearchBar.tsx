@@ -38,20 +38,22 @@ const SearchBar = (
         = async (search: string): Promise<SearchResultType | null> => {
         try {
             let response: AxiosResponse<SearchResultType>;
+            const searchArray: string[] = search.split(" ");
 
-            if (domain === "word") {
+            if (searchArray.length === 1) {  
                 response = await axios.get<IWordIndex[]>(`${apiUrl}/matches?search=${search}`);
-            } else if (domain === "phrase") {
+                setDomain("word");
+            } else if (searchArray.length > 1) {
                 const params = new URLSearchParams();
-                const tokens = search.split(" ");
-                tokens.forEach((token: string) => {
+                searchArray.forEach((token: string) => {
                     params.append("words", token);
                 });
                 const url = `${apiUrl}/phrase?${params.toString()}`;
 
                 response = await axios.get<IDocumentTokens[]>(url);
+                setDomain("phrase");
             } else {
-                console.error("Invalid parameter, select either word or phrase");
+                console.error("Please enter your search query.");
                 return null;
             }
 
@@ -62,7 +64,6 @@ const SearchBar = (
         }
     }
 
-    const handleSearchResult = async (): Promise<void> => {
         setLoading(true);
         setError(null);
         const response: SearchResultType | null = await fetchSearch(search);
@@ -98,16 +99,6 @@ const SearchBar = (
 
     return (
         <div>
-            <label>
-                Search for:
-                <select
-                    name="selectedDomain"
-                    onChange={event => setDomain(event.target.value)}
-                >
-                    <option value="word">Word</option>
-                    <option value="phrase">Phrase</option>
-                </select>
-            </label>
             <form>
                 <label htmlFor={"search"}> Search </label>
                 <div>
