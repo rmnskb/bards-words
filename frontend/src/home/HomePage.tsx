@@ -6,7 +6,7 @@ import SearchResults from "./SearchResults.tsx";
 
 export type SearchResultType = IWordIndex[] | IDocumentTokens[];
 
-
+// TODO: handle multiple results clean up
 const HomePage = () => {
     const [results, setResults] = useState<SearchResultType | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -19,7 +19,6 @@ const HomePage = () => {
                 setResults={setResults}
                 setLoading={setLoading}
                 setError={setError}
-                domain={domain}
                 setDomain={setDomain}
             />
             <SearchResults

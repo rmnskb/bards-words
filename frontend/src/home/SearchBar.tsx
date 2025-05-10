@@ -9,7 +9,6 @@ interface SearchBarProps {
     setResults: Dispatch<SetStateAction<SearchResultType | null>>;
     setLoading: Dispatch<SetStateAction<boolean>>;
     setError: Dispatch<SetStateAction<string | null>>;
-    domain: string;
     setDomain: Dispatch<SetStateAction<string>>;
 }
 
@@ -19,7 +18,6 @@ const SearchBar = (
         setResults
         , setLoading
         , setError
-        , domain
         , setDomain
     }: SearchBarProps
 ) => {
@@ -32,7 +30,7 @@ const SearchBar = (
     const handleSearchChange =
         (event: React.ChangeEvent<HTMLInputElement>) => {
             setSearch(event.target.value);
-        }
+        };
 
     const fetchSearch
         = async (search: string): Promise<SearchResultType | null> => {
@@ -40,7 +38,7 @@ const SearchBar = (
             let response: AxiosResponse<SearchResultType>;
             const searchArray: string[] = search.split(" ");
 
-            if (searchArray.length === 1) {  
+            if (searchArray.length === 1) {
                 response = await axios.get<IWordIndex[]>(`${apiUrl}/matches?search=${search}`);
                 setDomain("word");
             } else if (searchArray.length > 1) {
@@ -64,6 +62,7 @@ const SearchBar = (
         }
     }
 
+    const handleSearchResult = async (): Promise<void> => {
         setLoading(true);
         setError(null);
         const response: SearchResultType | null = await fetchSearch(search);
@@ -83,7 +82,6 @@ const SearchBar = (
                     event.preventDefault();
                     handleSearchResult().catch((err: AxiosResponse) => {
                         console.error('Error occurred search', err);
-                        setLoading(false);
                         setError('An unexpected error occurred.');
                     });
                     break;
@@ -95,25 +93,56 @@ const SearchBar = (
                 default:
                     break;
             }
-        }
+        };
+
+    const handleButtonClick =
+        (event: React.MouseEvent<HTMLButtonElement>): void => {
+            event.preventDefault();
+            handleSearchResult().catch((err: AxiosResponse) => {
+                console.error('Error occurred search', err);
+                setError('An unexpected error occurred.');
+            });
+        };
 
     return (
-        <div>
-            <form>
-                <label htmlFor={"search"}> Search </label>
-                <div>
+        <div className="min-h-screen flex items-center justify-center libre-baskerville-regular">
+            <form className="w-full max-w-2xl mx-auto px-4">
+                <label
+                    htmlFor={"search"}
+                    className="mb-2 text-sm font-medium text-gray-900 sr-only"
+                >Search</label>
+                <div className="relative">
                     <input
-                        type="text"
+                        type="search"
                         value={search}
                         id="search"
                         onChange={handleSearchChange}
                         onKeyDown={handleKeyDown}
-                        placeholder={"Search for a word..."} required
+                        placeholder={"Search words, phrases..."} required
+                        className="
+                            block w-full p-4 text-xl shadow-lg
+                            text-[#0D1B2A]
+                            border-2 border-gray-50
+                            rounded-lg bg-gray-50
+                            focus:border-[#D4AF37] focus:outline-[#D4AF37]
+                        "
                     />
+                    <button
+                        type="submit"
+                        onClick={handleButtonClick}
+                        className="
+                            text-gray-50 absolute end-2.5 bottom-2.5
+                            bg-[#D4AF37] hover:bg-[#B89423]
+                            focus:ring-1 focus:outline-none focus:ring-[#B89423]
+                            font-medium rounded-lg text-sm px-4 py-3
+                            shadow-sm
+                        "
+                    >Search
+                    </button>
                 </div>
             </form>
         </div>
-    )
+    );
 };
 
 export default SearchBar;
