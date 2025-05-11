@@ -8,6 +8,7 @@ export type SearchResultType = IWordIndex[] | IDocumentTokens[];
 
 // TODO: handle multiple results clean up
 const HomePage = () => {
+    const [search, setSearch] = useState<string>("");
     const [results, setResults] = useState<SearchResultType | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -15,18 +16,31 @@ const HomePage = () => {
 
     return (
         <>
-            <SearchBar
-                setResults={setResults}
-                setLoading={setLoading}
-                setError={setError}
-                setDomain={setDomain}
-            />
-            <SearchResults
-                domain={domain}
-                results={results}
-                loading={loading}
-                error={error}
-            />
+            <div className={`
+                flex flex-col items-center 
+                ${results ? 'justify-start pt-24' : 'justify-center'} min-h-screen
+                font-baskerville
+            `}>
+                <SearchBar
+                    search={search}
+                    setSearch={setSearch}
+                    setResults={setResults}
+                    setLoading={setLoading}
+                    setError={setError}
+                    setDomain={setDomain}
+                />
+                {results && (
+                    <div className="">
+                        <SearchResults
+                            search={search}
+                            domain={domain}
+                            results={results}
+                            loading={loading}
+                            error={error}
+                        />
+                    </div>
+                )}
+            </div>
         </>
     );
 }

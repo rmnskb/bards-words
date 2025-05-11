@@ -1,4 +1,4 @@
-import React, {useState, Dispatch, SetStateAction} from "react";
+import React, {Dispatch, SetStateAction} from "react";
 import axios, {AxiosResponse} from "axios";
 
 import {IWordIndex, IDocumentTokens} from "../WordInterfaces.ts";
@@ -6,6 +6,8 @@ import {SearchResultType} from "./HomePage.tsx";
 import {apiUrl} from "../Constants.ts";
 
 interface SearchBarProps {
+    search: string;
+    setSearch: Dispatch<SetStateAction<string>>;
     setResults: Dispatch<SetStateAction<SearchResultType | null>>;
     setLoading: Dispatch<SetStateAction<boolean>>;
     setError: Dispatch<SetStateAction<string | null>>;
@@ -15,18 +17,21 @@ interface SearchBarProps {
 
 const SearchBar = (
     {
-        setResults
+        search
+        , setSearch
+        , setResults
         , setLoading
         , setError
         , setDomain
     }: SearchBarProps
 ) => {
-    const [search, setSearch] = useState<string>("");
+
 
     const resetSearch = () => {
         setSearch("");
     };
 
+    // TODO: handle erroneous search submit after a normal one
     const handleSearchChange =
         (event: React.ChangeEvent<HTMLInputElement>) => {
             setSearch(event.target.value);
@@ -105,12 +110,12 @@ const SearchBar = (
         };
 
     return (
-        <div className="min-h-screen flex items-center justify-center libre-baskerville-regular">
-            <form className="w-full max-w-2xl mx-auto px-4">
+        <div className="w-full max-w-2xl mx-auto px-4">
+            <form className="w-full">
                 <label
                     htmlFor={"search"}
                     className="mb-2 text-sm font-medium text-gray-900 sr-only"
-                >Search</label>
+                ></label>
                 <div className="relative">
                     <input
                         type="search"
@@ -121,7 +126,7 @@ const SearchBar = (
                         placeholder={"Search words, phrases..."} required
                         className="
                             block w-full p-4 text-xl shadow-lg
-                            text-[#0D1B2A]
+                            text-[#0D1B2A] font-im-fell
                             border-2 border-gray-50
                             rounded-lg bg-gray-50
                             focus:border-[#D4AF37] focus:outline-[#D4AF37]
