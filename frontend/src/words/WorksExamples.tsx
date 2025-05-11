@@ -40,15 +40,19 @@ const WorksExamples = ({word}: WordExamplesProps) => {
     }, [word]);
 
     return (
-        <div>
-            <h2>Examples from works: </h2>
+        <div className="flex flex-col justify-center items-center w-full">
+            <p className="text-3xl m-3">Examples from works:</p>
             {error && (<p>{error}</p>)}
             {loading && (<p>Loading...</p>)}
             {wordIndex?.occurrences.map((result: OccurrenceElement, index) => (
-                    <div key={index}>
+                    <div key={index} className="
+                        border w-1/2 rounded-lg m-2 shadow-lg m-3
+                        hover:border-[#D4AF37] hover:outline-[#D4AF37] hover:scale-110
+                    ">
                         <WordContextCard
                             document={result.document}
                             indices={result.indices}
+                            word={word}
                         />
                     </div>
                 )

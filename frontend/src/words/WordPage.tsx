@@ -59,28 +59,48 @@ const WordPage = () => {
 
     return (
         <>
-            {loading && (<p>Loading...</p>)}
-            {error && (<p>{error}</p>)}
-            {wordDimensions && (
-                <div>
+            <div>
+                {loading && (<p>Loading...</p>)}
+                {error && (<p>{error}</p>)}
+                {wordDimensions && (
                     <div>
-                        <h1>{wordDimensions.word}</h1>
-                        <p>First Appearance: {findFirstAppearance(wordDimensions.yearFrequencies)}</p>
-                        <p>Total Frequency: {calculateTotalFrequency(wordDimensions.yearFrequencies)}</p>
+                        <div>
+                            <p
+                                className="
+                                    p-5
+                                    first-letter:float-left first-letter:mr-3
+                                    first-letter:text-9xl first-letter:font-bold
+                                    first-line:tracking-widest first-line:uppercase first-line:text-3xl
+                                    font-im-fell font-bold
+                                "
+                            >{wordDimensions.word}</p>
+                            <p>First Appearance: {findFirstAppearance(wordDimensions.yearFrequencies)}</p>
+                            <p>Total Frequency: {calculateTotalFrequency(wordDimensions.yearFrequencies)}</p>
+                        </div>
+                        <div
+                            className="
+                                 flex flex-row w-full p-5
+                            "
+                        >
+                            <div className="
+                                bg-[#F2EBD3] p-3 rounded-lg shadow-lg w-1/2 h-[300px] mr-4
+                            ">
+                                {wordDimensions?.yearFrequencies && (
+                                    <FreqPerYearChart stats={wordDimensions.yearFrequencies}/>)}
+                            </div>
+                            <div className="
+                                bg-[#F2EBD3] p-3 rounded-lg shadow-lg w-1/2 h-[300px] mr-4
+                            ">
+                                {wordDimensions?.documentFrequencies && (
+                                    <FreqPerDocChart stats={wordDimensions.documentFrequencies}/>)}
+                            </div>
+                        </div>
+                        <div>
+                            <WorksExamples word={word}/>
+                        </div>
                     </div>
-                    <div style={{width: '50%', height: '300px'}}>
-                        {wordDimensions?.yearFrequencies && (
-                            <FreqPerYearChart stats={wordDimensions.yearFrequencies}/>)}
-                    </div>
-                    <div style={{width: '50%', height: '300px'}}>
-                        {wordDimensions?.documentFrequencies && (
-                            <FreqPerDocChart stats={wordDimensions.documentFrequencies}/>)}
-                    </div>
-                    <div>
-                        <WorksExamples word={word}/>
-                    </div>
-                </div>
-            )}
+                )}
+            </div>
         </>
     );
 };

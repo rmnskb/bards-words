@@ -9,13 +9,14 @@ import {Link} from "react-router";
 interface WordContextCardProps {
     document: string;
     indices: number[];
+    word: string;
 }
 
 const WordContextCard
-    = ({document, indices}: WordContextCardProps) => {
+    = ({document, indices, word}: WordContextCardProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [tokens, setTokens] = useState<string[]>([]);
+    const [tokens, setTokens] = useState<string[][]>([]);
 
     useEffect(() => {
         const fetchTokens
@@ -40,7 +41,7 @@ const WordContextCard
             = (array: number[], maxSize: number) => {
             // randomly sample up to maxSize value from the given array (without substitution)
             if (array.length === 0) return [];
-            if (array.length < maxSize) return [...array];
+            if (array.length <= maxSize) return [...array];
 
             const sampleSize = Math.min(
                 Math.floor(Math.random() * maxSize) + 1,
@@ -57,12 +58,12 @@ const WordContextCard
             return Array.from(selectedIndices).map(index => array[index]);
         };
 
-        const randomIndices = getRandomIndices(indices, 5)
+        // FIXME: bug, sometimes the items are duplicated multiple times
+        const randomIndices = getRandomIndices(indices, 3)
 
         const handleNewTokens = (newTokens: string[] | undefined) => {
             if (newTokens) {
-                const stringVal = newTokens.join(" ");
-                setTokens(prevTokens => [...prevTokens, stringVal]);
+                setTokens(prevTokens => [...prevTokens, newTokens]);
             }
         };
 
@@ -84,22 +85,36 @@ const WordContextCard
             .catch((e: string) => setError(e));
     }, [document, indices]);
 
+    const formatText = (text: string[], highlight: string) => {
+        return text ? text.map((token, index) => {
+            if (token === "") {
+                return <br key={index}/>;
+            } else if (token.toLowerCase().replace(/[\W\s]*/g, "") === highlight) {
+                return <span key={index} className="text-[#8B1E3F] font-bold"> {token} </span>;
+            }
+
+            return <span key={index}> {token} </span>;
+        }) : null;
+    };
+
     return (
         <div>
             {loading && (<p>Loading...</p>)}
             {error && (<p>{error}</p>)}
             {tokens && (
-                <div>
+                <div className="
+                    block p-5 w-full
+                ">
                     <Link to={"/plays/" + getShakespeareWorkCode(document)}>
-                        <h4>Work: {document}</h4>
+                        <p className="text-3xl font-im-fell">{document}</p>
+                        <ul>
+                            {tokens.map((token, index) => (
+                                <li key={index} className="p-1 m-1 border-1 rounded-lg">
+                                    <p>...{formatText(token, word)}...</p>
+                                </li>
+                            ))}
+                        </ul>
                     </Link>
-                    <ul>
-                        {tokens.map((token, index) => (
-                            <li key={index}>
-                                <p>{token}</p>
-                            </li>
-                        ))}
-                    </ul>
                 </div>
             )}
         </div>
