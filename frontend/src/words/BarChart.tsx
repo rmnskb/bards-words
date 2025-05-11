@@ -1,8 +1,9 @@
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid
-    , Tooltip, Legend, ResponsiveContainer
+    , Tooltip, ResponsiveContainer
 } from "recharts";
 
+import CustomTooltip from "./CustomTooltip.tsx";
 import {DocumentFrequencyElement} from "../WordInterfaces.ts";
 
 interface BarChartData {
@@ -26,12 +27,11 @@ const FreqPerDocChart = ({stats}: BarChartData) => {
                     bottom: 5,
                 }}
             >
-                <CartesianGrid strokeDasharray="3 3"/>
+                <CartesianGrid strokeDasharray="3 3" fillOpacity={0.6} fill="#F0E5C5"/>
                 <XAxis dataKey="document"/>
-                <YAxis/>
-                <Tooltip/>
-                <Legend/>
-                <Bar dataKey="frequency" fill="#8884d8"/>
+                <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} />
+                <Tooltip content={<CustomTooltip/>}/>
+                <Bar dataKey="frequency" fill="#8B1E3F"/>
             </BarChart>
         </ResponsiveContainer>
     );
