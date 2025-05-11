@@ -4,6 +4,7 @@ import ContextCard from "./ContextCard.tsx";
 import {SearchResultType} from "./HomePage.tsx";
 
 interface ResultProps {
+    search: string;
     domain: string;
     results: SearchResultType | null;
     loading: boolean;
@@ -13,30 +14,31 @@ interface ResultProps {
 
 const SearchResults = (
     {
-        domain
+        search
+        , domain
         , results
         , error
         , loading
     }: ResultProps
 ) => {
     return (
-        <div>
+        <div className="w-full max-w-2xl mx-auto px-4 mt-4">
             {loading && (<p>Loading...</p>)}
             {error && <p>{error}</p>}
             {results && (
-                <div>
-                    <ol>
+                <div className="">
+                    <ol className="">
                         {domain === "word" ? (
                             (results as IWordIndex[]).map((result: IWordIndex, index) => (
-                                <li key={index}>
+                                <li className="py-1" key={index}>
                                     <WordCard word={result}></WordCard>
                                 </li>
                             ))
                         ) : (
                             (results as IDocumentTokens[])
                                 .map((result: IDocumentTokens, index) => (
-                                    <li key={index}>
-                                        <ContextCard context={result}></ContextCard>
+                                    <li className="py-1 w-full" key={index}>
+                                        <ContextCard highlight={search} context={result}></ContextCard>
                                     </li>
                                 ))
                         )}
