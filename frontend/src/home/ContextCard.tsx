@@ -27,13 +27,13 @@ const ContextCard = ({highlight, context}: ContextCardProps) => {
             <div className="
                 block p-5 bg-[#F2EBD3]
                 text-[#8B1E3F] font-im-fell text-xl
-                border-2 border-[#8B1E3F] rounded-lg  shadow-lg
+                border-2 border-[#8B1E3F] rounded-lg shadow-lg
                 hover:border-[#D4AF37] hover:outline-[#D4AF37] hover:scale-110
                 hover:text-[#D4AF37] hover:bg-[#F0E5C5]
             ">
-                <h3
+                <p
                     className="text-5xl"
-                >{context.document}</h3>
+                >{context.document}</p>
                 <p className="text-[#0D1B2A]">...{formattedText}...</p>
             </div>
         </Link>

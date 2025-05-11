@@ -49,7 +49,7 @@ const WordCard = ({word}: WordCardProps) => {
                     className="
                         first-letter:float-left first-letter:mr-3 first-letter:text-7xl first-letter:font-bold
                         first-line:tracking-widest first-line:uppercase
-                        font-im-fell
+                        font-im-fell font-bold
                     "
                 >
                     {convertToTitleCase(word.word)}
