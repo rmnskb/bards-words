@@ -5,6 +5,13 @@ import axios, {AxiosResponse} from "axios";
 import {IDocumentTokens} from "../WordInterfaces.ts";
 import {apiUrl} from "../Constants.ts";
 
+/**
+ TODO: Create visual hierarchy with distinct styling for play titles, character names, dialogues, etc.
+ TODO: Add spacing between acts, speeches, scenes
+ TODO: Add interactive elements??
+ TODO: Add navigation aids
+ TODO: Add ornamental dividers between major sections??
+ */
 const PlayPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -43,21 +50,61 @@ const PlayPage = () => {
             })
     }, [document]);
 
-    const formattedText = tokens ? tokens.map((token, index) => {
-        if (token === "") {
-            return <br key={index}/>;
-        } else if (indices.includes(index)) {
-            return <span key={index}> <strong>{token}</strong> </span>;
+    const groupTokensByLines = (tokens: string[]): string[][] => {
+        const lines: string[][] = [];
+        let currentLine: string[] = [];
+        const lineBreaks = ["\n"];
+
+        tokens.forEach((token: string) => {
+            if (lineBreaks.includes(token)) {
+                lines.push(currentLine);
+                currentLine = [];
+            } else {
+                currentLine.push(token);
+            }
+        });
+
+        if (currentLine.length > 0) {
+            lines.push(currentLine);
         }
-        return <span key={index}> {token} </span>;
-    }) : null;
+
+        return lines;
+    };
+
+    const formattedText = tokens ? (
+        <div>
+            {groupTokensByLines(tokens).map((line: string[], lineIndex: number) => (
+                <div key={lineIndex} className="
+                    text-center
+                    first-letter:mr-3 first-letter:text-9xl
+                    first-line:tracking-widest first-line:uppercase first-line:font-bold
+                    first-line:text-3xl first-line:font-im-fell
+                ">
+                    {line.map((token: string, tokenIndex: number) => {
+                        const globalIndex: number =
+                            tokens.slice(0, lineIndex).length + tokenIndex;
+
+                        if (indices.includes(globalIndex)) {
+                            return <strong key={tokenIndex}> {token} </strong>;
+                        } else if (token === "") {
+                            return <br key={tokenIndex}></br>
+                        }
+
+                        return <span key={tokenIndex}> {token} </span>;
+                    })}
+                </div>
+            ))}
+        </div>
+    ) : null;
 
     return (
         <>
             {loading && (<p>Loading...</p>)}
             {error && (<p>{error}</p>)}
             {tokens && (
-                <div>
+                <div
+                    className="flex flex-col items-center justify-center"
+                >
                     {tokens.length > 0 && (formattedText)}
                 </div>
             )}
