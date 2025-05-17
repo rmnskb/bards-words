@@ -2,6 +2,7 @@ import {IWordIndex, IDocumentTokens} from "../WordInterfaces.ts";
 import WordCard from "./WordCard.tsx";
 import ContextCard from "./ContextCard.tsx";
 import {SearchResultType} from "./HomePage.tsx";
+import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
 interface ResultProps {
     search: string;
@@ -23,7 +24,7 @@ const SearchResults = (
 ) => {
     return (
         <div className="w-full max-w-2xl mx-auto px-4 mt-4">
-            {loading && (<p>Loading...</p>)}
+            {loading && (<LoadingSpinner/>)}
             {error && <p>{error}</p>}
             {results && (
                 <div className="">

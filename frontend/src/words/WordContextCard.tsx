@@ -5,6 +5,7 @@ import {IDocumentTokens} from "../WordInterfaces.ts";
 import getShakespeareWorkCode from "../WorksEnum.ts";
 import {apiUrl} from "../Constants.ts";
 import {Link} from "react-router";
+import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
 interface WordContextCardProps {
     document: string;
@@ -99,7 +100,7 @@ const WordContextCard
 
     return (
         <div>
-            {loading && (<p>Loading...</p>)}
+            {loading && (<LoadingSpinner/>)}
             {error && (<p>{error}</p>)}
             {tokens && (
                 <div className="

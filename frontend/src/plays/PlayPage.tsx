@@ -4,6 +4,7 @@ import axios, {AxiosResponse} from "axios";
 
 import {IDocumentTokens} from "../WordInterfaces.ts";
 import {apiUrl} from "../Constants.ts";
+import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
 /**
  TODO: Create visual hierarchy with distinct styling for play titles, character names, dialogues, etc.
@@ -99,7 +100,7 @@ const PlayPage = () => {
 
     return (
         <>
-            {loading && (<p>Loading...</p>)}
+            {loading && (<LoadingSpinner/>)}
             {error && (<p>{error}</p>)}
             {tokens && (
                 <div

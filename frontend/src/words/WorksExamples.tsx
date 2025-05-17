@@ -4,6 +4,7 @@ import axios, {AxiosResponse} from "axios";
 import {IWordIndex, OccurrenceElement} from "../WordInterfaces.ts";
 import WordContextCard from "./WordContextCard";
 import {apiUrl} from "../Constants.ts";
+import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
 interface WordExamplesProps {
     word: string;
@@ -43,7 +44,7 @@ const WorksExamples = ({word}: WordExamplesProps) => {
         <div className="flex flex-col justify-center items-center w-full">
             <p className="text-3xl m-3">Examples from works:</p>
             {error && (<p>{error}</p>)}
-            {loading && (<p>Loading...</p>)}
+            {loading && (<LoadingSpinner/>)}
             {wordIndex?.occurrences.map((result: OccurrenceElement, index) => (
                     <div key={index} className="
                         border w-1/2 rounded-lg m-2 shadow-lg m-3

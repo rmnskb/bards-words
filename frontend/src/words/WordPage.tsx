@@ -7,6 +7,7 @@ import FreqPerYearChart from "./LineChart.tsx";
 import FreqPerDocChart from "./BarChart.tsx";
 import WorksExamples from "./WorksExamples.tsx";
 import {apiUrl} from "../Constants.ts";
+import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
 const WordPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -60,7 +61,7 @@ const WordPage = () => {
     return (
         <>
             <div>
-                {loading && (<p>Loading...</p>)}
+                {loading && (<LoadingSpinner/>)}
                 {error && (<p>{error}</p>)}
                 {wordDimensions && (
                     <div>
