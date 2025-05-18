@@ -2,12 +2,12 @@ import {useState, useEffect} from "react";
 import {useParams} from "react-router";
 import axios, {AxiosResponse} from "axios";
 
-import {IWordDimensions, YearFrequencyElement} from "../WordInterfaces.ts";
-import FreqPerYearChart from "./LineChart.tsx";
-import FreqPerDocChart from "./BarChart.tsx";
+import {IWordDimensions, IDictionaryEntry} from "../WordInterfaces.ts";
 import WorksExamples from "./WorksExamples.tsx";
+import WordStatsCard from "./WordStatsCard.tsx";
 import {apiUrl} from "../Constants.ts";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
+import GraphsCard from "./GraphsCard.tsx";
 
 /**
  * TODO: Divide the element into their own separate cards
@@ -24,8 +24,10 @@ const WordPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [wordDimensions, setWordDimensions] = useState<IWordDimensions | null>(null);
+    const [dictionaryEntry, setDictionaryEntry] = useState<IDictionaryEntry | null>(null);
     const params = useParams();
     const word = String(params.word);
+    const dictionaryApi = "https://api.dictionaryapi.dev/api/v2/entries/en";
 
     const fetchWordDimensions
         = async (word: string): Promise<IWordDimensions | null> => {
@@ -38,8 +40,20 @@ const WordPage = () => {
         }
     };
 
+    const fetchDictionaryEntry =
+        async (word: string): Promise<IDictionaryEntry[] | null> => {
+            try {
+                const response: AxiosResponse<IDictionaryEntry[]> = await axios.get(`${dictionaryApi}/${word}`);
+                return response.data;
+            } catch (e) {
+                console.error("Error fetching the dictionary entry", e);
+                return null;
+            }
+        };
+
     useEffect(() => {
         setLoading(true);
+
         fetchWordDimensions(word)
             .then((response) => {
                 setWordDimensions(response);
@@ -48,26 +62,19 @@ const WordPage = () => {
             .catch((e: string) => {
                 setError(e);
                 setLoading(false);
+            });
+
+        fetchDictionaryEntry(word)
+            .then((response) => {
+                // Tale only the best match, disregard the rest
+                setDictionaryEntry(response ? response[0] : null);
+                setLoading(false);
             })
+            .catch((e: string) => {
+                setError(e);
+                setLoading(false);
+            });
     }, [word]);
-
-    const findFirstAppearance
-        = (stats: YearFrequencyElement[]): number | undefined => {
-        if (stats.length === 0) {
-            return undefined;
-        }
-
-        return Math.min(...stats.map(entry => entry.year));
-    };
-
-    const calculateTotalFrequency
-        = (stats: YearFrequencyElement[]): number | undefined => {
-        if (stats.length === 0) {
-            return undefined;
-        }
-
-        return stats.map(entry => entry.frequency).reduce((x, y) => x + y, 0);
-    };
 
     return (
         <>
@@ -75,41 +82,10 @@ const WordPage = () => {
                 {loading && (<LoadingSpinner/>)}
                 {error && (<p>{error}</p>)}
                 {wordDimensions && (
-                    <div>
-                        <div>
-                            <p
-                                className="
-                                    p-5
-                                    first-letter:float-left first-letter:mr-3
-                                    first-letter:text-9xl first-letter:font-bold
-                                    first-line:tracking-widest first-line:uppercase first-line:text-3xl
-                                    font-im-fell font-bold
-                                "
-                            >{wordDimensions.word}</p>
-                            <p>First Appearance: {findFirstAppearance(wordDimensions.yearFrequencies)}</p>
-                            <p>Total Frequency: {calculateTotalFrequency(wordDimensions.yearFrequencies)}</p>
-                        </div>
-                        <div
-                            className="
-                                 flex flex-row w-full p-5
-                            "
-                        >
-                            <div className="
-                                bg-[#F2EBD3] p-3 rounded-lg shadow-lg w-1/2 h-[300px] mr-4
-                            ">
-                                {wordDimensions?.yearFrequencies && (
-                                    <FreqPerYearChart stats={wordDimensions.yearFrequencies}/>)}
-                            </div>
-                            <div className="
-                                bg-[#F2EBD3] p-3 rounded-lg shadow-lg w-1/2 h-[300px] mr-4
-                            ">
-                                {wordDimensions?.documentFrequencies && (
-                                    <FreqPerDocChart stats={wordDimensions.documentFrequencies}/>)}
-                            </div>
-                        </div>
-                        <div>
-                            <WorksExamples word={word}/>
-                        </div>
+                    <div className="flex flex-col items-center justify-center">
+                        <WordStatsCard wordDimensions={wordDimensions} dictionaryEntry={dictionaryEntry}/>
+                        <GraphsCard wordDimensions={wordDimensions}/>
+                        <WorksExamples word={word}/>
                     </div>
                 )}
             </div>
