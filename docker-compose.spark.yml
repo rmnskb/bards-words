@@ -6,7 +6,8 @@ services:
       context: ./spark
       dockerfile: Dockerfile
     image: spark-image
-    entrypoint: [ './entrypoint.sh', 'master' ]
+    entrypoint: /bin/bash
+    command: -c "/opt/spark/sbin/start-master.sh; tail -f /dev/null"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
       interval: 5s
@@ -34,7 +35,8 @@ services:
   spark-worker:
     container_name: spark-worker
     image: spark-image
-    entrypoint: [ './entrypoint.sh', 'worker' ]
+    entrypoint: /bin/bash
+    command: -c "/opt/spark/sbin/start-worker.sh  spark://spark-master:7077; tail -f /dev/null"
     depends_on:
       - spark-master
     env_file:
@@ -58,5 +60,6 @@ volumes:
 
 networks:
   web-spark-ntwrk:
-    external: true
-    name: web-spark-ntwrk
+    external:
+      name: web-spark-ntwrk
+
