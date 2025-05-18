@@ -35,6 +35,8 @@ const FreqPerYearChart = ({stats}: LineChartData) => {
     const sortedStats =
         [...imputedStats].sort((a, b) => a.year - b.year)
 
+    // TODO: Add title
+    // TODO: Handle the elements overlap
     return (
         <ResponsiveContainer width={"100%"} height={"100%"}>
             <LineChart

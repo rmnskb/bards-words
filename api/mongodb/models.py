@@ -46,3 +46,13 @@ class WordDimensionsItem(MongoQueryResult):
     word: str
     documentFrequencies: list[_DocumentFrequencyElement]
     yearFrequencies: list[_YearFrequencyElement]
+
+
+# TODO: Implement the ETL for this desired structure for the collocations to enable the graph view
+class WordCollocationsItem(MongoQueryResult):
+    class _LinkItem(BaseModel):
+        word: str  # Defines a link to this node
+        frequency: int  # Defines the size of the node
+
+    word: str
+    links: list[_LinkItem]

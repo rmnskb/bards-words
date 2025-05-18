@@ -15,6 +15,8 @@ WordDocumentType: TypeAlias = tuple[str, str]
 InvertedIndexType: TypeAlias = tuple[str, list[tuple[str, int, list[int]]]]
 
 
+# TODO: Add another transformation to separate by sentences for sentiment analysis purposes
+# TODO: Enable the collocation analysis
 class BronzeDataTransformer:
     """
     This class handles the actual data transformations in a functional manner.

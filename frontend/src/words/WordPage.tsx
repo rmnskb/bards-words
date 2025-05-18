@@ -9,6 +9,17 @@ import WorksExamples from "./WorksExamples.tsx";
 import {apiUrl} from "../Constants.ts";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
+/**
+ * TODO: Divide the element into their own separate cards
+ * TODO: Add page navigation on the side
+ * TODO: Hide the graphs in the dropdown
+ * TODO: Decorate the WorksExamples
+ * TODO: Show synonyms and antonyms
+ * TODO: Display collocations
+ * TODO: Appearance in the sentiments??
+ * TODO: 3rd party integration, e.g. etymology, definition
+ */
+
 const WordPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);

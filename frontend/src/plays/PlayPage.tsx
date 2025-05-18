@@ -7,12 +7,15 @@ import {apiUrl} from "../Constants.ts";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
 /**
- TODO: Create visual hierarchy with distinct styling for play titles, character names, dialogues, etc.
- TODO: Add spacing between acts, speeches, scenes
- TODO: Add interactive elements??
- TODO: Add navigation aids
- TODO: Add ornamental dividers between major sections??
+ * TODO: Create visual hierarchy with distinct styling for play titles, character names, dialogues, etc.
+ * TODO: Add spacing between acts, speeches, scenes
+ * TODO: Add interactive elements??
+ * TODO: Add navigation aids
+ * TODO: Add ornamental dividers between major sections??
+ * TODO: Implement Ctrl+F functionality with text highlighting
+ * TODO: Add 3rd party links for major characters
  */
+
 const PlayPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -99,17 +102,15 @@ const PlayPage = () => {
     ) : null;
 
     return (
-        <>
+        <div className="flex flex-col items-center justify-center">
             {loading && (<LoadingSpinner/>)}
             {error && (<p>{error}</p>)}
             {tokens && (
-                <div
-                    className="flex flex-col items-center justify-center"
-                >
+                <div>
                     {tokens.length > 0 && (formattedText)}
                 </div>
             )}
-        </>
+        </div>
     );
 };
 
