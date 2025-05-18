@@ -1,24 +1,24 @@
 import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer} from "recharts";
 
 import CustomTooltip from "./CustomTooltip.tsx";
-import {YearFrequencyElement} from "../WordInterfaces.ts";
+import {IYearFreqElement} from "../../WordInterfaces.ts";
 
 interface LineChartData {
-    stats: YearFrequencyElement[];
+    stats: IYearFreqElement[];
 }
 
 const FreqPerYearChart = ({stats}: LineChartData) => {
     const fillMissingYears
-        = (data: YearFrequencyElement[]): YearFrequencyElement[] => {
+        = (data: IYearFreqElement[]): IYearFreqElement[] => {
         const startYear = 1592;
         const endYear = 1613;
 
-        const yearMap = new Map<number, YearFrequencyElement>();
+        const yearMap = new Map<number, IYearFreqElement>();
         data.forEach(item => {
             yearMap.set(item.year, item);
         });
 
-        const filledData: YearFrequencyElement[] = [];
+        const filledData: IYearFreqElement[] = [];
         for (let year = startYear; year <= endYear; year++) {
             if (yearMap.has(year)) {
                 filledData.push(yearMap.get(year)!);

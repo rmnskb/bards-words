@@ -4,10 +4,10 @@ import {
 } from "recharts";
 
 import CustomTooltip from "./CustomTooltip.tsx";
-import {DocumentFrequencyElement} from "../WordInterfaces.ts";
+import {IDocumentFreqElement} from "../../WordInterfaces.ts";
 
 interface BarChartData {
-    stats: DocumentFrequencyElement[];
+    stats: IDocumentFreqElement[];
 }
 
 const FreqPerDocChart = ({stats}: BarChartData) => {
@@ -29,7 +29,7 @@ const FreqPerDocChart = ({stats}: BarChartData) => {
             >
                 <CartesianGrid strokeDasharray="3 3" fillOpacity={0.6} fill="#F0E5C5"/>
                 <XAxis dataKey="document"/>
-                <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} />
+                <YAxis label={{value: 'Frequency', angle: -90, position: 'insideLeft'}}/>
                 <Tooltip content={<CustomTooltip/>}/>
                 <Bar dataKey="frequency" fill="#8B1E3F"/>
             </BarChart>

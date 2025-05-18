@@ -1,7 +1,6 @@
 import {TooltipProps} from "recharts";
 import {NameType, ValueType} from "recharts/types/component/DefaultTooltipContent";
 
-
 const CustomTooltip
     = ({active, payload, label}: TooltipProps<ValueType, NameType>) => {
     if (!active) {
