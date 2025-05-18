@@ -1,4 +1,4 @@
-const ShakespeareWork = {
+const ShakespeareWorks = {
     "A Midsummer Night's Dream": "midsummer",
     "All's Well That Ends Well": "allWell",
     "Antony and Cleopatra": "cleopatra",
@@ -43,15 +43,18 @@ const ShakespeareWork = {
     "Venus and Adonis": "venus"
 } as const;
 
-type ShakespeareWorkTitleType = keyof typeof ShakespeareWork;
-type ShakespeareWorkCodeType = typeof ShakespeareWork[ShakespeareWorkTitleType];
+type TShakespeareWorkTitle = keyof typeof ShakespeareWorks;
+type TShakespeareWorkCode = typeof ShakespeareWorks[TShakespeareWorkTitle];
 
 const getShakespeareWorkCode
-    = (title: string): ShakespeareWorkCodeType | undefined => {
-    if (title in ShakespeareWork) {
-        return ShakespeareWork[title as ShakespeareWorkTitleType]
+    = (title: string): TShakespeareWorkCode | undefined => {
+    if (title in ShakespeareWorks) {
+        return ShakespeareWorks[title as TShakespeareWorkTitle]
     }
     return undefined;
 };
+
+export const ShakespeareWorksTitles: TShakespeareWorkTitle[]
+    = Object.keys(ShakespeareWorks) as TShakespeareWorkTitle[]
 
 export default getShakespeareWorkCode;
