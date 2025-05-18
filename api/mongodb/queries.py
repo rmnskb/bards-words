@@ -15,7 +15,8 @@ T = TypeVar('T')
 
 
 class _MongoRepository:
-
+    
+    # TODO: Initialise DB users and collection indices programatically
     def __init__(self):
         uri = self._get_conn_uri()
         self._client = AsyncMongoClient(uri)
