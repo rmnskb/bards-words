@@ -60,6 +60,5 @@ volumes:
 
 networks:
   web-spark-ntwrk:
-    external:
-      name: web-spark-ntwrk
+    name: web-spark-ntwrk
 
