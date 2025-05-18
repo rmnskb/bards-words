@@ -9,82 +9,33 @@ import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
 interface WordContextCardProps {
     document: string;
-    indices: number[];
+    index: number;
     word: string;
 }
 
 const WordContextCard
-    = ({document, indices, word}: WordContextCardProps) => {
+    = ({document, index, word}: WordContextCardProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [tokens, setTokens] = useState<string[][]>([]);
+    const [tokens, setTokens] = useState<string[] | null>([]);
 
-    useEffect(() => {
-        const fetchTokens
-            = async (document: string, index: number): Promise<IDocumentTokens | null> => {
-            const work = getShakespeareWorkCode(document);
-            const startIndex: number = index - 5;
-            const endIndex: number = index + 5;
+    const fetchTokens
+        = async (document: string, index: number): Promise<IDocumentTokens | null> => {
+        const work = getShakespeareWorkCode(document);
+        const startIndex: number = index - 7;
+        const endIndex: number = index + 8;
 
-            try {
-                const response: AxiosResponse<IDocumentTokens> =
-                    await axios.get<IDocumentTokens>(
-                        `${apiUrl}/tokens?document=${work}&start=${startIndex}&end=${endIndex}`
-                    )
-                return response.data;
-            } catch (e) {
-                console.error(e);
-                return null;
-            }
-        };
-
-        const getRandomIndices
-            = (array: number[], maxSize: number) => {
-            // randomly sample up to maxSize value from the given array (without substitution)
-            if (array.length === 0) return [];
-            if (array.length <= maxSize) return [...array];
-
-            const sampleSize = Math.min(
-                Math.floor(Math.random() * maxSize) + 1,
-                array.length
-            );
-
-            const selectedIndices = new Set<number>();
-
-            while (selectedIndices.size < sampleSize) {
-                const randomIndex = Math.floor(Math.random() * array.length);
-                selectedIndices.add(randomIndex);
-            }
-
-            return Array.from(selectedIndices).map(index => array[index]);
-        };
-
-        // FIXME: bug, sometimes the items are duplicated multiple times
-        const randomIndices = getRandomIndices(indices, 3)
-
-        const handleNewTokens = (newTokens: string[] | undefined) => {
-            if (newTokens) {
-                setTokens(prevTokens => [...prevTokens, newTokens]);
-            }
-        };
-
-        const fetchAllTokens = async () => {
-            setLoading(true);
-            try {
-                const promises
-                    = randomIndices.map(index => fetchTokens(document, index));
-                const responses = await Promise.all(promises);
-                responses.forEach(response => handleNewTokens(response?.occurrences));
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchAllTokens()
-            .catch((e: string) => setError(e));
-    }, [document, indices]);
+        try {
+            const response: AxiosResponse<IDocumentTokens> =
+                await axios.get<IDocumentTokens>(
+                    `${apiUrl}/tokens?document=${work}&start=${startIndex}&end=${endIndex}`
+                )
+            return response.data;
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+    };
 
     const formatText = (text: string[], highlight: string) => {
         return text ? text.map((token, index) => {
@@ -98,6 +49,20 @@ const WordContextCard
         }) : null;
     };
 
+    useEffect(() => {
+        fetchTokens(document, index)
+            .then((response) => {
+                if (response) {
+                    setTokens(response.occurrences)
+                }
+                setLoading(false);
+            })
+            .catch((e: string) => {
+                setError(e);
+                setLoading(false);
+            })
+    }, [document, index]);
+
     return (
         <div>
             {loading && (<LoadingSpinner/>)}
@@ -107,19 +72,13 @@ const WordContextCard
                     block p-5 w-full
                 ">
                     <Link to={"/plays/" + getShakespeareWorkCode(document)}>
-                        <p className="text-3xl font-im-fell">{document}</p>
-                        <ul>
-                            {tokens.map((token, index) => (
-                                <li key={index} className="p-1 m-1 border-1 rounded-lg">
-                                    <p>...{formatText(token, word)}...</p>
-                                </li>
-                            ))}
-                        </ul>
+                        <p>...{formatText(tokens, word)}...</p>
+                        <p className="text-xl font-im-fell">{document}</p>
                     </Link>
                 </div>
             )}
         </div>
     );
-};
+}
 
 export default WordContextCard;

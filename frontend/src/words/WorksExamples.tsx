@@ -1,10 +1,11 @@
 import {useState, useEffect} from "react";
 import axios, {AxiosResponse} from "axios";
 
-import {IWordIndex, OccurrenceElement} from "../WordInterfaces.ts";
+import {IWordIndex, IOccurrenceElement, IFlatOccurrenceElement} from "../WordInterfaces.ts";
 import WordContextCard from "./WordContextCard";
 import {apiUrl} from "../Constants.ts";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
+import {ShakespeareWorksTitles} from "../WorksEnum.ts";
 
 interface WordExamplesProps {
     word: string;
@@ -14,6 +15,11 @@ const WorksExamples = ({word}: WordExamplesProps) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>();
     const [wordIndex, setWordIndex] = useState<IWordIndex | null>(null);
+    const [flatOccurrences, setFlatOccurrences] = useState<IFlatOccurrenceElement[] | null>([]);
+    const [filteredFlatOccurrences, setFilteredFlatOccurrences] = useState<IFlatOccurrenceElement[] | null>([]);
+    const [loadCount, setLoadCount] = useState<number>(10);
+    const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
     const fetchWordIndices
         = async (word: string): Promise<IWordIndex | null> => {
@@ -27,37 +33,161 @@ const WorksExamples = ({word}: WordExamplesProps) => {
         }
     };
 
+    const flattenOccurrenceElements
+        = (input: IOccurrenceElement[]): IFlatOccurrenceElement[] => {
+        const flatOccurrenceElements: IFlatOccurrenceElement[] = [];
+
+        input.forEach(originalElement => {
+            originalElement.indices.forEach(index => {
+                flatOccurrenceElements.push({
+                    document: originalElement.document
+                    , index: index
+                });
+            });
+        });
+
+        return flatOccurrenceElements;
+    };
+
+    const handleLoadMore = () => {
+        if (!wordIndex) {
+            return
+        }
+
+        if (loadCount + 5 <= wordIndex.occurrences.length) {
+            setLoadCount(prevCount => prevCount + 5);
+        } else if (loadCount + 5 > wordIndex.occurrences.length) {
+            setLoadCount(wordIndex.occurrences.length);
+        }
+
+        setFlatOccurrences(
+            flattenOccurrenceElements(wordIndex.occurrences).slice(0, loadCount)
+        );
+    };
+
+    const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
+    const handleOptionClick = (option: string) => {
+        setSelectedOptions(prev => {
+            if (prev.some(item => item === option)) {
+                return prev.filter(item => item !== option);
+            } else {
+                return [...prev, option]
+            }
+        });
+    };
+
+    useEffect(() => {
+        if (selectedOptions.length === 0) {
+            setFilteredFlatOccurrences(flatOccurrences);
+        } else {
+            if (wordIndex) {
+                const filtered = flattenOccurrenceElements(
+                    wordIndex.occurrences.filter(
+                        item => selectedOptions.some(
+                            option => option == item.document
+                        )
+                    ).slice(0, loadCount)
+                );
+                setFilteredFlatOccurrences(filtered);
+            }
+        }
+    }, [wordIndex, selectedOptions, flatOccurrences, loadCount]);
+
     useEffect(() => {
         setLoading(true);
         fetchWordIndices(word)
             .then((response) => {
                 setWordIndex(response);
+                if (response) {
+                    setFlatOccurrences(
+                        flattenOccurrenceElements(response.occurrences).slice(0, loadCount)
+                    );
+                }
                 setLoading(false);
             })
             .catch((e: string) => {
                 setError(e);
                 setLoading(false);
             });
-    }, [word]);
+    }, [word, loadCount]);
 
+    // TODO: Style the filters dropdown menu
     return (
-        <div className="flex flex-col justify-center items-center w-full">
-            <p className="text-3xl m-3">Examples from works:</p>
+        <div className="
+            block w-3xl p-5 m-3
+            border-1 rounded-lg shadow-lg
+        ">
+            <div className="flex justify-between items-start w-full">
+                <p className="text-3xl m-3">Examples from works:</p>
+                <div className="relative w-xs">
+                    <button
+                        type="button"
+                        className="
+                        text-gray-50
+                        bg-[#D4AF37] hover:bg-[#B89423]
+                        focus:ring-1 focus:outline-none focus:ring-[#B89423]
+                        font-medium rounded-lg text-sm px-4 py-3
+                        shadow-sm
+                    "
+                        onClick={toggleDropdown}
+                    >
+                        <span>
+                          {selectedOptions.length === 0
+                              ? 'Select categories'
+                              : `${selectedOptions.length} category(s) selected`}
+                        </span>
+                    </button>
+                    {isDropdownOpen && (
+                        <div className="
+                            absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg border border-gray-300
+                        ">
+                            <ul>
+                                {ShakespeareWorksTitles.map((title, index) => (
+                                    <li
+                                        key={index}
+                                        onClick={() => handleOptionClick(title)}
+                                    >
+                                        <div>
+                                            <div className={`
+                                            w-4 h-4 border rounded flex item-center justify-center mr-2 
+                                            ${
+                                                selectedOptions.some(item => item == title)
+                                                    ? 'bg-blue-500 border-blue-500'
+                                                    : 'border=gray-300'
+                                            }`}>
+                                            </div>
+                                            <span className="text-sm">{title}</span>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            </div>
             {error && (<p>{error}</p>)}
             {loading && (<LoadingSpinner/>)}
-            {wordIndex?.occurrences.map((result: OccurrenceElement, index) => (
-                    <div key={index} className="
-                        border w-1/2 rounded-lg m-2 shadow-lg m-3
-                        hover:border-[#D4AF37] hover:outline-[#D4AF37] hover:scale-110
-                    ">
-                        <WordContextCard
-                            document={result.document}
-                            indices={result.indices}
-                            word={word}
-                        />
-                    </div>
-                )
-            )}
+            {wordIndex && filteredFlatOccurrences?.map(flatOccurrence => (
+                <WordContextCard
+                    document={flatOccurrence.document}
+                    index={flatOccurrence.index}
+                    word={word}
+                />
+            ))}
+            <button
+                type="button"
+                onClick={handleLoadMore}
+                className="
+                    text-gray-50
+                    bg-[#D4AF37] hover:bg-[#B89423]
+                    focus:ring-1 focus:outline-none focus:ring-[#B89423]
+                    font-medium rounded-lg text-sm px-4 py-3
+                    shadow-sm
+                "
+            >
+                Load more...
+            </button>
         </div>
     );
 };
