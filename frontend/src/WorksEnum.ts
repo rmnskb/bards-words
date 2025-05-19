@@ -43,8 +43,8 @@ const ShakespeareWorks = {
     "Venus and Adonis": "venus"
 } as const;
 
-type TShakespeareWorkTitle = keyof typeof ShakespeareWorks;
-type TShakespeareWorkCode = typeof ShakespeareWorks[TShakespeareWorkTitle];
+export type TShakespeareWorkTitle = keyof typeof ShakespeareWorks;
+export type TShakespeareWorkCode = typeof ShakespeareWorks[TShakespeareWorkTitle];
 
 const getShakespeareWorkCode
     = (title: string): TShakespeareWorkCode | undefined => {
