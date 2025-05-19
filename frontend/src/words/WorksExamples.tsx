@@ -1,11 +1,11 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import axios, {AxiosResponse} from "axios";
 
 import {IWordIndex, IOccurrenceElement, IFlatOccurrenceElement} from "../WordInterfaces.ts";
 import WordContextCard from "./WordContextCard";
 import {apiUrl} from "../Constants.ts";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
-import {ShakespeareWorksTitles} from "../WorksEnum.ts";
+import {TShakespeareWorkTitle} from "../WorksEnum.ts";
 
 interface WordExamplesProps {
     word: string;
@@ -18,8 +18,11 @@ const WorksExamples = ({word}: WordExamplesProps) => {
     const [flatOccurrences, setFlatOccurrences] = useState<IFlatOccurrenceElement[] | null>([]);
     const [filteredFlatOccurrences, setFilteredFlatOccurrences] = useState<IFlatOccurrenceElement[] | null>([]);
     const [loadCount, setLoadCount] = useState<number>(10);
+    const [availableOptions, setAvailableOptions] = useState<TShakespeareWorkTitle[]>([]);
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    const [areAllOptionsDisplayed, setAreAllOptionsDisplayed] = useState<boolean>(false);
+    const dropdownRef = useRef<HTMLDivElement | null>(null);
 
     const fetchWordIndices
         = async (word: string): Promise<IWordIndex | null> => {
@@ -50,16 +53,17 @@ const WorksExamples = ({word}: WordExamplesProps) => {
     };
 
     const handleLoadMore = () => {
-        if (!wordIndex) {
+        if (!flatOccurrences || !wordIndex) {
             return
         }
 
-        if (loadCount + 5 <= wordIndex.occurrences.length) {
+        if (loadCount + 5 <= flatOccurrences.length) {
             setLoadCount(prevCount => prevCount + 5);
-        } else if (loadCount + 5 > wordIndex.occurrences.length) {
-            setLoadCount(wordIndex.occurrences.length);
+        } else if (loadCount + 5 > flatOccurrences.length) {
+            setLoadCount(flatOccurrences.length);
+            setAreAllOptionsDisplayed(true);
         }
-
+         
         setFlatOccurrences(
             flattenOccurrenceElements(wordIndex.occurrences).slice(0, loadCount)
         );
@@ -76,7 +80,25 @@ const WorksExamples = ({word}: WordExamplesProps) => {
             }
         });
     };
+    
+    // Handle the dropdown behaviour
+    useEffect(() => {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+          setIsDropdownOpen(false);
+        }
+      };
 
+      if (isDropdownOpen) {
+        document.addEventListener('mousedown', handleClickOutside);
+      }
+
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, [isDropdownOpen]);
+    
+    // Handle the filters
     useEffect(() => {
         if (selectedOptions.length === 0) {
             setFilteredFlatOccurrences(flatOccurrences);
@@ -87,13 +109,14 @@ const WorksExamples = ({word}: WordExamplesProps) => {
                         item => selectedOptions.some(
                             option => option == item.document
                         )
-                    ).slice(0, loadCount)
-                );
+                    )
+                ).slice(0, loadCount);
                 setFilteredFlatOccurrences(filtered);
             }
         }
     }, [wordIndex, selectedOptions, flatOccurrences, loadCount]);
-
+    
+    // Handle the initial state of the page 
     useEffect(() => {
         setLoading(true);
         fetchWordIndices(word)
@@ -103,6 +126,7 @@ const WorksExamples = ({word}: WordExamplesProps) => {
                     setFlatOccurrences(
                         flattenOccurrenceElements(response.occurrences).slice(0, loadCount)
                     );
+                    setAvailableOptions(response.occurrences.map(item => item.document as TShakespeareWorkTitle));
                 }
                 setLoading(false);
             })
@@ -111,8 +135,7 @@ const WorksExamples = ({word}: WordExamplesProps) => {
                 setLoading(false);
             });
     }, [word, loadCount]);
-
-    // TODO: Style the filters dropdown menu
+    
     return (
         <div className="
             block w-3xl p-5 m-3
@@ -120,17 +143,17 @@ const WorksExamples = ({word}: WordExamplesProps) => {
         ">
             <div className="flex justify-between items-start w-full">
                 <p className="text-3xl m-3">Examples from works:</p>
-                <div className="relative w-xs">
+                <div className="relative" ref={dropdownRef}>
                     <button
-                        type="button"
-                        className="
+                      type="button"
+                      className="
                         text-gray-50
                         bg-[#D4AF37] hover:bg-[#B89423]
                         focus:ring-1 focus:outline-none focus:ring-[#B89423]
                         font-medium rounded-lg text-sm px-4 py-3
                         shadow-sm
-                    "
-                        onClick={toggleDropdown}
+                      "
+                      onClick={toggleDropdown}
                     >
                         <span>
                           {selectedOptions.length === 0
@@ -139,21 +162,22 @@ const WorksExamples = ({word}: WordExamplesProps) => {
                         </span>
                     </button>
                     {isDropdownOpen && (
-                        <div className="
-                            absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg border border-gray-300
-                        ">
-                            <ul>
-                                {ShakespeareWorksTitles.map((title, index) => (
+                        <div className={`
+                            absolute right-0 z-10 w-xs mt-1 rounded-md shadow-lg border bg-[#F2EBD3] border-gray-300
+                        `}>
+                            <ul className="py-1 overflow-auto text-base max-h-100">
+                                {availableOptions.map((title, index) => (
                                     <li
                                         key={index}
                                         onClick={() => handleOptionClick(title)}
+                                        className="flex items-center px-3 py-2 cursor-pointer hover:bg-[#D4AF37]"
                                     >
-                                        <div>
+                                        <div className="flex items-center">
                                             <div className={`
                                             w-4 h-4 border rounded flex item-center justify-center mr-2 
                                             ${
-                                                selectedOptions.some(item => item == title)
-                                                    ? 'bg-blue-500 border-blue-500'
+                                                selectedOptions.some(item => item === title)
+                                                    ? 'bg-[#8B1E3F] border-[#8B1E3F]'
                                                     : 'border=gray-300'
                                             }`}>
                                             </div>
@@ -168,26 +192,33 @@ const WorksExamples = ({word}: WordExamplesProps) => {
             </div>
             {error && (<p>{error}</p>)}
             {loading && (<LoadingSpinner/>)}
-            {wordIndex && filteredFlatOccurrences?.map(flatOccurrence => (
-                <WordContextCard
-                    document={flatOccurrence.document}
-                    index={flatOccurrence.index}
-                    word={word}
-                />
-            ))}
-            <button
-                type="button"
-                onClick={handleLoadMore}
-                className="
-                    text-gray-50
-                    bg-[#D4AF37] hover:bg-[#B89423]
-                    focus:ring-1 focus:outline-none focus:ring-[#B89423]
-                    font-medium rounded-lg text-sm px-4 py-3
-                    shadow-sm
-                "
-            >
-                Load more...
-            </button>
+            {wordIndex && filteredFlatOccurrences && (
+              <div>
+                <hr className="h-1 mx-auto mb-2 bg-gray-700 border-0 rounded-sm "/>
+                {filteredFlatOccurrences.map(flatOccurrence => (
+                  <WordContextCard
+                      document={flatOccurrence.document}
+                      index={flatOccurrence.index}
+                      word={word}
+                  />
+                ))}
+                {!areAllOptionsDisplayed && (
+                  <button
+                      type="button"
+                      onClick={handleLoadMore}
+                      className="
+                       text-gray-50
+                       bg-[#D4AF37] hover:bg-[#B89423]
+                       focus:ring-1 focus:outline-none focus:ring-[#B89423]
+                       font-medium rounded-lg text-sm px-4 py-3
+                       shadow-sm
+                     "
+                  >
+                    Load more...
+                  </button>
+                )}
+              </div>
+              )}
         </div>
     );
 };
