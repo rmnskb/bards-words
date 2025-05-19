@@ -40,7 +40,7 @@ const WordContextCard
     const formatText = (text: string[], highlight: string) => {
         return text ? text.map((token, index) => {
             if (token === "") {
-                return <br key={index}/>;
+                return <p key={index} className="h-1"></p>;
             } else if (token.toLowerCase().replace(/[\W\s]*/g, "") === highlight) {
                 return <span key={index} className="text-[#8B1E3F] font-bold"> {token} </span>;
             }
@@ -71,10 +71,16 @@ const WordContextCard
                 <div className="
                     block p-5 w-full
                 ">
+                    <p className="mb-2">...{formatText(tokens, word)}...</p>
                     <Link to={"/plays/" + getShakespeareWorkCode(document)}>
-                        <p>...{formatText(tokens, word)}...</p>
-                        <p className="text-xl font-im-fell">{document}</p>
+                        <span 
+                          className="
+                            text-xl font-im-fell text-gray-50
+                            bg-[#D4AF37] hover:bg-[#B89423] p-0.5 rounded-md
+                          "
+                        >{document}</span>
                     </Link>
+                    <hr className="border-t-2 border-dashed border-gray-400 my-2" />
                 </div>
             )}
         </div>
