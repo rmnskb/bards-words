@@ -10,6 +10,7 @@ from stop_words import get_stop_words
 DocumentTextType: TypeAlias = tuple[str, str]
 DocumentTokensType: TypeAlias = tuple[str, list[str]]
 DocumentIndexedTokensType: TypeAlias = tuple[tuple[str, str], list[int]]
+DocumentFlatIndexedTokensType: TypeAlias = tuple[str, str, int]
 NameLinesType: TypeAlias = tuple[str, list[str, str]]
 WordDocumentType: TypeAlias = tuple[str, str]
 InvertedIndexType: TypeAlias = tuple[str, list[tuple[str, int, list[int]]]]
@@ -37,6 +38,14 @@ class BronzeDataTransformer:
 
     @overload
     def transform(
+        self
+        , to: Literal['indexed_tokens']
+        , data: RDD[DocumentTokensType]
+    ) -> RDD[DocumentFlatIndexedTokensType]:
+        ...
+
+    @overload
+    def transform(
             self
             , to: Literal['inverted_index']
             , data: RDD[DocumentTokensType]
@@ -45,9 +54,9 @@ class BronzeDataTransformer:
 
     def transform(
             self
-            , to: Literal['tokens', 'inverted_index']
+            , to: Literal['tokens', 'indexed_tokens', 'inverted_index']
             , data: RDD[DocumentTextType | DocumentTokensType]
-    ) -> RDD[DocumentTokensType | InvertedIndexType]:
+    ) -> RDD[DocumentTokensType | DocumentFlatIndexedTokensType | InvertedIndexType]:
         """
         Conduct data transformation step (RDD -> RDD)
         :param to: to what type of data structure do your want you data to be converted to,
@@ -59,6 +68,8 @@ class BronzeDataTransformer:
         match to:
             case 'tokens':
                 return self._transform_text_to_tokens(data=data)
+            case 'indexed_tokens':
+                return self._flatten_indexed_tokens(data=data)
             case 'inverted_index':
                 return self._transform_tokens_to_inverted_idx(data=data)
             case _:
@@ -77,6 +88,26 @@ class BronzeDataTransformer:
             .map(self._tokenise)  # => RDD[tuple[str, list[str]]]
         )
 
+    def _transform_tokens_to_indexed_tokens(self, data: RDD[DocumentTokensType]) -> RDD[DocumentIndexedTokensType]:
+        return (
+            data
+            .flatMap(self._create_index_pairs)  # => RDD[list[tuple[tuple[str, str], list[int]]]]
+            .map(lambda entry: ((entry[0][0], entry[0][1].strip()), entry[1]))
+            .map(lambda entry: ((entry[0][0], entry[0][1].lower()), entry[1]))
+            .map(lambda entry: ((entry[0][0], self._remove_punctuation(entry[0][1])), entry[1]))
+            .map(lambda entry: ((entry[0][0], self._remove_suffix(entry[0][1])), entry[1]))
+            .filter(lambda entry: bool(entry[0][1]))  # check if the word is not an empty string
+        )
+
+    def _flatten_indexed_tokens(self, data: RDD[DocumentTokensType]) -> RDD[DocumentFlatIndexedTokensType]:
+        """
+        Flatten the indices (since there is 1 element per list it is a simple list -> integer transformation)
+        """
+        return (
+            self._transform_tokens_to_indexed_tokens(data)
+            .map(lambda entry: (entry[0][0], entry[0][1], entry[1][0]))
+        )
+
     def _transform_tokens_to_inverted_idx(self, data: RDD[DocumentTokensType]) -> RDD[InvertedIndexType]:
         """
         Transform a tokenised array to an inverted index data structure,
@@ -86,13 +117,7 @@ class BronzeDataTransformer:
         :return: inverted index data structure
         """
         return (
-            data
-            .flatMap(self._create_index_pairs)  # => RDD[list[tuple[tuple[str, str], list[int]]]]
-            .map(lambda entry: ((entry[0][0], entry[0][1].strip()), entry[1]))
-            .map(lambda entry: ((entry[0][0], entry[0][1].lower()), entry[1]))
-            .map(lambda entry: ((entry[0][0], self._remove_punctuation(entry[0][1])), entry[1]))
-            .map(lambda entry: ((entry[0][0], self._remove_suffix(entry[0][1])), entry[1]))
-            .filter(lambda entry: bool(entry[0][1]))  # check if the word is not an empty string
+            self._transform_tokens_to_indexed_tokens(data)
             # Concatenate the lists of indices
             .reduceByKey(lambda x, y: x + y)  # => RDD[tuple[str, str], list[int]]
             # Restructure the entry, calculate the word frequency in the document

@@ -28,6 +28,14 @@ class TokensSchema(SparkSchema):
     ])
 
 
+class IndexedTokensSchema(SparkSchema): 
+    _schema = StructType([
+        StructField('document', StringType())
+        , StructField('word', StringType())
+        , StructField('index', IntegerType())
+    ])
+
+
 class InvertedIndexSchema(SparkSchema):
     _schema = StructType([
         StructField('word', StringType(), False)

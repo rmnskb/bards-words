@@ -7,7 +7,7 @@ from pyspark.sql import SparkSession, DataFrame
 # via spark-submit --py-files <dependency>.zip shakespeare_etl.py
 from utils import (
     get_etl_conn_uri, BronzeDataExtractor, BronzeDataTransformer, DataLoader, SparkBase, TokensSchema,
-    InvertedIndexSchema
+    InvertedIndexSchema, IndexedTokensSchema
 )
 
 
@@ -27,32 +27,34 @@ def main():
     # T from ETL
     transformer = BronzeDataTransformer(sc=sc)
     tokens: RDD = transformer.transform(to='tokens', data=raw_data)
+    indexed_tokens: RDD = transformer.transform(to='indexed_tokens', data=tokens)
     inverted_idx: RDD = transformer.transform(to='inverted_index', data=tokens)
 
     # L from ETL
     # Predefine the RDD schemas for conversion to DataFrames
     tokens_schema = TokensSchema.get()
 
+    indexed_tokens_schema = IndexedTokensSchema.get()
+
     inverted_idx_schema = InvertedIndexSchema.get()
 
     tokens_df: DataFrame = spark.createDataFrame(tokens, schema=tokens_schema)
+    indexed_tokens_df: DataFrame = spark.createDataFrame(indexed_tokens, schema=indexed_tokens_schema)
     inverted_idx_df: DataFrame = spark.createDataFrame(inverted_idx, schema=inverted_idx_schema)
 
     loader = DataLoader(spark=spark)
 
-    loader.load(
-        data=tokens_df
-        , database='shakespeare'
-        , collection='bronzeTokens'
-        , write_mode='overwrite'
-    )
-
-    loader.load(
-        data=inverted_idx_df
-        , database='shakespeare'
-        , collection='bronzeIndices'
-        , write_mode='overwrite'
-    )
+    for collection, dataframe in {
+        'bronzeTokens': tokens_df
+        , 'bronzeIdxTokens': indexed_tokens_df
+        , 'bronzeIndices': inverted_idx_df
+    }.items():
+        loader.load(
+            data=dataframe
+            , database='shakespeare'
+            , collection=collection
+            , write_mode='overwrite'
+        )
 
 
 if __name__ == "__main__":
