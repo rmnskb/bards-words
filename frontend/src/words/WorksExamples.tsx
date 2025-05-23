@@ -56,6 +56,27 @@ const WorksExamples = ({word}: WordExamplesProps) => {
         if (!flatOccurrences || !wordIndex) {
             return
         }
+ 
+        if (filteredFlatOccurrences && selectedOptions) { 
+          const filtered = flattenOccurrenceElements(
+            wordIndex.occurrences.filter(
+              item => selectedOptions.some(
+                option => option === item.document
+              )
+            )
+          );
+
+          if (loadCount + 5 <= filtered.length) {
+              setLoadCount(prevCount => prevCount + 5);
+          } else if (loadCount + 5 > filtered.length) {
+              setLoadCount(filtered.length);
+              setAreAllOptionsDisplayed(true);
+          }
+
+          setFilteredFlatOccurrences(filtered.slice(0, loadCount));
+
+          return
+        }
 
         if (loadCount + 5 <= flatOccurrences.length) {
             setLoadCount(prevCount => prevCount + 5);
@@ -63,7 +84,7 @@ const WorksExamples = ({word}: WordExamplesProps) => {
             setLoadCount(flatOccurrences.length);
             setAreAllOptionsDisplayed(true);
         }
-         
+
         setFlatOccurrences(
             flattenOccurrenceElements(wordIndex.occurrences).slice(0, loadCount)
         );
@@ -80,7 +101,7 @@ const WorksExamples = ({word}: WordExamplesProps) => {
             }
         });
     };
-    
+ 
     // Handle the dropdown behaviour
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
@@ -97,7 +118,7 @@ const WorksExamples = ({word}: WordExamplesProps) => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }, [isDropdownOpen]);
-    
+ 
     // Handle the filters
     useEffect(() => {
         if (selectedOptions.length === 0) {
@@ -107,16 +128,20 @@ const WorksExamples = ({word}: WordExamplesProps) => {
                 const filtered = flattenOccurrenceElements(
                     wordIndex.occurrences.filter(
                         item => selectedOptions.some(
-                            option => option == item.document
+                            option => option === item.document
                         )
                     )
-                ).slice(0, loadCount);
-                setFilteredFlatOccurrences(filtered);
+                );
+                setFilteredFlatOccurrences(filtered.slice(0, loadCount));
+
+                // Load more button logic
+                if (filtered.length <= loadCount) setAreAllOptionsDisplayed(true);
+                else setAreAllOptionsDisplayed(false);
             }
         }
     }, [wordIndex, selectedOptions, flatOccurrences, loadCount]);
-    
-    // Handle the initial state of the page 
+ 
+    // Handle the initial state of the page
     useEffect(() => {
         setLoading(true);
         fetchWordIndices(word)
@@ -126,7 +151,13 @@ const WorksExamples = ({word}: WordExamplesProps) => {
                     setFlatOccurrences(
                         flattenOccurrenceElements(response.occurrences).slice(0, loadCount)
                     );
+
+                    // Dropdown filter options
                     setAvailableOptions(response.occurrences.map(item => item.document as TShakespeareWorkTitle));
+
+                    // Load more button logic
+                    if (response.occurrences.length <= loadCount) setAreAllOptionsDisplayed(true);
+                    else setAreAllOptionsDisplayed(false);
                 }
                 setLoading(false);
             })
