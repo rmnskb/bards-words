@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.mongodb import ShakespeareRepository, InvertedIndexItem, TokensItem, WordDimensionsItem
+from api.mongodb import ShakespeareRepository, InvertedIndexItem, TokensItem, WordDimensionsItem, CollocationsStatsItem
 from .enums import ShakespeareWork
 
-# TODO: handle empty responses either in the api or in the repo
+
 app = FastAPI()
 repo = ShakespeareRepository()
 
@@ -102,3 +102,12 @@ async def get_document(search: str = Query(None)) -> TokensItem:
     document = str(ShakespeareWork[search])
 
     return await repo.get_document(document)
+
+
+@app.get('/api/v1/collocations')
+async def get_collocations_stats(search: str = Query(None)) -> CollocationsStatsItem:
+    if search is None:
+        raise HTTPException(status_code=400, detail='Query parameter is required')
+
+    return await repo.get_collocations_stats(search)
+

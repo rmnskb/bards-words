@@ -9,7 +9,7 @@ import asyncio
 import pymongo
 from pymongo import AsyncMongoClient
 
-from .models import InvertedIndexItem, TokensItem, WordDimensionsItem
+from .models import InvertedIndexItem, TokensItem, WordDimensionsItem, CollocationsStatsItem
 
 T = TypeVar('T')
 
@@ -223,6 +223,12 @@ class ShakespeareRepository(_MongoRepository):
 
         if result:
             return TokensItem(**result)
+
+    async def get_collocations_stats(self, word: str) -> CollocationsStatsItem:
+        result = await self._db.silverCollocationsStats.find_one({"word": word})
+
+        if result:
+            return CollocationsStatsItem(**result)
 
 
 if __name__ == "__main__":
