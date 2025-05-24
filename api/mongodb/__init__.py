@@ -1,2 +1,2 @@
 from .queries import ShakespeareRepository
-from .models import InvertedIndexItem, TokensItem, WordDimensionsItem
+from .models import InvertedIndexItem, TokensItem, WordDimensionsItem, CollocationsStatsItem

@@ -14,13 +14,12 @@ class TokensItem(MongoQueryResult):
     occurrences: list[str]
 
 
-class _OccurrenceElement(BaseModel):
-    document: str
-    frequency: int
-    indices: list[int]
-
-
 class InvertedIndexItem(MongoQueryResult):
+    class _OccurrenceElement(BaseModel):
+        document: str
+        frequency: int
+        indices: list[int]
+
     word: str
     occurrences: list[_OccurrenceElement]
 
@@ -32,27 +31,24 @@ class NormalisedIndexItem(MongoQueryResult):
     positionIdx: int
 
 
-class _DocumentFrequencyElement(BaseModel):
-    document: str
-    frequency: int
-
-
-class _YearFrequencyElement(BaseModel):
-    year: int
-    frequency: int
-
-
 class WordDimensionsItem(MongoQueryResult):
+    class _DocumentFrequencyElement(BaseModel):
+        document: str
+        frequency: int
+
+    class _YearFrequencyElement(BaseModel):
+        year: int
+        frequency: int
+
     word: str
     documentFrequencies: list[_DocumentFrequencyElement]
     yearFrequencies: list[_YearFrequencyElement]
 
 
-# TODO: Implement the ETL for this desired structure for the collocations to enable the graph view
-class WordCollocationsItem(MongoQueryResult):
+class CollocationsStatsItem(MongoQueryResult):
     class _LinkItem(BaseModel):
-        word: str  # Defines a link to this node
+        other: str  # Defines a link to this node
         frequency: int  # Defines the size of the node
 
     word: str
-    links: list[_LinkItem]
+    collocationsStats: list[_LinkItem]
