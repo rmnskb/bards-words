@@ -173,7 +173,7 @@ const WorksExamples = ({word}: WordExamplesProps) => {
             border-1 rounded-lg shadow-lg
         ">
             <div className="flex justify-between items-start w-full">
-                <p className="text-3xl m-3">Examples from works:</p>
+                <p className="text-3xl font-bold font-im-fell m-3">Examples from works:</p>
                 <div className="relative" ref={dropdownRef}>
                     <button
                       type="button"
@@ -188,8 +188,8 @@ const WorksExamples = ({word}: WordExamplesProps) => {
                     >
                         <span>
                           {selectedOptions.length === 0
-                              ? 'Select categories'
-                              : `${selectedOptions.length} category(s) selected`}
+                              ? 'Select plays'
+                              : `${selectedOptions.length} play(s) selected`}
                         </span>
                     </button>
                     {isDropdownOpen && (

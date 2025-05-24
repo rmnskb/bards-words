@@ -8,11 +8,10 @@ import WordStatsCard from "./WordStatsCard.tsx";
 import {apiUrl} from "../Constants.ts";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
 import GraphsCard from "./GraphsCard.tsx";
+import WordRelationshipsCard from "./WordRelationshipsCard.tsx";
 
 /**
- * TODO: Divide the element into their own separate cards
  * TODO: Add page navigation on the side
- * TODO: Hide the graphs in the dropdown
  * TODO: Decorate the WorksExamples
  * TODO: Show synonyms and antonyms
  * TODO: Display collocations
@@ -85,6 +84,7 @@ const WordPage = () => {
                     <div className="flex flex-col items-center justify-center">
                         <WordStatsCard wordDimensions={wordDimensions} dictionaryEntry={dictionaryEntry}/>
                         <GraphsCard wordDimensions={wordDimensions}/>
+                        <WordRelationshipsCard word={word}/>
                         <WorksExamples word={word}/>
                     </div>
                 )}
