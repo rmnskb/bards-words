@@ -53,3 +53,13 @@ export interface IDictionaryEntry {
         }
     }[];
 }
+
+export interface ICollocationsStatItem {
+    other: string;
+    frequency: number;
+}
+
+export interface ICollocationsStats {
+    word: string;
+    collocationsStats: ICollocationsStatItem[];
+}
