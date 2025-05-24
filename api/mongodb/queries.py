@@ -40,6 +40,12 @@ class ShakespeareRepository(_MongoRepository):
     def __init__(self):
         super().__init__()
         self._db = self.client['shakespeare']
+        self._create_indices()
+ 
+    def _create_indices(self) -> None:
+        self._db.bronzeIndices.create_index(
+            [("word", "text")]
+        )
 
     async def find_word(self, word: str) -> InvertedIndexItem:
         """
