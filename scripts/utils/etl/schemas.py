@@ -76,3 +76,16 @@ class WordDimensionsFrequencies(SparkSchema):
             ])
         ), False)
     ])
+
+
+class CollocationsStatsSchema(SparkSchema):
+    _schema = StructType([
+        StructField('word', StringType(), False)
+        , StructField('collocationsStats', ArrayType(
+            StructType([
+                StructField('other', StringType(), False)
+                , StructField('frequency', IntegerType(), False)
+            ])
+        ), False)
+    ])
+

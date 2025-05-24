@@ -3,7 +3,7 @@ from pyspark.sql.functions import col
 from pyspark.sql.types import IntegerType
 
 from utils import (
-    get_etl_conn_uri, SilverDataExtractor, SilverDataTransformer, DataLoader, SparkBase
+    get_etl_conn_uri, SilverDataExtractor, SilverDataTransformer, DataLoader, SparkBase, CollocationsStatsSchema
 )
 
 
@@ -16,17 +16,27 @@ def main() -> None:
 
     # E
     extractor = SilverDataExtractor(spark=spark, database='shakespeare', collection='bronzeIndices')
+    idx_tokens_extractor = SilverDataExtractor(spark=spark, database='shakespeare', collection='bronzeIdxTokens')
     raw_indices = extractor.extract(source='mongo').drop('_id')
     works_years = extractor.extract(source='s3')
+    raw_idx_tokens = idx_tokens_extractor.extract(source='mongo').drop('_id')
 
     # T
-    data = SilverDataTransformer.transform(raw_indices)
+    transformer = SilverDataTransformer()
+    normalised_words = transformer.transform(raw_indices, to='normalise')
     works_years = works_years.select(col('document'), col('year').cast(IntegerType()).alias('year'))
+
+    collocations_stats_rdd = transformer.transform(data=raw_idx_tokens, to='collocations_stats')
+    print(collocations_stats_rdd.take(5))
+    collocations_stats_schema = CollocationsStatsSchema.get()
+    collocations_stats_df = spark.createDataFrame(collocations_stats_rdd, schema=collocations_stats_schema)
+    print(collocations_stats_df.show(5, truncate=False))
 
     # L
     for collection, dataframe in {
-        'silverWords': data
+        'silverWords': normalised_words
         , 'silverWorksYears': works_years
+        , 'silverCollocationsStats': collocations_stats_df
     }.items():
         DataLoader(spark=spark).load(
             data=dataframe

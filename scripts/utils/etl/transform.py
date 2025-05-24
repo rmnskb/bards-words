@@ -14,6 +14,8 @@ DocumentFlatIndexedTokensType: TypeAlias = tuple[str, str, int]
 NameLinesType: TypeAlias = tuple[str, list[str, str]]
 WordDocumentType: TypeAlias = tuple[str, str]
 InvertedIndexType: TypeAlias = tuple[str, list[tuple[str, int, list[int]]]]
+CollocationsType: TypeAlias = tuple[tuple[str, int], tuple[str, str]]
+CollocationsStatsType: TypeAlias = tuple[str, list[tuple[str, int]]]
 
 
 # TODO: Add another transformation to separate by sentences for sentiment analysis purposes
@@ -187,8 +189,39 @@ class BronzeDataTransformer:
 
 class SilverDataTransformer:
 
+    @overload
+    def transform(self, data: DataFrame, to: Literal['normalise']) -> DataFrame:
+        ...
+
+    @overload
+    def transform(self, data: DataFrame, to: Literal['collocations_stats']) -> RDD[CollocationsStatsType]:
+        ...
+
+    def transform(
+            self
+            , data: DataFrame
+            , to: Literal['normalise', 'collocations_stats']
+    ) -> DataFrame | RDD[CollocationsStatsType]:
+        match to:
+            case 'normalise':
+                return self._normalise_words(data=data)
+            case 'collocations_stats':
+                rdd = data.rdd.map(
+                    lambda row: (str(row['document']), str(row['word']), int(row['index']))
+                )
+
+                collocations = self._create_collocations(data=rdd)
+
+                # Since the collocations consist of 2 words, the calculations have to be done twice
+                collocations_stats_1st_part = self._calculate_collocations_stats(data=collocations, reverse=False)
+                collocations_stats_2nd_part = self._calculate_collocations_stats(data=collocations, reverse=True)
+
+                return collocations_stats_1st_part.union(collocations_stats_2nd_part)
+            case _:
+                raise ValueError(f'Invalid transformation target: {to}')
+
     @staticmethod
-    def transform(data: DataFrame) -> DataFrame:
+    def _normalise_words(data: DataFrame) -> DataFrame: 
         return (
             data
             .select(col('word'), explode(col('occurrences')).alias('occurrences'))  # Flatten the array of occurrences
@@ -197,6 +230,31 @@ class SilverDataTransformer:
                 , col("occurrences").getField("document").alias("document")
                 , col("occurrences").getField("frequency").alias("frequency")
             )
+        )
+
+    @staticmethod
+    def _create_collocations(data: RDD[DocumentFlatIndexedTokensType]) -> RDD[CollocationsType]:
+        joinable_rdd = data \
+            .map(lambda entry: ((entry[0], entry[2]), entry[1]))  # Put the document and index as RDD key, word as value
+
+        shifted_rdd = joinable_rdd \
+            .map(lambda entry: ((entry[0][0], entry[0][1] + 1), entry[1]))  # Shift the index by one to join on it
+
+        return (
+            joinable_rdd
+            .join(shifted_rdd)  # => RDD[tuple[str, int], tuple[word, word]]
+        )
+
+    @staticmethod 
+    def _calculate_collocations_stats(data: RDD[CollocationsType], reverse: bool) -> RDD[CollocationsStatsType]:
+        return (
+            data
+            .map(
+                lambda entry: (tuple(sorted([entry[1][0], entry[1][1]], reverse=reverse)), 1)
+            )  # => RDD[tuple[tuple[str, str], int]]
+            .reduceByKey(lambda x, y: x + y)
+            .map(lambda entry: (entry[0][0], [(entry[0][1], entry[1])])) # => RDD[tuple[str, list[tuple[str, int]]]]
+            .reduceByKey(lambda x, y: x + y)
         )
 
 
