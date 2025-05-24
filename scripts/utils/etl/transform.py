@@ -19,7 +19,6 @@ CollocationsStatsType: TypeAlias = tuple[str, list[tuple[str, int]]]
 
 
 # TODO: Add another transformation to separate by sentences for sentiment analysis purposes
-# TODO: Enable the collocation analysis
 class BronzeDataTransformer:
     """
     This class handles the actual data transformations in a functional manner.
@@ -212,11 +211,9 @@ class SilverDataTransformer:
 
                 collocations = self._create_collocations(data=rdd)
 
-                # Since the collocations consist of 2 words, the calculations have to be done twice
-                collocations_stats_1st_part = self._calculate_collocations_stats(data=collocations, reverse=False)
-                collocations_stats_2nd_part = self._calculate_collocations_stats(data=collocations, reverse=True)
+                collocations_stats = self._calculate_collocations_stats(data=collocations)
 
-                return collocations_stats_1st_part.union(collocations_stats_2nd_part)
+                return collocations_stats
             case _:
                 raise ValueError(f'Invalid transformation target: {to}')
 
@@ -246,14 +243,24 @@ class SilverDataTransformer:
         )
 
     @staticmethod 
-    def _calculate_collocations_stats(data: RDD[CollocationsType], reverse: bool) -> RDD[CollocationsStatsType]:
-        return (
-            data
+    def _calculate_collocations_stats(data: RDD[CollocationsType]) -> RDD[CollocationsStatsType]:
+        """
+        Calculate frequency statistics for two words collocations
+        """
+
+        # TODO: Potentially expand the algorithm to more words 
+        return (  
+            data 
             .map(
-                lambda entry: (tuple(sorted([entry[1][0], entry[1][1]], reverse=reverse)), 1)
+                lambda entry: (tuple(sorted([entry[1][0], entry[1][1]])), 1)
             )  # => RDD[tuple[tuple[str, str], int]]
             .reduceByKey(lambda x, y: x + y)
-            .map(lambda entry: (entry[0][0], [(entry[0][1], entry[1])])) # => RDD[tuple[str, list[tuple[str, int]]]]
+            .flatMap(
+                lambda entry: [
+                    (entry[0][0], [(entry[0][1], entry[1])])
+                    , (entry[0][1], [(entry[0][0], entry[1])])
+                ]
+            )
             .reduceByKey(lambda x, y: x + y)
         )
 
