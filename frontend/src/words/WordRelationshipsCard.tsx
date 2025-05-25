@@ -46,8 +46,10 @@ const WordRelationshipsCard = ({word}: WordRelationshipsCardProps) => {
       <p className="text-3xl font-bold font-im-fell">Word Relationships</p>
       {loading && (<LoadingSpinner/>)}
       {error && (<p>{error}</p>)}
-      {collocationsStats && (  
-        <NetworkGraph stats={collocationsStats}/>
+      {collocationsStats && (
+        <div className="bg=[#F2EBD3] p-3 m-3 rounded-lg border-1 shadow-lg w-full h-[350px]">
+          <NetworkGraph stats={collocationsStats}/>
+        </div>
       )}
     </div>
   );
