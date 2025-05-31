@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from "axios";
 import { ICollocationsStats } from "../WordInterfaces.ts";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
 import { apiUrl } from "../Constants.ts";
-import NetworkGraph from "./graphs/NetworkGraph.tsx";
+import CollocationsGraph from "./graphs/CollocationsGraph.tsx";
 
 interface WordRelationshipsCardProps {
     word: string;
@@ -47,8 +47,8 @@ const WordRelationshipsCard = ({word}: WordRelationshipsCardProps) => {
       {loading && (<LoadingSpinner/>)}
       {error && (<p>{error}</p>)}
       {collocationsStats && (
-        <div className="bg=[#F2EBD3] p-3 m-3 rounded-lg border-1 shadow-lg w-full h-[350px]">
-          <NetworkGraph stats={collocationsStats}/>
+        <div className="bg-[#F2EBD3] p-3 rounded-lg border-1 shadow-lg w-full h-[350px]">
+          <CollocationsGraph stats={collocationsStats}/>
         </div>
       )}
     </div>
