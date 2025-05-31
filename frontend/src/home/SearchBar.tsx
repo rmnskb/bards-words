@@ -4,6 +4,7 @@ import axios, {AxiosResponse} from "axios";
 import {IWordIndex, IDocumentTokens} from "../WordInterfaces.ts";
 import {SearchResultType} from "./HomePage.tsx";
 import {apiUrl} from "../Constants.ts";
+import portrait from "../images/portrait.png"
 
 interface SearchBarProps {
     search: string;
@@ -111,6 +112,17 @@ const SearchBar = (
 
     return (
         <div className="w-full max-w-2xl mx-auto px-4">
+            <div className="flex items-center justify-center gap-3 mb-6 "> 
+              <img 
+                src={portrait} 
+                className="
+                 w-42 h-48 rounded-full border-2 object-cover brightness-0
+                "
+              />
+              <h1 className="text-7xl font-bold text-[#8B1E3F] font-imperial">
+               Bard Scope
+              </h1>
+            </div>
             <form className="w-full">
                 <label
                     htmlFor={"search"}

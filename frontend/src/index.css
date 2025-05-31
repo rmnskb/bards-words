@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Imperial+Script&display=swap');
 @import "tailwindcss";
 
 @theme {
     --font-baskerville: "Libre Baskerville", serif;
     --font-im-fell: "IM Fell English", serif;
+    --font-imperial: "Imperial Script", serif;
 }
