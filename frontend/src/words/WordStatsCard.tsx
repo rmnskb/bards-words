@@ -1,3 +1,4 @@
+import { schemeObservable10 } from "d3-scale-chromatic";
 import {IWordDimensions, IDictionaryEntry, IYearFreqElement, IDocumentFreqElement} from "../WordInterfaces.ts";
 
 interface WordStatsProps {
@@ -36,13 +37,12 @@ const WordStatsCard = ({wordDimensions, dictionaryEntry}: WordStatsProps) => {
                 border-1 rounded-lg shadow-lg
             ">
                 <p className="
-                                p-5
-                                first-letter:float-left first-letter:mr-3
-                                first-letter:text-7xl first-letter:font-bold
-                                first-line:tracking-widest first-line:uppercase first-line:text-3xl
-                                font-im-fell
-                            "
-                >{wordDimensions.word}</p>
+                  p-5
+                  first-letter:float-left first-letter:mr-3
+                  first-letter:text-7xl first-letter:font-bold
+                  first-line:tracking-widest first-line:uppercase first-line:text-3xl
+                  font-im-fell
+                ">{wordDimensions.word}</p>
                 {dictionaryEntry && (
                     <span className="text-2xl">{dictionaryEntry.phonetic}</span>
                 )}
@@ -75,6 +75,33 @@ const WordStatsCard = ({wordDimensions, dictionaryEntry}: WordStatsProps) => {
                         </span>
                         <span>Plays</span>
                     </div>
+                </div>
+                <div className="p-1 mt-3 text-lg">
+                  {dictionaryEntry
+                    && dictionaryEntry.meanings 
+                    && dictionaryEntry.meanings.length !== 0 
+                    && dictionaryEntry.meanings[0].definitions
+                    && (
+                    <p className="text-xl">{dictionaryEntry.meanings[0].definitions[0].definition}</p>
+                  )}
+                  {dictionaryEntry
+                    && dictionaryEntry.meanings 
+                    && dictionaryEntry.meanings[0].synonyms
+                    && (
+                      <div> 
+                        <span className="font-bold">Synonyms: </span>
+                        <span>{dictionaryEntry.meanings[0].synonyms.join(", ")}</span>
+                      </div>
+                  )}
+                  {dictionaryEntry
+                    && dictionaryEntry.meanings 
+                    && dictionaryEntry.meanings[0].antonyms
+                    && (
+                      <div> 
+                        <span className="font-bold">Antonyms: </span>
+                        <span>{dictionaryEntry.meanings[0].antonyms.join(", ")}</span>
+                      </div>
+                  )}
                 </div>
             </div>
         </div>

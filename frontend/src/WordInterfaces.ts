@@ -48,9 +48,9 @@ export interface IDictionaryEntry {
         definitions?: {
             definition?: string;
             example?: string;
-            synonyms?: string[];
-            antonyms?: string[];
-        }
+        }[];
+        synonyms?: string[];
+        antonyms?: string[];
     }[];
 }
 

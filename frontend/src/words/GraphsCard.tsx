@@ -13,12 +13,12 @@ const GraphsCard = ({wordDimensions}: GraphsCardProps) => {
             border-1 rounded-lg shadow-lg
         ">
             <p className="text-3xl font-bold font-im-fell">Frequency Analysis</p>
-            <div className="bg-[#F2EBD3] p-3 m-3 rounded-lg border-1 shadow-lg w-full h-[350px]">
+            <div className="bg-[#F2EBD3] p-3 my-3 rounded-lg border-1 shadow-lg w-full h-[350px]">
                 <p className="text-2xl ml-2 font-im-fell">Frequency by Year</p>
                 {wordDimensions?.yearFrequencies && (
                     <FreqPerYearChart stats={wordDimensions.yearFrequencies}/>)}
             </div>
-            <div className="bg-[#F2EBD3] p-3 m-3 rounded-lg border-1 shadow-lg w-full h-[350px]">
+            <div className="bg-[#F2EBD3] p-3 my-3 rounded-lg border-1 shadow-lg w-full h-[350px]">
                 <p className="text-2xl ml-2 font-im-fell">Frequency by Work</p>
                 {wordDimensions?.documentFrequencies && (
                     <FreqPerDocChart stats={wordDimensions.documentFrequencies}/>)}
