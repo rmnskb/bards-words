@@ -1,9 +1,17 @@
-import { schemeObservable10 } from "d3-scale-chromatic";
 import {IWordDimensions, IDictionaryEntry, IYearFreqElement, IDocumentFreqElement} from "../WordInterfaces.ts";
 
 interface WordStatsProps {
     wordDimensions: IWordDimensions;
     dictionaryEntry: IDictionaryEntry | null;  // Empty response from the 3rd party API should not be a showstopper
+}
+
+interface IWordListProps {      
+  label: string;
+  words: string[];
+}
+
+interface IDictionaryDisplayProps {
+  dictionaryEntry: IDictionaryEntry | null | undefined;
 }
 
 const WordStatsCard = ({wordDimensions, dictionaryEntry}: WordStatsProps) => {
@@ -28,6 +36,34 @@ const WordStatsCard = ({wordDimensions, dictionaryEntry}: WordStatsProps) => {
     const getTotalWorksAppearances
         = (stats: IDocumentFreqElement[]): number => {
         return stats.length
+    };
+
+    // A list of either synonyms or antonyms
+    const WordList = ({ label, words }: IWordListProps) => (
+      <div>
+        <span className="font-bold">{label}: </span>
+        <span>{words.join(", ")}</span>
+      </div>
+    ); 
+
+    const DictionaryDisplay = ({ dictionaryEntry }: IDictionaryDisplayProps) => {
+      const firstMeaning = dictionaryEntry?.meanings?.[0];
+ 
+      if (!firstMeaning) return null;
+
+      return (
+        <div className="p-1 mt-3 text-lg">
+          {firstMeaning.definitions?.[0] && (
+            <p className="text-xl">{firstMeaning.definitions[0].definition}</p>
+          )}
+          {firstMeaning.synonyms && (
+            <WordList label="Synonyms" words={firstMeaning.synonyms} />
+          )}
+          {firstMeaning.antonyms && (
+            <WordList label="Antonyms" words={firstMeaning.antonyms} />
+          )}
+        </div>
+      );
     };
 
     return (
@@ -76,33 +112,7 @@ const WordStatsCard = ({wordDimensions, dictionaryEntry}: WordStatsProps) => {
                         <span>Plays</span>
                     </div>
                 </div>
-                <div className="p-1 mt-3 text-lg">
-                  {dictionaryEntry
-                    && dictionaryEntry.meanings 
-                    && dictionaryEntry.meanings.length !== 0 
-                    && dictionaryEntry.meanings[0].definitions
-                    && (
-                    <p className="text-xl">{dictionaryEntry.meanings[0].definitions[0].definition}</p>
-                  )}
-                  {dictionaryEntry
-                    && dictionaryEntry.meanings 
-                    && dictionaryEntry.meanings[0].synonyms
-                    && (
-                      <div> 
-                        <span className="font-bold">Synonyms: </span>
-                        <span>{dictionaryEntry.meanings[0].synonyms.join(", ")}</span>
-                      </div>
-                  )}
-                  {dictionaryEntry
-                    && dictionaryEntry.meanings 
-                    && dictionaryEntry.meanings[0].antonyms
-                    && (
-                      <div> 
-                        <span className="font-bold">Antonyms: </span>
-                        <span>{dictionaryEntry.meanings[0].antonyms.join(", ")}</span>
-                      </div>
-                  )}
-                </div>
+                <DictionaryDisplay dictionaryEntry={dictionaryEntry}/>
             </div>
         </div>
     );
