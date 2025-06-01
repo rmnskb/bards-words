@@ -14,7 +14,7 @@ interface WordContextCardProps {
 }
 
 const WordContextCard
-    = ({document, index, word}: WordContextCardProps) => {
+    = ({ document, index, word }: WordContextCardProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [tokens, setTokens] = useState<string[] | null>([]);
@@ -71,7 +71,7 @@ const WordContextCard
                 <div className="
                     block p-5 w-full
                 ">
-                    <p className="mb-2">...{formatText(tokens, word)}...</p>
+                    <div className="mb-2">...{formatText(tokens, word)}...</div>
                     <Link to={"/plays/" + getShakespeareWorkCode(document)}>
                         <span 
                           className="
@@ -85,6 +85,6 @@ const WordContextCard
             )}
         </div>
     );
-}
+};
 
 export default WordContextCard;

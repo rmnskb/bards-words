@@ -226,8 +226,9 @@ const WorksExamples = ({word}: WordExamplesProps) => {
             {wordIndex && filteredFlatOccurrences && (
               <div>
                 <hr className="h-1 mx-auto mb-2 bg-gray-700 border-0 rounded-sm "/>
-                {filteredFlatOccurrences.map(flatOccurrence => (
+                {filteredFlatOccurrences.map((flatOccurrence, idx) => (
                   <WordContextCard
+                      key={idx}
                       document={flatOccurrence.document}
                       index={flatOccurrence.index}
                       word={word}
