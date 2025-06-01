@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from "react";
+import { useState, useEffect, useRef } from "react";
 import axios, {AxiosResponse} from "axios";
 
 import {IWordIndex, IOccurrenceElement, IFlatOccurrenceElement} from "../WordInterfaces.ts";
@@ -9,9 +9,10 @@ import {TShakespeareWorkTitle} from "../WorksEnum.ts";
 
 interface WordExamplesProps {
     word: string;
+    selectedWorks: string[] | null;
 }
 
-const WorksExamples = ({word}: WordExamplesProps) => {
+const WorksExamples = ({ word, selectedWorks }: WordExamplesProps) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>();
     const [wordIndex, setWordIndex] = useState<IWordIndex | null>(null);
@@ -101,6 +102,11 @@ const WorksExamples = ({word}: WordExamplesProps) => {
             }
         });
     };
+
+    // Handle updates from the bar chart
+    useEffect(() => {
+      if (selectedWorks) setSelectedOptions(selectedWorks);
+    }, [selectedWorks]);
  
     // Handle the dropdown behaviour
     useEffect(() => {

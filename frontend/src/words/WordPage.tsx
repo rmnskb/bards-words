@@ -13,10 +13,6 @@ import WordRelationshipsCard from "./WordRelationshipsCard.tsx";
 /**
  * TODO: Add page navigation on the side
  * TODO: Decorate the WorksExamples
- * TODO: Show synonyms and antonyms
- * TODO: Display collocations
- * TODO: Appearance in the sentiments??
- * TODO: 3rd party integration, e.g. etymology, definition
  */
 
 const WordPage = () => {
@@ -24,6 +20,7 @@ const WordPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [wordDimensions, setWordDimensions] = useState<IWordDimensions | null>(null);
     const [dictionaryEntry, setDictionaryEntry] = useState<IDictionaryEntry | null>(null);
+    const [selectedWorks, setSelectedWorks] = useState<string[] | null>(null);
     const params = useParams();
     const word = String(params.word);
     const dictionaryApi = "https://api.dictionaryapi.dev/api/v2/entries/en";
@@ -83,9 +80,9 @@ const WordPage = () => {
                 {wordDimensions && (
                     <div className="flex flex-col items-center justify-center">
                         <WordStatsCard wordDimensions={wordDimensions} dictionaryEntry={dictionaryEntry}/>
-                        <GraphsCard wordDimensions={wordDimensions}/>
+                        <GraphsCard wordDimensions={wordDimensions} selectedWorks={selectedWorks} setSelectedWorks={setSelectedWorks}/>
                         <WordRelationshipsCard word={word}/>
-                        <WorksExamples word={word}/>
+                        <WorksExamples word={word} selectedWorks={selectedWorks}/>
                     </div>
                 )}
             </div>
