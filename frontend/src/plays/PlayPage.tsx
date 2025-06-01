@@ -30,7 +30,9 @@ const PlayPage = () => {
         = async (document: string): Promise<IDocumentTokens | null> => {
         try {
             const response: AxiosResponse<IDocumentTokens>
-                = await axios.get<IDocumentTokens>(`${apiUrl}/document?search=${document}`);
+                = await axios.get<IDocumentTokens>(
+        `${apiUrl}/tokens?document=${document}&start=0&end=10000`
+                );
             return response.data;
         } catch (e) {
             console.error(e);
