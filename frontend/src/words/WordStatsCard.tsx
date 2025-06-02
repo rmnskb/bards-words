@@ -14,7 +14,11 @@ interface IDictionaryDisplayProps {
   dictionaryEntry: IDictionaryEntry | null | undefined;
 }
 
-const WordStatsCard = ({wordDimensions, dictionaryEntry}: WordStatsProps) => {
+const WordStatsCard = ({ wordDimensions, dictionaryEntry }: WordStatsProps) => {
+    const wordTitle = wordDimensions.word.replace(
+      wordDimensions.word, (word => word[0].toUpperCase() + word.substring(1).toLowerCase())
+    );
+
     const getFirstAppearance
         = (stats: IYearFreqElement[]): number | undefined => {
         if (stats.length === 0) {
@@ -76,9 +80,9 @@ const WordStatsCard = ({wordDimensions, dictionaryEntry}: WordStatsProps) => {
                   p-5
                   first-letter:float-left first-letter:mr-3
                   first-letter:text-7xl first-letter:font-bold
-                  first-line:tracking-widest first-line:uppercase first-line:text-3xl
+                  first-line:tracking-widest first-line:text-5xl
                   font-im-fell
-                ">{wordDimensions.word}</p>
+                ">{wordTitle}</p>
                 {dictionaryEntry && (
                     <span className="text-2xl">{dictionaryEntry.phonetic}</span>
                 )}
