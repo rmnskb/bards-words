@@ -1,4 +1,5 @@
-import React, {Dispatch, SetStateAction} from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import axios, {AxiosResponse} from "axios";
 
 import {IWordIndex, IDocumentTokens} from "../WordInterfaces.ts";
@@ -26,7 +27,7 @@ const SearchBar = (
         , setDomain
     }: SearchBarProps
 ) => {
-
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const resetSearch = () => {
         setSearch("");
@@ -66,12 +67,12 @@ const SearchBar = (
             console.error('Error fetching search', error);
             return null;
         }
-    }
-
-    const handleSearchResult = async (): Promise<void> => {
+    };
+ 
+    const performSearch = async (searchTerm: string): Promise<void> => { 
         setLoading(true);
         setError(null);
-        const response: SearchResultType | null = await fetchSearch(search);
+        const response: SearchResultType | null = await fetchSearch(searchTerm);
         setLoading(false);
 
         if (response) {
@@ -79,7 +80,12 @@ const SearchBar = (
         } else {
             setError('Failed to fetch search results :(');
         }
-    }
+    };
+
+    const handleSearchResult = async (): Promise<void> => {
+        setSearchParams({ "search": search });
+        await performSearch(search);
+    };
 
     const handleKeyDown =
         (event: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -109,6 +115,16 @@ const SearchBar = (
                 setError('An unexpected error occurred.');
             });
         };
+
+    useEffect(() => {
+        const searchQuery = searchParams.get("search");
+
+        if (searchQuery && searchQuery.trim()) {
+            setSearch(searchQuery);
+
+            performSearch(searchQuery);
+        }
+    }, [searchParams]);
 
     return (
         <div className="w-full max-w-2xl mx-auto px-4">
