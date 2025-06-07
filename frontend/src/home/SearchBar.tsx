@@ -98,10 +98,11 @@ const SearchBar = (
                     });
                     break;
                 }
-                case "Escape":
+                case "Escape": {
                     event.preventDefault()
                     resetSearch();
                     break;
+                }
                 default:
                     break;
             }
