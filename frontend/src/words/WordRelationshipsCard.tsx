@@ -7,10 +7,10 @@ import { apiUrl } from "../Constants.ts";
 import CollocationsGraph from "./graphs/CollocationsGraph.tsx";
 
 interface WordRelationshipsCardProps {
-    word: string;
+  word: string;
 }
 
-const WordRelationshipsCard = ({word}: WordRelationshipsCardProps) => {
+const WordRelationshipsCard = ({ word }: WordRelationshipsCardProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [collocationsStats, setCollocationsStats] = useState<ICollocationsStats | null>(null);
@@ -44,10 +44,13 @@ const WordRelationshipsCard = ({word}: WordRelationshipsCardProps) => {
       block w-3xl p-5 m-3 border-1 rounded-lg shadow-lg
     ">
       <p className="text-3xl font-bold font-im-fell">Word Relationships</p>
-      {loading && (<LoadingSpinner/>)}
+      {loading && (<LoadingSpinner />)}
       {error && (<p>{error}</p>)}
       {collocationsStats && (
-        <div className="bg-[#F2EBD3] p-3 rounded-lg border-1 shadow-lg w-full h-[350px]">
+        <div className="
+          p-3 rounded-lg border-1 shadow-lg w-full h-[350px]
+          bg-vellum dark:bg-aged-leather 
+        ">
           <CollocationsGraph stats={collocationsStats}/>
         </div>
       )}
