@@ -16,7 +16,7 @@ const Header = () => {
   return (
     <header className="
       w-full bg-[#3E2723] shadow-lg 
-      border-b border-[#2C1810]
+      border-b border-[#2C1810] 
     ">
       <div className="
         flex flex-row items-center justify-center
@@ -32,7 +32,9 @@ const Header = () => {
               alt="logo"
               className="h-8 w-8 object-contain"
             />
-            <span className="text-[#F5F0E1] font-semibold text-xl font-im-fell">
+            <span className="
+              text-[#F5F0E1] font-semibold text-xl font-im-fell
+            ">
               BardScope
             </span>
           </Link>

@@ -27,156 +27,157 @@ const SearchBar = (
         , setDomain
     }: SearchBarProps
 ) => {
-    const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-    const resetSearch = () => {
-        setSearch("");
+  const resetSearch = () => {
+    setSearch("");
+  };
+
+  // TODO: handle erroneous search submit after a normal one
+  const handleSearchChange =
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(event.target.value);
     };
 
-    // TODO: handle erroneous search submit after a normal one
-    const handleSearchChange =
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            setSearch(event.target.value);
-        };
+  const fetchSearch
+    = async (search: string): Promise<SearchResultType | null> => {
+    try {
+      let response: AxiosResponse<SearchResultType>;
+      const searchArray: string[] = search.split(" ");
 
-    const fetchSearch
-        = async (search: string): Promise<SearchResultType | null> => {
-        try {
-            let response: AxiosResponse<SearchResultType>;
-            const searchArray: string[] = search.split(" ");
+      if (searchArray.length === 1) {
+        response = await axios.get<IWordIndex[]>(`${apiUrl}/matches?search=${search}`);
+        setDomain("word");
+      } else if (searchArray.length > 1) {
+        const params = new URLSearchParams();
+        searchArray.forEach((token: string) => {
+            params.append("words", token);
+        });
+        const url = `${apiUrl}/phrase?${params.toString()}`;
 
-            if (searchArray.length === 1) {
-                response = await axios.get<IWordIndex[]>(`${apiUrl}/matches?search=${search}`);
-                setDomain("word");
-            } else if (searchArray.length > 1) {
-                const params = new URLSearchParams();
-                searchArray.forEach((token: string) => {
-                    params.append("words", token);
-                });
-                const url = `${apiUrl}/phrase?${params.toString()}`;
+        response = await axios.get<IDocumentTokens[]>(url);
+        setDomain("phrase");
+      } else {
+        console.error("Please enter your search query.");
+        return null;
+      }
 
-                response = await axios.get<IDocumentTokens[]>(url);
-                setDomain("phrase");
-            } else {
-                console.error("Please enter your search query.");
-                return null;
-            }
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching search', error);
+      return null;
+    }
+  };
 
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching search', error);
-            return null;
+  const performSearch = async (searchTerm: string): Promise<void> => { 
+    setLoading(true);
+    setError(null);
+    const response: SearchResultType | null = await fetchSearch(searchTerm);
+    setLoading(false);
+
+    if (response) setResults(response);
+    else setError('Failed to fetch search results :(');
+  };
+
+  const handleSearchResult = async (): Promise<void> => {
+    setSearchParams({ "search": search });
+    await performSearch(search);
+  };
+
+  const handleKeyDown =
+    (event: React.KeyboardEvent<HTMLInputElement>): void => {
+      switch (event.key) {
+        case "Enter": {
+          event.preventDefault();
+          handleSearchResult().catch((err: AxiosResponse) => {
+              console.error('Error occurred search', err);
+              setError('An unexpected error occurred.');
+          });
+          break;
         }
-    };
- 
-    const performSearch = async (searchTerm: string): Promise<void> => { 
-        setLoading(true);
-        setError(null);
-        const response: SearchResultType | null = await fetchSearch(searchTerm);
-        setLoading(false);
-
-        if (response) {
-            setResults(response);
-        } else {
-            setError('Failed to fetch search results :(');
+        case "Escape": {
+          event.preventDefault()
+          resetSearch();
+          break;
         }
+        default:
+          break;
+      }
     };
 
-    const handleSearchResult = async (): Promise<void> => {
-        setSearchParams({ "search": search });
-        await performSearch(search);
+  const handleButtonClick =
+    (event: React.MouseEvent<HTMLButtonElement>): void => {
+      event.preventDefault();
+      handleSearchResult().catch((err: AxiosResponse) => {
+        console.error('Error occurred search', err);
+        setError('An unexpected error occurred.');
+      });
     };
 
-    const handleKeyDown =
-        (event: React.KeyboardEvent<HTMLInputElement>): void => {
-            switch (event.key) {
-                case "Enter": {
-                    event.preventDefault();
-                    handleSearchResult().catch((err: AxiosResponse) => {
-                        console.error('Error occurred search', err);
-                        setError('An unexpected error occurred.');
-                    });
-                    break;
-                }
-                case "Escape": {
-                    event.preventDefault()
-                    resetSearch();
-                    break;
-                }
-                default:
-                    break;
-            }
-        };
+  useEffect(() => {
+    const searchQuery = searchParams.get("search");
 
-    const handleButtonClick =
-        (event: React.MouseEvent<HTMLButtonElement>): void => {
-            event.preventDefault();
-            handleSearchResult().catch((err: AxiosResponse) => {
-                console.error('Error occurred search', err);
-                setError('An unexpected error occurred.');
-            });
-        };
+    if (searchQuery && searchQuery.trim()) {
+      setSearch(searchQuery);
+      performSearch(searchQuery);
+    }
+  }, [searchParams]);
 
-    useEffect(() => {
-        const searchQuery = searchParams.get("search");
-
-        if (searchQuery && searchQuery.trim()) {
-            setSearch(searchQuery);
-
-            performSearch(searchQuery);
-        }
-    }, [searchParams]);
-
-    return (
-        <div className="w-full max-w-2xl mx-auto px-4">
-            <div className="flex items-center justify-center gap-3 mb-6 "> 
-              <img 
-                src={portrait} 
-                className="
-                 w-42 h-48 rounded-full border-2 object-cover brightness-0
-                "
-              />
-              <h1 className="text-7xl font-bold text-[#8B1E3F] font-imperial">
-               Bard Scope
-              </h1>
-            </div>
-            <form className="w-full">
-                <label
-                    htmlFor={"search"}
-                    className="mb-2 text-sm font-medium text-gray-900 sr-only"
-                ></label>
-                <div className="relative">
-                    <input
-                        type="search"
-                        value={search}
-                        id="search"
-                        onChange={handleSearchChange}
-                        onKeyDown={handleKeyDown}
-                        placeholder={"Search words, phrases..."} required
-                        className="
-                            block w-full p-4 text-xl shadow-lg
-                            text-[#0D1B2A] font-im-fell
-                            border-2 border-gray-50
-                            rounded-lg bg-gray-50
-                            focus:border-[#D4AF37] focus:outline-[#D4AF37]
-                        "
-                    />
-                    <button
-                        type="submit"
-                        onClick={handleButtonClick}
-                        className="
-                            text-gray-50 absolute end-2.5 bottom-2.5
-                            bg-[#D4AF37] hover:bg-[#B89423]
-                            focus:ring-1 focus:outline-none focus:ring-[#B89423]
-                            font-medium rounded-lg text-sm px-4 py-3
-                            shadow-sm
-                        "
-                    >Search
-                    </button>
-                </div>
-            </form>
+  return (
+    <div className="w-full max-w-2xl mx-auto px-4">
+      <div className="flex items-center justify-center gap-3 mb-6 "> 
+        <img 
+          src={portrait} 
+          className="
+            w-42 h-48 rounded-full border-2 object-cover brightness-0 
+          "
+        />
+        <h1 className="
+          text-7xl font-bold text-royal-wine font-imperial
+          dark:text-crimson 
+        ">
+          Bard Scope
+        </h1>
+      </div>
+      <form className="w-full">
+        <label
+            htmlFor={"search"}
+            className="mb-2 text-sm font-medium text-gray-900 sr-only"
+        ></label>
+        <div className="relative">
+          <input
+            type="search"
+            value={search}
+            id="search"
+            onChange={handleSearchChange}
+            onKeyDown={handleKeyDown}
+            placeholder={"Search words, phrases..."} required
+            className="
+              block w-full p-4 text-xl shadow-lg
+              text-quill font-im-fell
+              border-2 border-vellum
+              rounded-lg bg-silk
+              focus:border-gold-leaf focus:outline-gold-leaf
+              dark:bg-warm-taupe dark:text-moonlight
+              dark:border-cafe-au-lait
+              dark:focus:border-bright-gold dark:focus:outline-bright-gold
+            "
+          />
+          <button
+            type="submit"
+            onClick={handleButtonClick}
+            className="
+              text-quill absolute end-2.5 bottom-2.5
+              bg-gold-leaf hover:bg-soft-gold
+              focus:ring-1 focus:outline-none focus:ring-soft-gold
+              font-medium rounded-lg text-sm px-4 py-3 shadow-sm
+              dark:hover:bg-bright-gold dark:focus:ring-bright-gold
+            "
+          >Search</button>
         </div>
-    );
+      </form>
+    </div>
+  );
 };
 
 export default SearchBar;

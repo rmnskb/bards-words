@@ -15,33 +15,31 @@ const HomePage = () => {
   const [domain, setDomain] = useState<string>("word");
 
   return (
-    <>
-      <div className={`
-        flex flex-col items-center 
-        ${results ? 'justify-start pt-24' : 'justify-center'} min-h-screen
-        font-baskerville
-      `}>
-        <SearchBar
-          search={search}
-          setSearch={setSearch}
-          setResults={setResults}
-          setLoading={setLoading}
-          setError={setError}
-          setDomain={setDomain}
-        />
-        {results && (
-          <div className="">
-             <SearchResults
-              search={search}
-              domain={domain}
-              results={results}
-              loading={loading}
-              error={error}
-             />
-          </div>
-        )}
-      </div>
-    </>
+    <div className={`
+      flex flex-col items-center 
+      ${results ? 'justify-start pt-24' : 'justify-center'} min-h-screen
+      font-baskerville
+    `}>
+      <SearchBar
+        search={search}
+        setSearch={setSearch}
+        setResults={setResults}
+        setLoading={setLoading}
+        setError={setError}
+        setDomain={setDomain}
+      />
+      {results && (
+        <div className="">
+          <SearchResults
+            search={search}
+            domain={domain}
+            results={results}
+            loading={loading}
+            error={error}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -6,7 +6,26 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-baskerville: "Libre Baskerville", serif;
-    --font-im-fell: "IM Fell English", serif;
-    --font-imperial: "Imperial Script", serif;
+  --font-baskerville: "Libre Baskerville", serif;
+  --font-im-fell: "IM Fell English", serif;
+  --font-imperial: "Imperial Script", serif;
+  --color-parchment: #F5F0E1;
+  --color-vellum: #F2EBD3;
+  --color-quill: #2C1810;
+  --color-ink: #3E2723;
+  --color-gold-leaf: #D4AF37;
+  --color-royal-wine: #8B1E3F;
+  --color-soft-gold: #C4A447;
+  --color-deep-wine: #7A1B38;
+  --color-silk: #F8F3E6;
+  
+  /* Dark Theme */
+  --color-leather: #1A1410;
+  --color-aged-leather: #211A16;
+  --color-candlelight: #F5F0E1;
+  --color-moonlight: #E8DCC6;
+  --color-bright-gold: #E5BF47;
+  --color-crimson: #A5233E;
+  --color-warm-taupe: #3A2F26;
+  --color-cafe-au-lait: #423529;
 }

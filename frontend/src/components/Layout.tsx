@@ -8,7 +8,7 @@ const Layout = () => {
   return (
     <div className="
       min-h-screen font-baskerville
-      bg-[#F5F0E1] dark:bg-[#2A2F3E]
+      bg-parchment dark:bg-leather
     ">
       <Header/>
       <Outlet/>
