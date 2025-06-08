@@ -9,6 +9,7 @@ const Layout = () => {
     <div className="
       min-h-screen font-baskerville
       bg-parchment dark:bg-leather
+      text-quill dark:text-moonlight
     ">
       <Header/>
       <Outlet/>
