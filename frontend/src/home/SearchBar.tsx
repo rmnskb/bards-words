@@ -167,10 +167,11 @@ const SearchBar = (
             type="submit"
             onClick={handleButtonClick}
             className="
-              text-quill absolute end-2.5 bottom-2.5
+              absolute end-2.5 bottom-2.5
               bg-gold-leaf hover:bg-soft-gold
               focus:ring-1 focus:outline-none focus:ring-soft-gold
               font-medium rounded-lg text-sm px-4 py-3 shadow-sm
+              text-silk dark:text-quill
               dark:hover:bg-bright-gold dark:focus:ring-bright-gold
             "
           >Search</button>
