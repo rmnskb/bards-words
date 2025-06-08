@@ -16,7 +16,7 @@ interface SearchBarProps {
     setDomain: Dispatch<SetStateAction<string>>;
 }
 
-
+// TODO: Add autosuggestions
 const SearchBar = (
     {
         search

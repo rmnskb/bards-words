@@ -5,7 +5,7 @@ interface WordStatsProps {
     dictionaryEntry: IDictionaryEntry | null;  // Empty response from the 3rd party API should not be a showstopper
 }
 
-interface IWordListProps {      
+interface IWordListProps {
   label: string;
   words: string[];
 }
@@ -60,10 +60,10 @@ const WordStatsCard = ({ wordDimensions, dictionaryEntry }: WordStatsProps) => {
           {firstMeaning.definitions?.[0] && (
             <p className="text-xl">{firstMeaning.definitions[0].definition}</p>
           )}
-          {firstMeaning.synonyms && (
+          {firstMeaning.synonyms?.[0] && (
             <WordList label="Synonyms" words={firstMeaning.synonyms} />
           )}
-          {firstMeaning.antonyms && (
+          {firstMeaning.antonyms?.[0] && (
             <WordList label="Antonyms" words={firstMeaning.antonyms} />
           )}
         </div>

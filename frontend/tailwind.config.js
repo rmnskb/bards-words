@@ -1,4 +1,7 @@
 module.exports = {
-    darkMode: 'false',
-    plugins: [],
+  darkMode: 'class',
+  theme: {
+    extend: {},
+  },
+  plugins: [],
 };
