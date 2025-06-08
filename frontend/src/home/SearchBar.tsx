@@ -125,7 +125,7 @@ const SearchBar = (
 
   return (
     <div className="w-full max-w-2xl mx-auto px-4">
-      <div className="flex items-center justify-center gap-3 mb-6 "> 
+      <div className="flex items-center justify-center gap-3 mb-6">
         <img 
           src={portrait} 
           className="
@@ -136,7 +136,7 @@ const SearchBar = (
           text-7xl font-bold text-royal-wine font-imperial
           dark:text-crimson 
         ">
-          Bard Scope
+          Words Bard
         </h1>
       </div>
       <form className="w-full">

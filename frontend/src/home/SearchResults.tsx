@@ -1,7 +1,7 @@
-import {IWordIndex, IDocumentTokens} from "../WordInterfaces.ts";
+import { IWordIndex, IDocumentTokens } from "../WordInterfaces.ts";
 import WordCard from "./WordCard.tsx";
 import ContextCard from "./ContextCard.tsx";
-import {SearchResultType} from "./HomePage.tsx";
+import { SearchResultType } from "./HomePage.tsx";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
 interface ResultProps {
@@ -11,7 +11,6 @@ interface ResultProps {
   loading: boolean;
   error: string | null;
 }
-
 
 const SearchResults = (
   {
