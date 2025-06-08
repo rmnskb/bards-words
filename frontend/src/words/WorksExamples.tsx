@@ -20,7 +20,7 @@ const WorksExamples = ({ word, selectedWorks }: WordExamplesProps) => {
   const [wordIndex, setWordIndex] = useState<IWordIndex | null>(null);
   const [flatOccurrences, setFlatOccurrences] = useState<IFlatOccurrenceElement[] | null>([]);
   const [filteredFlatOccurrences, setFilteredFlatOccurrences] = useState<IFlatOccurrenceElement[] | null>([]);
-  const [loadCount, setLoadCount] = useState<number>(10);
+  const [loadCount, setLoadCount] = useState<number>(5);
   const [availableOptions, setAvailableOptions] = useState<TShakespeareWorkTitle[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -30,12 +30,12 @@ const WorksExamples = ({ word, selectedWorks }: WordExamplesProps) => {
   const fetchWordIndices
     = async (word: string): Promise<IWordIndex | null> => {
     try {
-        const response: AxiosResponse<IWordIndex> =
-            await axios.get<IWordIndex>(`${apiUrl}/word?search=${word}`)
-        return response.data;
+      const response: AxiosResponse<IWordIndex> =
+        await axios.get<IWordIndex>(`${apiUrl}/word?search=${word}`)
+      return response.data;
     } catch (e) {
-        console.error(e);
-        return null;
+      console.error(e);
+      return null;
     }
   };
 
@@ -58,48 +58,32 @@ const WorksExamples = ({ word, selectedWorks }: WordExamplesProps) => {
   const handleLoadMore = () => {
     if (!flatOccurrences || !wordIndex) return
 
-    if (filteredFlatOccurrences && selectedOptions?.length > 0) {
-      const filtered = flattenOccurrenceElements(
-        wordIndex.occurrences.filter(
-          item => selectedOptions.some(
-            option => option === item.document
-          )
+    let content = flatOccurrences;
+
+    if (selectedOptions?.length > 0) {
+      content = content.filter(
+        item => selectedOptions.some(
+          option => option === item.document
         )
       );
-
-      if (loadCount + 5 <= filtered.length) {
-        setLoadCount(prevCount => prevCount + 5);
-      } else if (loadCount + 5 > filtered.length) {
-        setLoadCount(filtered.length);
-        setAreAllOptionsDisplayed(true);
-      }
-
-      setFilteredFlatOccurrences(filtered.slice(0, loadCount));
-
-      return
     }
 
-    if (loadCount + 5 <= flatOccurrences.length) {
-      setLoadCount(prevCount => prevCount + 5);
-    } else if (loadCount + 5 > flatOccurrences.length) {
-      setLoadCount(flatOccurrences.length);
+    if (loadCount + 5 < content.length) setLoadCount(prevCount => prevCount + 5);
+    else {
+      setLoadCount(content.length);
       setAreAllOptionsDisplayed(true);
     }
 
-    setFlatOccurrences(
-      flattenOccurrenceElements(wordIndex.occurrences).slice(0, loadCount)
-    );
+    setFilteredFlatOccurrences(content.slice(0, loadCount));
   };
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   const handleOptionClick = (option: string) => {
     setSelectedOptions(prev => {
-      if (prev.some(item => item === option)) {
+      if (prev.some(item => item === option)) 
         return prev.filter(item => item !== option);
-      } else {
-        return [...prev, option]
-      }
+      else return [...prev, option];
     });
   };
 
@@ -111,14 +95,11 @@ const WorksExamples = ({ word, selectedWorks }: WordExamplesProps) => {
   // Handle the dropdown behaviour
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node))
         setIsDropdownOpen(false);
-      }
     };
 
-    if (isDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    if (isDropdownOpen) document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -127,9 +108,9 @@ const WorksExamples = ({ word, selectedWorks }: WordExamplesProps) => {
 
   // Handle the filters
   useEffect(() => {
-    if (selectedOptions.length === 0) {
-      setFilteredFlatOccurrences(flatOccurrences);
-    } else {
+    if (selectedOptions.length === 0 && flatOccurrences)
+      setFilteredFlatOccurrences(flatOccurrences.slice(0, loadCount));
+    else {
       if (wordIndex) {
         const filtered = flattenOccurrenceElements(
           wordIndex.occurrences.filter(
@@ -154,12 +135,12 @@ const WorksExamples = ({ word, selectedWorks }: WordExamplesProps) => {
       .then((response) => {
         setWordIndex(response);
         if (response) {
-          setFlatOccurrences(
-            flattenOccurrenceElements(response.occurrences).slice(0, loadCount)
-          );
+          setFlatOccurrences(flattenOccurrenceElements(response.occurrences));
 
           // Dropdown filter options
-          setAvailableOptions(response.occurrences.map(item => item.document as TShakespeareWorkTitle));
+          setAvailableOptions(
+            response.occurrences.map(item => item.document as TShakespeareWorkTitle)
+          );
 
           // Load more button logic
           if (response.occurrences.length <= loadCount) setAreAllOptionsDisplayed(true);
