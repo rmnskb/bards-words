@@ -1,12 +1,25 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.mongodb import ShakespeareRepository, InvertedIndexItem, TokensItem, WordDimensionsItem, CollocationsStatsItem
+from api.mongodb import (
+    ShakespeareRepository, InvertedIndexItem, 
+    TokensItem, WordDimensionsItem, CollocationsStatsItem, SuggestionsItem
+)
 from .enums import ShakespeareWork
 
 
-app = FastAPI()
 repo = ShakespeareRepository()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> None:
+    await repo.create_indices()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:3000",
@@ -110,4 +123,11 @@ async def get_collocations_stats(search: str = Query(None)) -> CollocationsStats
         raise HTTPException(status_code=400, detail='Query parameter is required')
 
     return await repo.get_collocations_stats(search)
+
+
+@app.get('/api/v1/suggestions')
+async def get_autosuggestions(q: str = Query(None), limit: int = Query(None)) -> SuggestionsItem:
+    if q is None:
+        raise HTTPException(status_code=400, detail='Query parameter is required')
+    return await repo.get_autosuggestions(q=q, limit=limit)
 

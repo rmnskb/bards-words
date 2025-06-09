@@ -4,19 +4,16 @@ from typing import Optional, TypeVar
 from collections import defaultdict
 from itertools import groupby
 
-import asyncio
-
 import pymongo
 from pymongo import AsyncMongoClient
 
-from .models import InvertedIndexItem, TokensItem, WordDimensionsItem, CollocationsStatsItem
+from .models import InvertedIndexItem, TokensItem, WordDimensionsItem, CollocationsStatsItem, SuggestionsItem
 
 T = TypeVar('T')
 
 
 class _MongoRepository:
-    
-    # TODO: Initialise DB users and collection indices programatically
+
     def __init__(self):
         uri = self._get_conn_uri()
         self._client = AsyncMongoClient(uri)
@@ -40,6 +37,11 @@ class ShakespeareRepository(_MongoRepository):
     def __init__(self):
         super().__init__()
         self._db = self.client['shakespeare']
+ 
+    async def create_indices(self) -> None:
+        await self._db.bronzeIndices.create_index(
+            [("word", "text")]
+        )
 
     async def find_word(self, word: str) -> InvertedIndexItem:
         """
@@ -229,10 +231,21 @@ class ShakespeareRepository(_MongoRepository):
 
         if result:
             return CollocationsStatsItem(**result)
+ 
+    async def get_autosuggestions(self, q: str, limit: int) -> SuggestionsItem:
+        pattern = re.escape(q)
 
+        results = await self._db.bronzeIndices.find(
+            {
+                'word': {
+                    '$regex': pattern,
+                    '$options': 'i'
+                },
+            }, {'word': 1, '_id': 0,}
+        ).limit(limit).to_list(None)
 
-if __name__ == "__main__":
-    repo = ShakespeareRepository()
-    # result = asyncio.run(repo.find_tokens("The Comedy of Errors", 1000, 100))
-    res = asyncio.run(repo.find_word("life"))
-    print(res)
+        suggestions = [result['word'] for result in results if 'word' in result]
+ 
+        if results:
+            return SuggestionsItem(suggestions=suggestions)
+
