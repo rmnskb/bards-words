@@ -6,6 +6,7 @@ import { IWordIndex, IDocumentTokens } from "../WordInterfaces.ts";
 import { SearchResultType } from "./HomePage.tsx";
 import { apiUrl } from "../Constants.ts";
 import Portrait from "../components/Portrait.tsx";
+import AutoSuggestionsDropdown from "../components/AutoSuggestionsDropdown.tsx";
 
 interface SearchBarProps {
     search: string;
@@ -16,7 +17,10 @@ interface SearchBarProps {
     setDomain: Dispatch<SetStateAction<string>>;
 }
 
-// TODO: Add autosuggestions
+/**
+ *  TODO: Separate the Search Bar into separate descendant components, 
+ *  e.g. SearchBar element, suggestions, etc.
+ */ 
 const SearchBar = (
   {
     search
@@ -149,6 +153,7 @@ const SearchBar = (
             onChange={handleSearchChange}
             onKeyDown={handleKeyDown}
             placeholder={"Search words, phrases..."} required
+            autoComplete="off"
             className="
               block w-full p-4 text-xl shadow-lg
               text-quill font-im-fell
@@ -174,6 +179,15 @@ const SearchBar = (
           >Search</button>
         </div>
       </form>
+      <AutoSuggestionsDropdown
+        search={search}
+        setSearch={setSearch}
+        className="
+          border border-ink dark:border-moonlight
+          rounded-xl shadow-lg z-50 max-h-80 overflow-y-auto
+          bg-vellum dark:bg-cafe-au-lait
+        "
+      />
     </div>
   );
 };
