@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { FaRegSun, FaRegMoon } from "react-icons/fa6";
 
 import HeaderSearchBar from "./HeaderSearchBar";
-import portrait from "../images/portrait.png"
+// import portrait from "../images/portrait.png"
 
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
@@ -15,8 +15,9 @@ const Header = () => {
 
   return (
     <header className="
-      w-full bg-[#3E2723] shadow-lg 
-      border-b border-[#2C1810] 
+      w-full shadow-lg 
+      border-b border-quill bg-ink
+      dark:bg-cafe-au-lait dark:border-warm-taupe
     ">
       <div className="
         flex flex-row items-center justify-center
@@ -27,34 +28,30 @@ const Header = () => {
             to="/?search="
             className="flex items-center space-x-3 hover:opacity transition-opacity"
           >
-            <img
-              src={portrait}
-              alt="logo"
-              className="h-8 w-8 object-contain"
-            />
             <span className="
-              text-[#F5F0E1] font-semibold text-xl font-im-fell
-            ">
-              BardScope
-            </span>
+              text-deep-wine font-semibold text-5xl font-imperial
+              dark:text-crimson
+            ">Words Bard</span>
           </Link>
         </div>
 
         <div className="flex-1 max-w-md mx-8">
-          <HeaderSearchBar/>
+          <HeaderSearchBar />
         </div>
 
         <button
           onClick={() => {setIsDarkMode(!isDarkMode)}}
           className="
-            p-2 rounded-lg bg-[#2C1810] hover:bg-[#1A0F08]
-            text-[#F5F0E1] hover:text-[#D4AF37]
-            transition-colors duration-200
-            focus:outline-none focus:ring-2 focus:ring-[#D4AF37]
+            p-2 rounded-lg transition-colors duration-200
+            focus:outline-none focus:ring-2 focus:ring-gold-leaf
+            bg-aged-leather hover:bg-warm-taupe
+            text-vellum hover:text-soft-gold
+            dark:bg-parchment dark:hover:bg-ink
+            dark:text-quill dark:hover:text-bright-gold
           "
           aria-label="Toggle Dark Mode"
         >
-          {isDarkMode ? <FaRegMoon size={20} /> : <FaRegSun size={20} />}
+          {isDarkMode ? <FaRegSun size={20} /> : <FaRegMoon size={20} />}
         </button>
       </div>
     </header>

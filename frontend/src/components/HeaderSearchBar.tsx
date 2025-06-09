@@ -47,23 +47,27 @@ const HeaderSearchBar = () => {
            onKeyDown={handleKeyDown}
            placeholder={"Search words, phrases..."} required
            className="
-             block w-full py-3 pl-4 pr-14 text-md shadow-lg
-             text-[#0D1B2A] font-im-fell
-             border-2 border-gray-50
-             rounded-lg bg-gray-50
-             focus:border-[#D4AF37] focus:outline-[#D4AF37]
+            block w-full py-3 pl-4 pr-14 text-md shadow-lg
+            text-quill font-im-fell
+            border-2 border-vellum
+            rounded-lg bg-silk
+            focus:border-gold-leaf focus:outline-gold-leaf
+            dark:bg-warm-taupe dark:text-moonlight
+            dark:border-candlelight
+            dark:focus:border-bright-gold dark:focus:outline-bright-gold
            "
           />
         <button
           type="submit"
           onClick={handleButtonClick}
           className="
-            text-gray-50 absolute right-2.5 top-3 -translate-y-1/12
-            bg-[#D4AF37] hover:bg-[#B89423]
-            focus:ring-1 focus:outline-none focus:ring-[#B89423]
+            absolute right-2.5 top-3 -translate-y-1/12
+            bg-gold-leaf hover:bg-soft-gold
+            focus:ring-1 focus:outline-none focus:ring-soft-gold
             font-medium rounded-lg text-md px-3 py-2 shadow-sm
-          "
-        ><SlMagnifier/></button>
+            text-silk dark:text-quill
+            dark:hover:bg-bright-gold dark:focus:ring-bright-gold
+          "><SlMagnifier /></button>
        </div>
      </form>
     </div>
