@@ -52,3 +52,7 @@ class CollocationsStatsItem(MongoQueryResult):
 
     word: str
     collocationsStats: list[_LinkItem]
+
+class SuggestionsItem(MongoQueryResult):
+    suggestions: list[str]
+

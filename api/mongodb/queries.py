@@ -7,7 +7,7 @@ from itertools import groupby
 import pymongo
 from pymongo import AsyncMongoClient
 
-from .models import InvertedIndexItem, TokensItem, WordDimensionsItem, CollocationsStatsItem
+from .models import InvertedIndexItem, TokensItem, WordDimensionsItem, CollocationsStatsItem, SuggestionsItem
 
 T = TypeVar('T')
 
@@ -231,4 +231,21 @@ class ShakespeareRepository(_MongoRepository):
 
         if result:
             return CollocationsStatsItem(**result)
+ 
+    async def get_autosuggestions(self, q: str, limit: int) -> SuggestionsItem:
+        pattern = re.escape(q)
+
+        results = await self._db.bronzeIndices.find(
+            {
+                'word': {
+                    '$regex': pattern,
+                    '$options': 'i'
+                },
+            }, {'word': 1, '_id': 0,}
+        ).limit(limit).to_list(None)
+
+        suggestions = [result['word'] for result in results if 'word' in result]
+ 
+        if results:
+            return SuggestionsItem(suggestions=suggestions)
 
