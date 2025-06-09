@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -5,8 +7,16 @@ from api.mongodb import ShakespeareRepository, InvertedIndexItem, TokensItem, Wo
 from .enums import ShakespeareWork
 
 
-app = FastAPI()
 repo = ShakespeareRepository()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> None:
+    await repo.create_indices()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:3000",

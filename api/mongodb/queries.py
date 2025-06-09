@@ -4,8 +4,6 @@ from typing import Optional, TypeVar
 from collections import defaultdict
 from itertools import groupby
 
-import asyncio
-
 import pymongo
 from pymongo import AsyncMongoClient
 
@@ -15,8 +13,7 @@ T = TypeVar('T')
 
 
 class _MongoRepository:
-    
-    # TODO: Initialise DB users and collection indices programatically
+
     def __init__(self):
         uri = self._get_conn_uri()
         self._client = AsyncMongoClient(uri)
@@ -40,10 +37,9 @@ class ShakespeareRepository(_MongoRepository):
     def __init__(self):
         super().__init__()
         self._db = self.client['shakespeare']
-        self._create_indices()
  
-    def _create_indices(self) -> None:
-        self._db.bronzeIndices.create_index(
+    async def create_indices(self) -> None:
+        await self._db.bronzeIndices.create_index(
             [("word", "text")]
         )
 
@@ -236,9 +232,3 @@ class ShakespeareRepository(_MongoRepository):
         if result:
             return CollocationsStatsItem(**result)
 
-
-if __name__ == "__main__":
-    repo = ShakespeareRepository()
-    # result = asyncio.run(repo.find_tokens("The Comedy of Errors", 1000, 100))
-    res = asyncio.run(repo.find_word("life"))
-    print(res)
