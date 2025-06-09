@@ -2,10 +2,10 @@ import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import axios, {AxiosResponse} from "axios";
 
-import {IWordIndex, IDocumentTokens} from "../WordInterfaces.ts";
-import {SearchResultType} from "./HomePage.tsx";
-import {apiUrl} from "../Constants.ts";
-import portrait from "../images/portrait.png"
+import { IWordIndex, IDocumentTokens } from "../WordInterfaces.ts";
+import { SearchResultType } from "./HomePage.tsx";
+import { apiUrl } from "../Constants.ts";
+import Portrait from "../components/Portrait.tsx";
 
 interface SearchBarProps {
     search: string;
@@ -18,14 +18,14 @@ interface SearchBarProps {
 
 // TODO: Add autosuggestions
 const SearchBar = (
-    {
-        search
-        , setSearch
-        , setResults
-        , setLoading
-        , setError
-        , setDomain
-    }: SearchBarProps
+  {
+    search
+    , setSearch
+    , setResults
+    , setLoading
+    , setError
+    , setDomain
+  }: SearchBarProps
 ) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -126,11 +126,8 @@ const SearchBar = (
   return (
     <div className="w-full max-w-2xl mx-auto px-4">
       <div className="flex items-center justify-center gap-3 mb-6">
-        <img 
-          src={portrait} 
-          className="
-            w-42 h-48 rounded-full border-2 object-cover brightness-0 
-          "
+        <Portrait 
+          className="w-42 h-48 rounded-full border-2 object-cover transition-all duration-300"
         />
         <h1 className="
           text-7xl font-bold text-royal-wine font-imperial

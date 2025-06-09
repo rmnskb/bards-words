@@ -3,8 +3,9 @@ import { Link } from "react-router";
 import { FaRegSun, FaRegMoon } from "react-icons/fa6";
 
 import HeaderSearchBar from "./HeaderSearchBar";
-// import portrait from "../images/portrait.png"
+import Portrait from "./Portrait";
 
+// TODO: Style the portrait properly
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
@@ -23,6 +24,9 @@ const Header = () => {
         flex flex-row items-center justify-center
         py-6 px-4 max-w-7xl mx-auto
       ">
+        <Portrait 
+          className="w-12 h-16 mr-2 rounded-full border-2 object-cover transition-all duration-300"
+        />
         <div className="flex items-center space-x-3">
           <Link 
             to="/?search="
