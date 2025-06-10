@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import SearchBar from "./SearchBar.tsx";
+import SearchArea from "./SearchArea.tsx";
 import {IDocumentTokens, IWordIndex} from "../WordInterfaces.ts";
 import SearchResults from "./SearchResults.tsx";
 
@@ -20,8 +20,9 @@ const HomePage = () => {
       ${results ? 'justify-start pt-24' : 'justify-center'} min-h-screen
       font-baskerville
     `}>
-      <SearchBar
+      <SearchArea
         search={search}
+        isLoading={loading}
         setSearch={setSearch}
         setResults={setResults}
         setLoading={setLoading}
