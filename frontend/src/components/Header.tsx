@@ -1,19 +1,47 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { FaRegSun, FaRegMoon } from "react-icons/fa6";
 
-import HeaderSearchBar from "./HeaderSearchBar";
+import SearchBar from "./SearchBar";
 import Portrait from "./Portrait";
+import { SlMagnifier } from "react-icons/sl";
 
 // TODO: Style the portrait properly
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+  const navigate = useNavigate();
+
+  const handleKeyDown =
+    (event: React.KeyboardEvent<HTMLInputElement>): void => {
+      switch (event.key) {
+        case "Enter": {
+          event.preventDefault();
+          if (search) navigate(`/?search=${encodeURIComponent(search)}`);
+          break;
+        }
+        case "Escape": {
+          event.preventDefault()
+          setSearch("");
+          break;
+        }
+        default:
+          break;
+      }
+    };
+
+  const handleButtonClick =
+    (event: React.MouseEvent<HTMLButtonElement>): void => {
+      event.preventDefault();
+      if (search) navigate(`/?search=${encodeURIComponent(search)}`);
+    };
 
   useEffect(() => {
     if (isDarkMode) document.documentElement.classList.add("dark");
     else document.documentElement.classList.remove("dark");
   }, [isDarkMode]);
-
+  
+  // TODO: Add suggestions below the search bar
   return (
     <header className="
       w-full shadow-lg 
@@ -24,11 +52,11 @@ const Header = () => {
         flex flex-row items-center justify-center
         py-6 px-4 max-w-7xl mx-auto
       ">
-        <Portrait 
+        <Portrait
           className="w-12 h-16 mr-2 rounded-full border-2 object-cover transition-all duration-300"
         />
         <div className="flex items-center space-x-3">
-          <Link 
+          <Link
             to="/?search="
             className="flex items-center space-x-3 hover:opacity transition-opacity"
           >
@@ -39,8 +67,16 @@ const Header = () => {
           </Link>
         </div>
 
-        <div className="flex-1 max-w-md mx-8">
-          <HeaderSearchBar />
+        <div className="flex-1 max-w-md mx-8 w-full px-4">
+          <SearchBar
+            search={search}
+            onInputChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onButtonClick={handleButtonClick}
+            inputSpacing="py-3 pl-4 pr-14 text-md"
+            buttonIcon={<SlMagnifier />}
+            buttonSpacing="absolute right-2.5 top-3 -translate-y-1/12 px-3 py-2"
+          />
         </div>
 
         <button
