@@ -1,20 +1,18 @@
-import { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { useSearchParams } from "react-router";
 import axios, { AxiosResponse } from "axios";
 
-import { IWordIndex, IDocumentTokens, ISuggestionsItem } from "../WordInterfaces.ts";
+import { IWordIndex, IDocumentTokens } from "../WordInterfaces.ts";
 import { SearchResultType } from "./HomePage.tsx";
 import { apiUrl } from "../Constants.ts";
 import SearchBar from "../components/SearchBar.tsx";
 import Portrait from "../components/Portrait.tsx";
 import AutoSuggestionsDropdown from "../components/AutoSuggestionsDropdown.tsx";
+import useSearchSuggestions from "../hooks/useSearchSuggestions";
+import useSearchKeyboardNavigation from "../hooks/useSearchKeyboardNavigation";
+import useClickedOutside from "../hooks/useClickedOutside";
 
-type suggestionsApiProps = {
-  search: string;
-  limit?: number;
-};
-
-type SearchBarProps = {
+type SearchAreaProps = {
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;
   setResults: Dispatch<SetStateAction<SearchResultType | null>>;
@@ -32,14 +30,33 @@ const SearchArea = (
     , setLoading
     , setError
     , setDomain
-  }: SearchBarProps
+  }: SearchAreaProps
 ) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-  const searchRef = useRef<HTMLDivElement>(null);
-  const suggestionsLimit = 10;
+
+  const suggestions = useSearchSuggestions({ search, setShowSuggestions, });
+
+  const handleKeyDown = useSearchKeyboardNavigation({ 
+    items: suggestions, 
+    onSelect: setSearch,
+    onSearchSubmit: () => {
+      performSearch(search).catch((err: AxiosResponse) => {
+        console.error('Error occurred search', err);
+        setError('An unexpected error occurred.');
+      });
+    },
+    showSuggestions: showSuggestions,
+    setShowSuggestions: setShowSuggestions,
+    selectedIndex: selectedIndex,
+    setSelectedIndex: setSelectedIndex,
+  });
+
+  const searchRef = useClickedOutside(() => {
+    setShowSuggestions(false);
+    setSelectedIndex(-1);
+  });
 
 
   // TODO: handle erroneous search submit after a normal one
@@ -78,16 +95,6 @@ const SearchArea = (
     }
   };
 
-  const fetchSuggestions = async ({search, limit}: suggestionsApiProps) => {
-    try {
-      const response = await axios.get<ISuggestionsItem>(`${apiUrl}/suggestions?q=${search}&limit=${limit}`);
-      return response.data;
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
-  };
-
   const performSearch = async (searchTerm: string): Promise<void> => { 
     setLoading(true);
     setError(null);
@@ -99,116 +106,17 @@ const SearchArea = (
 
     setShowSuggestions(false);
     setSelectedIndex(-1);
+    setSearchParams({ "search": searchTerm });
   };
   
-  // FIXME: DRY this stuff
-  const handleSearchResult = async (): Promise<void> => {
-    setSearchParams({ "search": search });
-    await performSearch(search);
-  };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    setSearch(suggestion);
-    setSearchParams({ "search": suggestion });
-    performSearch(suggestion);
-  };
-
-  const handleKeyDown 
-    = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        handleSearchResult().catch((err: AxiosResponse) => {
-          console.error('Error occurred during search', err);
-          setError('An unexpected error occurred.');
-        });
-
-        return;
-      }
-    }
-
-    // TODO: Fix the navigation with arrow keys for the light theme??
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault();
-        setSelectedIndex(prev => 
-          prev < suggestions.length - 1 ? prev + 1 : 0
-        );
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
-        break;
-      case "Enter":
-        e.preventDefault();
-        if (selectedIndex >= 0) handleSuggestionClick(suggestions[selectedIndex]);
-        else setShowSuggestions(false);
-        break;
-      case "Escape":
-        e.preventDefault();
-        setShowSuggestions(false);
-        setSelectedIndex(-1);
-        break;
-      case "Tab":
-        setShowSuggestions(false);
-        setSelectedIndex(-1);
-        break;
-    }
-  };
-
   const handleButtonClick =
     (e: React.MouseEvent<HTMLButtonElement>): void => {
       e.preventDefault();
-      handleSearchResult().catch((err: AxiosResponse) => {
+      performSearch(search).catch((err: AxiosResponse) => {
         console.error('Error occurred search', err);
         setError('An unexpected error occurred.');
       });
     };
-
-  const handleSuggestionMouseEnter = (index: number) => {
-    setSelectedIndex(index);
-  };
-
-  // Handle click outside of the search area
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowSuggestions(false);
-        setSelectedIndex(-1);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    if (search.trim().length > 2) {
-      setLoading(true);
-
-      const timeoutId = setTimeout(() => {
-        fetchSuggestions({ search: search, limit: suggestionsLimit })
-          .then(response => {
-            if (response && response.suggestions) {
-              setSuggestions(response?.suggestions);
-              setShowSuggestions(response?.suggestions.length > 0);
-            }
-          })
-          .catch((e: string) => {
-            console.error(e);
-          })
-          .finally(() => {
-            setLoading(false);
-          })
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-  }, [search, suggestionsLimit]);
 
   useEffect(() => {
     const searchQuery = searchParams.get("search");
@@ -244,8 +152,8 @@ const SearchArea = (
           suggestions={suggestions}
           showSuggestions={showSuggestions}
           selectedIndex={selectedIndex}
-          onSuggestionClick={handleSuggestionClick}
-          onMouseEnter={handleSuggestionMouseEnter}
+          onSuggestionClick={(suggestion: string) => setSearch(suggestion)}
+          onMouseEnter={(index: number) => setSelectedIndex(index)}
           contentSpacing="absolute top-full left-0 right-0 z-50 mt-2"
         />
       </div>
