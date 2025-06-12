@@ -1,34 +1,41 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { FaRegSun, FaRegMoon } from "react-icons/fa6";
+import { SlMagnifier } from "react-icons/sl";
 
 import SearchBar from "./SearchBar";
 import Portrait from "./Portrait";
-import { SlMagnifier } from "react-icons/sl";
+import AutoSuggestionsDropdown from "./AutoSuggestionsDropdown";
+import useSearchSuggestions from "../hooks/useSearchSuggestions";
+import useSearchKeyboardNavigation from "../hooks/useSearchKeyboardNavigation";
+import useClickedOutside from "../hooks/useClickedOutside";
 
-// TODO: Style the portrait properly
+
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+
   const navigate = useNavigate();
 
-  const handleKeyDown =
-    (event: React.KeyboardEvent<HTMLInputElement>): void => {
-      switch (event.key) {
-        case "Enter": {
-          event.preventDefault();
-          if (search) navigate(`/?search=${encodeURIComponent(search)}`);
-          break;
-        }
-        case "Escape": {
-          event.preventDefault()
-          setSearch("");
-          break;
-        }
-        default:
-          break;
-      }
-    };
+  const suggestions = useSearchSuggestions({ search, setShowSuggestions, });
+
+  const handleKeyDown = useSearchKeyboardNavigation({ 
+    items: suggestions, 
+    onSelect: setSearch,
+    onSearchSubmit: () => navigate(`/?search=${encodeURIComponent(search)}`),
+    showSuggestions: showSuggestions,
+    setShowSuggestions: setShowSuggestions,
+    selectedIndex: selectedIndex,
+    setSelectedIndex: setSelectedIndex,
+  });
+
+  const searchRef = useClickedOutside(() => {
+    setShowSuggestions(false);
+    setSelectedIndex(-1);
+  });
+
 
   const handleButtonClick =
     (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -41,7 +48,7 @@ const Header = () => {
     else document.documentElement.classList.remove("dark");
   }, [isDarkMode]);
   
-  // TODO: Add suggestions below the search bar
+// TODO: Style the portrait properly
   return (
     <header className="
       w-full shadow-lg 
@@ -67,7 +74,7 @@ const Header = () => {
           </Link>
         </div>
 
-        <div className="flex-1 max-w-md mx-8 w-full px-4">
+        <div className="relative flex max-w-md mx-8 w-full px-4" ref={searchRef}>
           <SearchBar
             search={search}
             onInputChange={(e) => setSearch(e.target.value)}
@@ -76,6 +83,15 @@ const Header = () => {
             inputSpacing="py-3 pl-4 pr-14 text-md"
             buttonIcon={<SlMagnifier />}
             buttonSpacing="absolute right-2.5 top-3 -translate-y-1/12 px-3 py-2"
+          />
+          <AutoSuggestionsDropdown
+            suggestions={suggestions}
+            showSuggestions={showSuggestions}
+            selectedIndex={selectedIndex}
+            isLoading={false}
+            onSuggestionClick={(suggestion: string) => setSearch(suggestion)}
+            onMouseEnter={(index: number) => setSelectedIndex(index)}
+            contentSpacing="absolute top-full left-0 right-0 z-50 mt-2"
           />
         </div>
 

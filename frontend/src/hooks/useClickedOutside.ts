@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 
-const useClickedOutside = <T extends HTMLElement>(
+const useClickedOutside = <T extends HTMLDivElement>(
   callback: () => void
 ) => {
   const ref = useRef<T>(null);
