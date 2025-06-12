@@ -16,7 +16,6 @@ type suggestionsApiProps = {
 
 type SearchBarProps = {
   search: string;
-  isLoading: boolean;
   setSearch: Dispatch<SetStateAction<string>>;
   setResults: Dispatch<SetStateAction<SearchResultType | null>>;
   setLoading: Dispatch<SetStateAction<boolean>>;
@@ -28,7 +27,6 @@ type SearchBarProps = {
 const SearchArea = (
   {
     search
-    , isLoading
     , setSearch
     , setResults
     , setLoading
@@ -246,7 +244,6 @@ const SearchArea = (
           suggestions={suggestions}
           showSuggestions={showSuggestions}
           selectedIndex={selectedIndex}
-          isLoading={isLoading}
           onSuggestionClick={handleSuggestionClick}
           onMouseEnter={handleSuggestionMouseEnter}
           contentSpacing="absolute top-full left-0 right-0 z-50 mt-2"

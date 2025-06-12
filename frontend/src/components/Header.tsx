@@ -88,7 +88,6 @@ const Header = () => {
             suggestions={suggestions}
             showSuggestions={showSuggestions}
             selectedIndex={selectedIndex}
-            isLoading={false}
             onSuggestionClick={(suggestion: string) => setSearch(suggestion)}
             onMouseEnter={(index: number) => setSelectedIndex(index)}
             contentSpacing="absolute top-full left-0 right-0 z-50 mt-2"

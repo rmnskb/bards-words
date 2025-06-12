@@ -1,12 +1,10 @@
 import { useEffect, useRef } from "react";
 
-import LoadingSpinner from "./LoadingSpinner";
 
 type AutoSuggestionsDropdownProps = {
   suggestions: string[];
   showSuggestions: boolean;
   selectedIndex: number;
-  isLoading: boolean;
   onSuggestionClick: (suggestion: string) => void;
   onMouseEnter: (index: number) => void;
   contentSpacing?: string;
@@ -17,7 +15,6 @@ const AutoSuggestionsDropdown = ({
   suggestions,
   showSuggestions,
   selectedIndex,
-  isLoading,
   onSuggestionClick,
   onMouseEnter,
   contentSpacing = ""
@@ -38,7 +35,6 @@ const AutoSuggestionsDropdown = ({
 
   return (
     <div>
-      {isLoading && (<LoadingSpinner />)}
       {showSuggestions && suggestions.length > 0 && (
         <div className={`
           border border-ink dark:border-moonlight
