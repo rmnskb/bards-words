@@ -8,15 +8,19 @@ import CustomTooltip from "./CustomTooltip.tsx";
 import { IDocumentFreqElement } from "../../WordInterfaces.ts";
 import { CategoricalChartState } from "recharts/types/chart/types";
 import useDarkMode from "../../hooks/useDarkMode.ts";
+import { TShakespeareWorkTitle } from "../../WorksEnum.ts";
+import { adaptRechartsTooltip } from "../../adapters/tooltipAdapters.ts";
 
-interface IBarChartData {
+interface BarChartData {
   stats: IDocumentFreqElement[];
-  selectedWorks: string[] | null;
-  setSelectedWorks: Dispatch<SetStateAction<string[] | null>>;
+  selectedWorks: TShakespeareWorkTitle[] | null;
+  setSelectedWorks: Dispatch<SetStateAction<TShakespeareWorkTitle[] | null>>;
 }
 
-const FreqPerDocChart 
-    = ({ stats, selectedWorks, setSelectedWorks }: IBarChartData) => {
+
+const FreqPerDocChart = (
+  { stats, selectedWorks, setSelectedWorks }: BarChartData
+) => {
   const isDarkMode = useDarkMode();
 
   const sortedStats =
@@ -25,7 +29,7 @@ const FreqPerDocChart
   const handleClick = (payload: CategoricalChartState) => {
     if (!payload || !payload.activeLabel) return null;
 
-    const activeLabel = payload.activeLabel;
+    const activeLabel = payload.activeLabel as TShakespeareWorkTitle;
 
     if (!selectedWorks) setSelectedWorks([activeLabel]);
     else if (selectedWorks.includes(activeLabel)) {
@@ -54,7 +58,7 @@ const FreqPerDocChart
         <CartesianGrid strokeDasharray="3 3" fillOpacity={0.6} />
         <XAxis dataKey="document"/>
         <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }}/>
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={(props) => (<CustomTooltip data={adaptRechartsTooltip(props)} />)} />
         <Bar dataKey="frequency">
           {
             sortedStats.map((entry: IDocumentFreqElement, index: number) => (

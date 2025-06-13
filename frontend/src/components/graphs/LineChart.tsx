@@ -6,10 +6,12 @@ import {
 import CustomTooltip from "./CustomTooltip.tsx";
 import { IYearFreqElement } from "../../WordInterfaces.ts";
 import useDarkMode from "../../hooks/useDarkMode.ts";
+import { adaptRechartsTooltip } from "../../adapters/tooltipAdapters.ts";
 
 interface LineChartData {
   stats: IYearFreqElement[];
 }
+
 
 const FreqPerYearChart = ({stats}: LineChartData) => {
   const isDarkMode = useDarkMode();
@@ -58,7 +60,7 @@ const FreqPerYearChart = ({stats}: LineChartData) => {
           label={{ value: 'Year', position: 'insideBottomRight', offset: 0 }}
         />
         <YAxis label={{value: 'Frequency', angle: -90, position: 'insideLeft'}} />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={(props) => (<CustomTooltip data={adaptRechartsTooltip(props)} />)} />
         <Line type="monotone" dataKey="frequency" stroke={isDarkMode ? "#6B4C9A" : "#8B1E3F"} />
       </LineChart>
     </ResponsiveContainer>

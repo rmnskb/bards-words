@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router";
 import { ResponsiveCirclePackingCanvas } from "@nivo/circle-packing";
 
+import CustomTooltip from "./CustomTooltip";
 import { ICollocationsStats } from "../../WordInterfaces";
 import useDarkMode from "../../hooks/useDarkMode";
+import { INodeEvent } from "../../types/tooltip";
+import { adaptNivoTooltip } from "../../adapters/tooltipAdapters";
 
 interface CollocationsGraphProps {
   stats: ICollocationsStats;
@@ -18,10 +21,6 @@ interface ICirclesPackingProps {
   children: INode[];
 }
 
-interface INodeEvent {
-  id: string;
-  value: number;
-}
 
 const CollocationsGraph = ({ stats }: CollocationsGraphProps) => {
   const navigate = useNavigate();
@@ -33,22 +32,6 @@ const CollocationsGraph = ({ stats }: CollocationsGraphProps) => {
       name: item.other,
       value: item.frequency
     })),
-  };
-
-  const Tooltip = ({ id, value }: INodeEvent) => {
-    return (
-      <div className="
-        flex flex-col p-1 rounded-lg 
-        border shadow-lg 
-        font-im-fell text-xl
-        min-w-fit whitespace-nowrap
-        bg-parchment border-royal-wine 
-        dark:bg-warm-taupe dark:border-crimson
-      ">
-        <p>{id}</p>
-        <p>{`Frequency: ${value}`}</p>
-      </div>
-    );
   };
 
   return (
@@ -76,7 +59,7 @@ const CollocationsGraph = ({ stats }: CollocationsGraphProps) => {
         labelsSkipRadius={10}
         labelTextColor="#2C1810"
         animate={true}
-        tooltip={Tooltip}
+        tooltip={(props: INodeEvent) => (<CustomTooltip data={adaptNivoTooltip(props)} />)}
         onClick={(node: INodeEvent) => {navigate(`/words/${node.id}`)}}
       />
     </div>
