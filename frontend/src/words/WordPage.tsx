@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useParams } from "react-router";
 
-import WorksExamples from "./WorksExamples.tsx";
 import WordStatsCard from "./WordStatsCard.tsx";
-import GraphsCard from "./GraphsCard.tsx";
+import WordFreqGraphsCard from "./WordFreqGraphsCard.tsx";
 import WordRelationshipsCard from "./WordRelationshipsCard.tsx";
+import WordWorksExamplesCard from "./WordWorksExamplesCard.tsx";
 import useWordDimensionsFetch from "../hooks/useWordDimensionsFetch.ts";
 import useDictionaryEntryFetch from "../hooks/useDictionaryEntryFetch.ts";
+import { TShakespeareWorkTitle } from "../WorksEnum.ts";
 
 /**
  * TODO: Add page navigation on the side
@@ -14,10 +15,11 @@ import useDictionaryEntryFetch from "../hooks/useDictionaryEntryFetch.ts";
  */
 
 const WordPage = () => {
-  const [selectedWorks, setSelectedWorks] = useState<string[] | null>(null);
+  //TODO: Remove the null from the types 
+  const [selectedWorks, setSelectedWorks] = useState<TShakespeareWorkTitle[] | null>(null);
   const params = useParams();
   const word = String(params.word);
-  
+
   const wordDimensions = useWordDimensionsFetch(word);
   const dictionaryEntry = useDictionaryEntryFetch(word);
 
@@ -26,16 +28,16 @@ const WordPage = () => {
       {wordDimensions && (
         <div className="flex flex-col items-center justify-center">
           <WordStatsCard 
-            wordDimensions={wordDimensions} 
+            wordDimensions={wordDimensions}
             dictionaryEntry={dictionaryEntry}
           />
-          <GraphsCard 
-            wordDimensions={wordDimensions} 
-            selectedWorks={selectedWorks} 
+          <WordFreqGraphsCard 
+            wordDimensions={wordDimensions}
+            selectedWorks={selectedWorks}
             setSelectedWorks={setSelectedWorks}
           />
           <WordRelationshipsCard word={word} />
-          <WorksExamples word={word} selectedWorks={selectedWorks} />
+          <WordWorksExamplesCard word={word} selectedWorks={selectedWorks} />
         </div>
       )}
     </>

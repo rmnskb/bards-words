@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from "axios";
 import { ICollocationsStats } from "../WordInterfaces.ts";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
 import { apiUrl } from "../Constants.ts";
-import CollocationsGraph from "./graphs/CollocationsGraph.tsx";
+import CollocationsGraph from "../components/graphs/CollocationsGraph.tsx";
 
 interface WordRelationshipsCardProps {
   word: string;
