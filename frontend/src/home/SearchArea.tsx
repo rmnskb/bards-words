@@ -1,41 +1,32 @@
-import { useEffect, useState, Dispatch, SetStateAction } from "react";
-import { useSearchParams } from "react-router";
-import axios, { AxiosResponse } from "axios";
+import { useEffect, Dispatch, SetStateAction } from "react";
+import { AxiosResponse } from "axios";
 
-import { IWordIndex, IDocumentTokens } from "../WordInterfaces.ts";
-import { SearchResultType } from "./HomePage.tsx";
-import { apiUrl } from "../Constants.ts";
 import SearchBar from "../components/SearchBar.tsx";
 import Portrait from "../components/Portrait.tsx";
 import AutoSuggestionsDropdown from "../components/AutoSuggestionsDropdown.tsx";
 import useSearchSuggestions from "../hooks/useSearchSuggestions";
 import useSearchKeyboardNavigation from "../hooks/useSearchKeyboardNavigation";
 import useClickedOutside from "../hooks/useClickedOutside";
+import { UseParametrisedSearchFetchReturn } from "../hooks/useParametrisedSearchFetch.ts";
 
-type SearchAreaProps = {
+type SearchHookOmitted = "loading" | "domain" | "results" | "error";
+
+interface SearchAreaProps extends Omit<UseParametrisedSearchFetchReturn, SearchHookOmitted> {
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;
-  setResults: Dispatch<SetStateAction<SearchResultType | null>>;
-  setLoading: Dispatch<SetStateAction<boolean>>;
-  setError: Dispatch<SetStateAction<string | null>>;
-  setDomain: Dispatch<SetStateAction<string>>;
 };
 
 
-const SearchArea = (
-  {
-    search
-    , setSearch
-    , setResults
-    , setLoading
-    , setError
-    , setDomain
-  }: SearchAreaProps
-) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-
+const SearchArea = ({
+  search,
+  setSearch,
+  performSearch,
+  showSuggestions,
+  setShowSuggestions,
+  selectedIndex,
+  setSelectedIndex,
+  searchParameter,
+}: SearchAreaProps) => {
   const suggestions = useSearchSuggestions({ search, setShowSuggestions, });
 
   const handleKeyDown = useSearchKeyboardNavigation({ 
@@ -44,7 +35,6 @@ const SearchArea = (
     onSearchSubmit: () => {
       performSearch(search).catch((err: AxiosResponse) => {
         console.error('Error occurred search', err);
-        setError('An unexpected error occurred.');
       });
     },
     showSuggestions: showSuggestions,
@@ -58,74 +48,20 @@ const SearchArea = (
     setSelectedIndex(-1);
   });
 
-
-  // TODO: handle erroneous search submit after a normal one
-  const handleSearchChange =
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(event.target.value);
-    };
-
-  const fetchSearch
-    = async (search: string): Promise<SearchResultType | null> => {
-    try {
-      let response: AxiosResponse<SearchResultType>;
-      const searchArray: string[] = search.split(" ");
-
-      if (searchArray.length === 1) {
-        response = await axios.get<IWordIndex[]>(`${apiUrl}/matches?search=${search}`);
-        setDomain("word");
-      } else if (searchArray.length > 1) {
-        const params = new URLSearchParams();
-        searchArray.forEach((token: string) => {
-            params.append("words", token);
-        });
-        const url = `${apiUrl}/phrase?${params.toString()}`;
-
-        response = await axios.get<IDocumentTokens[]>(url);
-        setDomain("phrase");
-      } else {
-        console.error("Please enter your search query.");
-        return null;
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching search', error);
-      return null;
-    }
-  };
-
-  const performSearch = async (searchTerm: string): Promise<void> => { 
-    setLoading(true);
-    setError(null);
-    const response: SearchResultType | null = await fetchSearch(searchTerm);
-    setLoading(false);
-
-    if (response) setResults(response);
-    else setError('Failed to fetch search results :(');
-
-    setShowSuggestions(false);
-    setSelectedIndex(-1);
-    setSearchParams({ "search": searchTerm });
-  };
-  
   const handleButtonClick =
     (e: React.MouseEvent<HTMLButtonElement>): void => {
       e.preventDefault();
       performSearch(search).catch((err: AxiosResponse) => {
         console.error('Error occurred search', err);
-        setError('An unexpected error occurred.');
       });
     };
 
   useEffect(() => {
-    const searchQuery = searchParams.get("search");
-
-    if (searchQuery && searchQuery.trim()) {
-      setSearch(searchQuery);
-      performSearch(searchQuery);
+    if (searchParameter && searchParameter.trim()) {
+      setSearch(searchParameter);
+      performSearch(searchParameter);
     }
-  }, [searchParams]);
+  }, [searchParameter]);
 
   return (
     <div className="w-full max-w-2xl mx-auto px-4" ref={searchRef}>
@@ -141,7 +77,7 @@ const SearchArea = (
       <div className="relative w-full">
         <SearchBar
           search={search}
-          onInputChange={handleSearchChange}
+          onInputChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
           onButtonClick={handleButtonClick}
           inputSpacing="p-4 text-xl"

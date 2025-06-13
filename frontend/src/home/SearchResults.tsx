@@ -1,16 +1,13 @@
-import { IWordIndex, IDocumentTokens } from "../WordInterfaces.ts";
 import WordCard from "./WordCard.tsx";
 import ContextCard from "./ContextCard.tsx";
-import { SearchResultType } from "./HomePage.tsx";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
+import { UseSearchFetchReturn } from "../hooks/useSearchFetch.ts";
+import { IWordIndex, IDocumentTokens } from "../WordInterfaces.ts";
 
-interface ResultProps {
+interface SearchResultsProps extends Omit<UseSearchFetchReturn, "performSearch"> {
   search: string;
-  domain: string;
-  results: SearchResultType | null;
-  loading: boolean;
-  error: string | null;
 }
+
 
 const SearchResults = (
   {
@@ -19,7 +16,7 @@ const SearchResults = (
     , results
     , error
     , loading
-  }: ResultProps
+  }: SearchResultsProps
 ) => {
   return (
     <div className="w-full max-w-2xl mx-auto px-4 mt-4">
@@ -34,7 +31,7 @@ const SearchResults = (
                   <WordCard word={result}></WordCard>
                 </li>
               ))
-            ) : (
+              ) : (
               (results as IDocumentTokens[])
                 .map((result: IDocumentTokens, index) => (
                   <li className="py-1 w-full" key={index}>
