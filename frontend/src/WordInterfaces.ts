@@ -1,16 +1,18 @@
+import { TShakespeareWorkTitle } from "./WorksEnum";
+
 export interface IOccurrenceElement {
-  document: string;
+  document: TShakespeareWorkTitle;
   frequency: number;
   indices: number[];
 }
 
 export interface IFlatOccurrenceElement {
-  document: string;
+  document: TShakespeareWorkTitle;
   index: number;
 }
 
 export interface IDocumentFreqElement {
-  document: string;
+  document: TShakespeareWorkTitle;
   frequency: number;
 }
 
@@ -31,7 +33,7 @@ export interface IWordDimensions {
 }
 
 export interface IDocumentTokens {
-  document: string;
+  document: TShakespeareWorkTitle;
   occurrences: string[];
 }
 
