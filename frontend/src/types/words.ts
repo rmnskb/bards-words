@@ -1,4 +1,4 @@
-import { TShakespeareWorkTitle } from "./WorksEnum";
+import { TShakespeareWorkTitle } from "../constants/worksEnum";
 
 export interface IOccurrenceElement {
   document: TShakespeareWorkTitle;
@@ -35,25 +35,6 @@ export interface IWordDimensions {
 export interface IDocumentTokens {
   document: TShakespeareWorkTitle;
   occurrences: string[];
-}
-
-export interface IDictionaryEntry {
-  word: string;
-  phonetic: string;
-  phonetics?: {
-    text: string;
-    audio?: string;
-  }[];
-  origin?: string;
-  meanings?: {
-    partOfSpeech: string;
-    definitions?: {
-      definition?: string;
-      example?: string;
-    }[];
-    synonyms?: string[];
-    antonyms?: string[];
-  }[];
 }
 
 export interface ICollocationsStatItem {
