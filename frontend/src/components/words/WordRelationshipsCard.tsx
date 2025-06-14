@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
 
-import { ICollocationsStats } from "../WordInterfaces.ts";
-import LoadingSpinner from "../components/LoadingSpinner.tsx";
-import { apiUrl } from "../Constants.ts";
-import CollocationsGraph from "../components/graphs/CollocationsGraph.tsx";
+import { ICollocationsStats } from "../../types";
+import { apiUrl } from "../../constants";
+import LoadingSpinner from "../common/LoadingSpinner.tsx";
+import CollocationsGraph from "../graphs/CollocationsGraph.tsx";
 
 interface WordRelationshipsCardProps {
   word: string;

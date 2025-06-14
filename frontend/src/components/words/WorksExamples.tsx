@@ -1,6 +1,6 @@
-import { IFlatOccurrenceElement } from "../WordInterfaces"; 
+import { IFlatOccurrenceElement } from "../../types"; 
 import WordContextCard from "./WordContextCard";
-import LoadMoreButton from "../components/LoadMoreButton";
+import LoadMoreButton from "../common/LoadMoreButton";
 
 interface WorksExamplesProps {
   word: string;
@@ -8,6 +8,7 @@ interface WorksExamplesProps {
   areAllOptionsDisplayed: boolean;
   handleLoadMore: () => void;
 }
+
 
 const WorksExamples = ({
   word,

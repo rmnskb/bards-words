@@ -3,7 +3,7 @@ import {
   IDictionaryEntry,
   IYearFreqElement,
   IDocumentFreqElement
-} from "../WordInterfaces.ts";
+} from "../../types";
 
 interface WordStatsProps {
   wordDimensions: IWordDimensions;
@@ -11,6 +11,7 @@ interface WordStatsProps {
   dictionaryEntry: IDictionaryEntry | null;
 }
 
+// TODO: Restrcuture these as separate components
 interface IWordListProps {
   label: string;
   words: string[];

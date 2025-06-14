@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
 import { Link } from "react-router";
 
-import { IDocumentTokens } from "../WordInterfaces.ts";
-import getShakespeareWorkCode from "../WorksEnum.ts";
-import { apiUrl } from "../Constants.ts";
-import LoadingSpinner from "../components/LoadingSpinner.tsx";
+import { IDocumentTokens } from "../../types";
+import { apiUrl, getShakespeareWorkCode } from "../../constants";
+import LoadingSpinner from "../common/LoadingSpinner.tsx";
 
 interface WordContextCardProps {
   document: string;

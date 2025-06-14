@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 
-import { IWordDimensions } from "../WordInterfaces.ts";
-import GraphCard, { GraphCardProps } from "../components/GraphCard.tsx";
-import { TShakespeareWorkTitle } from "../WorksEnum.ts";
+import { IWordDimensions } from "../../types";
+import { TShakespeareWorkTitle } from "../../constants";
+import GraphCard, { GraphCardProps } from "../common/GraphCard.tsx";
 
 interface GraphsCardProps {
   wordDimensions: IWordDimensions;

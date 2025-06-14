@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useParams } from "react-router";
 
-import WordStatsCard from "./WordStatsCard.tsx";
-import WordFreqGraphsCard from "./WordFreqGraphsCard.tsx";
-import WordRelationshipsCard from "./WordRelationshipsCard.tsx";
-import WordWorksExamplesCard from "./WordWorksExamplesCard.tsx";
-import useWordDimensionsFetch from "../hooks/useWordDimensionsFetch.ts";
-import useDictionaryEntryFetch from "../hooks/useDictionaryEntryFetch.ts";
-import { TShakespeareWorkTitle } from "../WorksEnum.ts";
+import WordStatsCard from "../components/words/WordStatsCard.tsx";
+import WordFreqGraphsCard from "../components/words/WordFreqGraphsCard.tsx";
+import WordRelationshipsCard from "../components/words/WordRelationshipsCard.tsx";
+import WordWorksExamplesCard from "../components/words/WordWorksExamplesCard.tsx";
+import useWordDimensionsFetch from "../hooks/words/useWordDimensionsFetch.ts";
+import useDictionaryEntryFetch from "../hooks/words/useDictionaryEntryFetch.ts";
+import { TShakespeareWorkTitle } from "../constants/";
 
 /**
  * TODO: Add page navigation on the side

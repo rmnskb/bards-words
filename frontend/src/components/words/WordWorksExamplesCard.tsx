@@ -1,9 +1,9 @@
 import WorksExamples from "./WorksExamples.tsx";
-import LoadingSpinner from "../components/LoadingSpinner.tsx";
-import { TShakespeareWorkTitle } from "../WorksEnum.ts";
-import FilterDropdown from "../components/FilterDropdown.tsx";
-import useWordIndicesFetch from "../hooks/useWordIndicesFetch.ts";
-import useWordOccurrencesFiltering from "../hooks/useWordOccurrencesFiltering.ts";
+import LoadingSpinner from "../common/LoadingSpinner.tsx";
+import { TShakespeareWorkTitle } from "../../constants";
+import FilterDropdown from "../common/FilterDropdown.tsx";
+import useWordIndicesFetch from "../../hooks/words/useWordIndicesFetch.ts";
+import useWordOccurrencesFiltering from "../../hooks/words/useWordOccurrencesFiltering.ts";
 
 interface WordExamplesProps {
   word: string;
