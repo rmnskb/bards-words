@@ -1,13 +1,13 @@
 import { useEffect, Dispatch, SetStateAction } from "react";
 import { AxiosResponse } from "axios";
 
-import SearchBar from "../components/SearchBar.tsx";
-import Portrait from "../components/Portrait.tsx";
-import AutoSuggestionsDropdown from "../components/AutoSuggestionsDropdown.tsx";
-import useSearchSuggestions from "../hooks/useSearchSuggestions";
-import useSearchKeyboardNavigation from "../hooks/useSearchKeyboardNavigation";
-import useClickedOutside from "../hooks/useClickedOutside";
-import { UseParametrisedSearchFetchReturn } from "../hooks/useParametrisedSearchFetch.ts";
+import SearchBar from "../common/SearchBar.tsx";
+import Portrait from "../common/Portrait.tsx";
+import AutoSuggestionsDropdown from "../common/SuggestionsDropdown.tsx";
+import useSearchSuggestions from "../../hooks/home/useSearchSuggestions";
+import useSearchKeyboardNavigation from "../../hooks/home/useSearchKeyboardNavigation";
+import useClickedOutside from "../../hooks/common/useClickedOutside";
+import { UseParametrisedSearchFetchReturn } from "../../hooks/home/useParametrisedSearchFetch.ts";
 
 type SearchHookOmitted = "loading" | "domain" | "results" | "error";
 

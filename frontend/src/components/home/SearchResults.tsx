@@ -1,8 +1,8 @@
 import WordCard from "./WordCard.tsx";
 import ContextCard from "./ContextCard.tsx";
-import LoadingSpinner from "../components/LoadingSpinner.tsx";
-import { UseSearchFetchReturn } from "../hooks/useSearchFetch.ts";
-import { IWordIndex, IDocumentTokens } from "../WordInterfaces.ts";
+import LoadingSpinner from "../common/LoadingSpinner.tsx";
+import { UseSearchFetchReturn } from "../../hooks/home/useSearchFetch.ts";
+import { IWordIndex, IDocumentTokens } from "../../types";
 
 interface SearchResultsProps extends Omit<UseSearchFetchReturn, "performSearch"> {
   search: string;

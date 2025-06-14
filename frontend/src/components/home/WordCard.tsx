@@ -1,15 +1,14 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router";
 
-import { IWordIndex } from "../WordInterfaces.ts";
+import { IWordIndex } from "../../types";
 
 interface WordCardProps {
   word: IWordIndex;
 }
 
-const WordCard = ({word}: WordCardProps) => {
-  const [sampledDocuments, setSampledDocuments] = useState<string>('');
 
+const WordCard = ({ word }: WordCardProps) => {
   const calculateTotalFrequency = (invertedIdx: IWordIndex): number => {
     // MapReduce in TS huh
     return invertedIdx.occurrences
@@ -31,10 +30,10 @@ const WordCard = ({word}: WordCardProps) => {
   const convertToTitleCase = (word: string): string => {
     return word.charAt(0).toUpperCase() + word.slice(1);
   };
-
-  useEffect(() => {
-    setSampledDocuments(sampleDocuments(word, 3).join("; "));
-  }, [word])
+  
+  const sampledDocuments = useMemo(() => {
+    return sampleDocuments(word, 3).join("; ")
+  }, [word]);
 
   return (
     <Link to={"/words/" + word.word}>

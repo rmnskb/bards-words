@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import SearchArea from "./SearchArea.tsx";
-import SearchResults from "./SearchResults.tsx";
-import useParametrisedSearchFetch from "../hooks/useParametrisedSearchFetch.ts";
+import SearchArea from "../components/home/SearchArea.tsx";
+import SearchResults from "../components/home/SearchResults.tsx";
+import useParametrisedSearchFetch from "../hooks/home/useParametrisedSearchFetch.ts";
 
 
 // TODO: handle multiple results clean up
