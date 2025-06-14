@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
 
-import { IWordDimensions } from "../../types";
+import { IWordDimensions, INavigationData } from "../../types";
 import { TShakespeareWorkTitle } from "../../constants";
 import GraphCard, { GraphCardProps } from "../common/GraphCard.tsx";
 
-interface GraphsCardProps {
+interface WordFreqGraphsCardProps extends INavigationData {
   wordDimensions: IWordDimensions;
   selectedWorks: TShakespeareWorkTitle[] | null;
   setSelectedWorks: Dispatch<SetStateAction<TShakespeareWorkTitle[] | null>>;
@@ -12,10 +12,12 @@ interface GraphsCardProps {
 
 
 const WordFreqGraphsCard = ({ 
+  id = "graphs",
+  title = "Frequency Analysis",
   wordDimensions,
   selectedWorks,
   setSelectedWorks
-}: GraphsCardProps) => {
+}: WordFreqGraphsCardProps) => {
   const graphsData: GraphCardProps[] = [
     {
       title: "Frequency by Year",
@@ -30,11 +32,14 @@ const WordFreqGraphsCard = ({
   ]
 
   return (
-    <div className="
-      block w-3xl p-5 m-3
-      border-1 rounded-lg shadow-lg
-    ">
-      <p className="text-3xl font-bold font-im-fell">Frequency Analysis</p>
+    <div 
+      id={id}
+      className="
+        block w-3xl p-5 m-3
+        border-1 rounded-lg shadow-lg
+      "
+    >
+      <p className="text-3xl font-bold font-im-fell">{title}</p>
       {graphsData.map((data, index) => (
         <GraphCard
           key={index}

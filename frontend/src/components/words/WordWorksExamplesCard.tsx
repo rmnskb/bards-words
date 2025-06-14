@@ -4,13 +4,20 @@ import { TShakespeareWorkTitle } from "../../constants";
 import FilterDropdown from "../common/FilterDropdown.tsx";
 import useWordIndicesFetch from "../../hooks/words/useWordIndicesFetch.ts";
 import useWordOccurrencesFiltering from "../../hooks/words/useWordOccurrencesFiltering.ts";
+import { INavigationData } from "../../types/navigation.ts";
 
-interface WordExamplesProps {
+interface WordWorksExamplesProps extends INavigationData {
   word: string;
   selectedWorks: TShakespeareWorkTitle[] | null;
 }
 
-const WordWorksExamplesCard = ({ word, selectedWorks }: WordExamplesProps) => {
+
+const WordWorksExamplesCard = ({
+  id = "examples",
+  title = "Examples from works:",
+  word,
+  selectedWorks,
+}: WordWorksExamplesProps) => {
   const { loading, error, wordIndex } = useWordIndicesFetch(word);
 
   const {
@@ -23,12 +30,15 @@ const WordWorksExamplesCard = ({ word, selectedWorks }: WordExamplesProps) => {
   } = useWordOccurrencesFiltering(wordIndex, selectedWorks);
 
   return (
-    <div className="
-      block w-3xl p-5 m-3
-      border-1 rounded-lg shadow-lg
-    ">
+    <div
+      id={id}
+      className="
+        block w-3xl p-5 m-3
+        border-1 rounded-lg shadow-lg
+      "
+    >
       <div className="flex justify-between items-start w-full">
-        <p className="text-3xl font-bold font-im-fell m-3">Examples from works:</p>
+        <p className="text-3xl font-bold font-im-fell m-3">{title}</p>
         <FilterDropdown
           availableOptions={availableOptions}
           selectedOptions={selectedOptions}

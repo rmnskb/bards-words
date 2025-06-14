@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
 
-import { ICollocationsStats } from "../../types";
+import { ICollocationsStats, INavigationData } from "../../types";
 import { apiUrl } from "../../constants";
 import LoadingSpinner from "../common/LoadingSpinner.tsx";
 import CollocationsGraph from "../graphs/CollocationsGraph.tsx";
 
-interface WordRelationshipsCardProps {
+interface WordRelationshipsCardProps extends INavigationData {
   word: string;
 }
 
-const WordRelationshipsCard = ({ word }: WordRelationshipsCardProps) => {
+const WordRelationshipsCard = ({
+  id = "relationships",
+  title = "Word Relationships",
+  word,
+}: WordRelationshipsCardProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [collocationsStats, setCollocationsStats] = useState<ICollocationsStats | null>(null);
@@ -40,16 +44,17 @@ const WordRelationshipsCard = ({ word }: WordRelationshipsCardProps) => {
   }, [word]);
 
   return (
-    <div className="  
-      block w-3xl p-5 m-3 border-1 rounded-lg shadow-lg
-    ">
-      <p className="text-3xl font-bold font-im-fell">Word Relationships</p>
+    <div
+      id={id}
+      className="block w-3xl p-5 m-3 border-1 rounded-lg shadow-lg"
+    >
+      <p className="text-3xl font-bold font-im-fell">{title}</p>
       {loading && (<LoadingSpinner />)}
       {error && (<p>{error}</p>)}
       {collocationsStats && (
         <div className="
           p-3 rounded-lg border-1 shadow-lg w-full h-[350px]
-          bg-vellum dark:bg-aged-leather 
+          bg-vellum dark:bg-aged-leather
         ">
           <CollocationsGraph stats={collocationsStats}/>
         </div>

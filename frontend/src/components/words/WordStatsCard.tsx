@@ -2,10 +2,11 @@ import {
   IWordDimensions,
   IDictionaryEntry,
   IYearFreqElement,
-  IDocumentFreqElement
+  IDocumentFreqElement,
+  INavigationData,
 } from "../../types";
 
-interface WordStatsProps {
+interface WordStatsProps extends INavigationData {
   wordDimensions: IWordDimensions;
   // Empty response from the 3rd party API should not be a showstopper
   dictionaryEntry: IDictionaryEntry | null;
@@ -26,7 +27,11 @@ interface IStatsDisplayProps {
   statsType?: "firstAppearance" | "totalOccurrences" | "appearedIn";
 }
 
-const WordStatsCard = ({ wordDimensions, dictionaryEntry }: WordStatsProps) => {
+const WordStatsCard = ({
+  id = "stats",
+  wordDimensions, 
+  dictionaryEntry 
+}: WordStatsProps) => {
   const wordTitle = wordDimensions.word.replace(
     wordDimensions.word, (word => word[0].toUpperCase() + word.substring(1).toLowerCase())
   );
@@ -158,30 +163,31 @@ const WordStatsCard = ({ wordDimensions, dictionaryEntry }: WordStatsProps) => {
   ]
 
   return (
-    <div>
-      <div className="
+    <div 
+      id={id}
+      className="
         block w-3xl p-5 m-3
         border-1 rounded-lg shadow-lg
-      ">
-        <p className="
-          first-letter:float-left first-letter:mr-3
-          first-letter:text-7xl first-letter:font-bold
-          first-line:tracking-widest first-line:text-5xl
-          font-im-fell p-5
-        ">{wordTitle}</p>
-        {dictionaryEntry && (
-            <span className="text-2xl">{dictionaryEntry.phonetic}</span>
-        )}
-        <div className="flex flex-row">
-          {statsCardsContent.map((statsProps, index) => (
-            <StatsDisplay
-              key={index}
-              {...statsProps}
-            />
-          ))}
-        </div>
-        <DictionaryDisplay dictionaryEntry={dictionaryEntry}/>
+      "
+    >
+      <p className="
+        first-letter:float-left first-letter:mr-3
+        first-letter:text-7xl first-letter:font-bold
+        first-line:tracking-widest first-line:text-5xl
+        font-im-fell p-5
+      ">{wordTitle}</p>
+      {dictionaryEntry && (
+          <span className="text-2xl">{dictionaryEntry.phonetic}</span>
+      )}
+      <div className="flex flex-row">
+        {statsCardsContent.map((statsProps, index) => (
+          <StatsDisplay
+            key={index}
+            {...statsProps}
+          />
+        ))}
       </div>
+      <DictionaryDisplay dictionaryEntry={dictionaryEntry}/>
     </div>
   );
 };

@@ -5,9 +5,11 @@ import WordStatsCard from "../components/words/WordStatsCard.tsx";
 import WordFreqGraphsCard from "../components/words/WordFreqGraphsCard.tsx";
 import WordRelationshipsCard from "../components/words/WordRelationshipsCard.tsx";
 import WordWorksExamplesCard from "../components/words/WordWorksExamplesCard.tsx";
+import WordPageNavigation from "../components/words/WordPageNavigation.tsx";
 import useWordDimensionsFetch from "../hooks/words/useWordDimensionsFetch.ts";
 import useDictionaryEntryFetch from "../hooks/words/useDictionaryEntryFetch.ts";
 import { TShakespeareWorkTitle } from "../constants/";
+import { INavigationData } from "../types/";
 
 /**
  * TODO: Add page navigation on the side
@@ -23,21 +25,57 @@ const WordPage = () => {
   const wordDimensions = useWordDimensionsFetch(word);
   const dictionaryEntry = useDictionaryEntryFetch(word);
 
+  const navigationData: INavigationData[] = [
+    {
+      id: "stats",
+      title: "Statistics",
+    },
+    {
+      id: "graphs",
+      title: "Frequency Analysis",
+    },
+    {
+      id: "relationships",
+      title: "Word Relationships",
+    },
+    {
+      id: "examples",
+      title: "Examples from works"
+    }
+  ];
+
   return (
     <>
       {wordDimensions && (
         <div className="flex flex-col items-center justify-center">
-          <WordStatsCard 
+          <WordPageNavigation
+            word={word}
+            navigationData={navigationData}
+          />
+          <WordStatsCard
+            id={navigationData[0].id}
+            title={navigationData[0].title}
             wordDimensions={wordDimensions}
             dictionaryEntry={dictionaryEntry}
           />
           <WordFreqGraphsCard 
+            id={navigationData[1].id}
+            title={navigationData[1].title}
             wordDimensions={wordDimensions}
             selectedWorks={selectedWorks}
             setSelectedWorks={setSelectedWorks}
           />
-          <WordRelationshipsCard word={word} />
-          <WordWorksExamplesCard word={word} selectedWorks={selectedWorks} />
+          <WordRelationshipsCard
+            id={navigationData[2].id}
+            title={navigationData[2].title}
+            word={word}
+          />
+          <WordWorksExamplesCard
+            id={navigationData[3].id}
+            title={navigationData[3].title}
+            word={word}
+            selectedWorks={selectedWorks}
+          />
         </div>
       )}
     </>
