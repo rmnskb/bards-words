@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 
-import Layout from "./components/Layout";
-import HomePage from "./home/HomePage.tsx";
-import WordPage from "./words/WordPage.tsx";
-import PlayPage from "./plays/PlayPage.tsx";
+import Layout from "./components/layout/Layout";
+import HomePage from "./pages/HomePage";
+import WordPage from "./pages/WordPage";
+import PlayPage from "./pages/PlayPage";
 
 /**
  * A list of ideas that can be implemented in future iterations of the application

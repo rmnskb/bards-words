@@ -1,7 +1,8 @@
 import { TooltipProps } from "recharts";
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
-import { ITooltipData, INodeEvent } from "../types/tooltip";
+import { ITooltipData, INodeEvent } from "../types";
+
 
 export const adaptRechartsTooltip = (
   { active, payload, label }: TooltipProps<ValueType, NameType>
