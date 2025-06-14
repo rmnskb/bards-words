@@ -1,11 +1,14 @@
+from typing import Optional
+from datetime import datetime
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.mongodb import (
-    ShakespeareRepository, InvertedIndexItem, 
-    TokensItem, WordDimensionsItem, CollocationsStatsItem, SuggestionsItem
+    ShakespeareRepository, InvertedIndexItem,
+    TokensItem, WordDimensionsItem, CollocationsStatsItem,
+    SuggestionsItem, WordOfTheDayItem
 )
 from .enums import ShakespeareWork
 
@@ -129,5 +132,16 @@ async def get_collocations_stats(search: str = Query(None)) -> CollocationsStats
 async def get_autosuggestions(q: str = Query(None), limit: int = Query(None)) -> SuggestionsItem:
     if q is None:
         raise HTTPException(status_code=400, detail='Query parameter is required')
+
     return await repo.get_autosuggestions(q=q, limit=limit)
+
+
+@app.get('/api/v1/randomWord')
+async def get_random_word(date: Optional[str] = Query(None), word_length: Optional[int] = Query(None)) -> WordOfTheDayItem:
+    try:
+        target_date = datetime.strptime(date, "%Y-%m-%d").date() if date else None
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid date format: {e}. Use YYYY-mm-dd")
+
+    return await repo.get_random_word(target_date=target_date, length=word_length)
 

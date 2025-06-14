@@ -1,15 +1,22 @@
 import os
 import re
-from typing import Optional, TypeVar
+import random
+import hashlib
+from typing import Optional, TypeVar, TypeAlias
 from collections import defaultdict
 from itertools import groupby
+from datetime import date
 
 import pymongo
 from pymongo import AsyncMongoClient
 
-from .models import InvertedIndexItem, TokensItem, WordDimensionsItem, CollocationsStatsItem, SuggestionsItem
+from .models import (
+    InvertedIndexItem, TokensItem, WordDimensionsItem, 
+    CollocationsStatsItem, SuggestionsItem, WordOfTheDayItem
+)
 
 T = TypeVar('T')
+MongoFilterType: TypeAlias = dict[str, str]
 
 
 class _MongoRepository:
@@ -42,6 +49,13 @@ class ShakespeareRepository(_MongoRepository):
         await self._db.bronzeIndices.create_index(
             [("word", "text")]
         )
+
+    @staticmethod
+    def _get_deterministic_seed(target_date: date) -> int:
+        date_string = target_date.isoformat()
+        hash_obj = hashlib.sha256(date_string.encode())
+
+        return int.from_bytes(hash_obj.digest()[:8], byteorder="big")
 
     async def find_word(self, word: str) -> InvertedIndexItem:
         """
@@ -248,4 +262,46 @@ class ShakespeareRepository(_MongoRepository):
  
         if results:
             return SuggestionsItem(suggestions=suggestions)
+
+    async def _get_total_word_count(self, filter: Optional[MongoFilterType] = {}) -> int:
+        return await self._db.bronzeIndices.count_documents(filter)
+
+    async def _get_word_by_index(self, idx: int, filter: Optional[MongoFilterType] = {}) -> Optional[InvertedIndexItem]:
+        cursor = self._db.bronzeIndices.find(filter).skip(idx).limit(1)
+        document = await cursor.to_list(length=1)
+
+        if not document:
+            return None
+
+        return InvertedIndexItem(**document[0])
+
+    async def get_random_word(self, target_date: Optional[date] = None, length: Optional[int] = None) -> WordOfTheDayItem:
+        if length:
+            pattern = fr'^\w{{{length}}}$'  # Horrendous, yet effective :/ 
+            filter = {'word': {'$regex': pattern}}
+        else:
+            filter = {}
+
+        is_random = target_date is None
+        total_cnt = await self._get_total_word_count(filter=filter)
+
+        if target_date:
+            seed = self._get_deterministic_seed(target_date)
+
+            random.seed(seed)
+            word_idx = random.randint(0, total_cnt - 1)
+            random.seed()
+
+            response_date = target_date
+        else:
+            word_idx = random.randint(0, int(total_cnt) - 1)
+            response_date = date.today().isoformat()
+
+        document = await self._get_word_by_index(word_idx, filter=filter)
+
+        return WordOfTheDayItem(
+            word=document.word,
+            date=response_date,
+            is_random=is_random,
+        )
 
