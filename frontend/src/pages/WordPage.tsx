@@ -12,7 +12,6 @@ import { TShakespeareWorkTitle } from "../constants/";
 import { INavigationData } from "../types/";
 
 /**
- * TODO: Add page navigation on the side
  * TODO: Decorate the WorksExamples
  */
 
@@ -47,35 +46,38 @@ const WordPage = () => {
   return (
     <>
       {wordDimensions && (
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-row items-start justify-center">
           <WordPageNavigation
             word={word}
             navigationData={navigationData}
           />
-          <WordStatsCard
-            id={navigationData[0].id}
-            title={navigationData[0].title}
-            wordDimensions={wordDimensions}
-            dictionaryEntry={dictionaryEntry}
-          />
-          <WordFreqGraphsCard 
-            id={navigationData[1].id}
-            title={navigationData[1].title}
-            wordDimensions={wordDimensions}
-            selectedWorks={selectedWorks}
-            setSelectedWorks={setSelectedWorks}
-          />
-          <WordRelationshipsCard
-            id={navigationData[2].id}
-            title={navigationData[2].title}
-            word={word}
-          />
-          <WordWorksExamplesCard
-            id={navigationData[3].id}
-            title={navigationData[3].title}
-            word={word}
-            selectedWorks={selectedWorks}
-          />
+          <div className="flex flex-col items-center justify-center">
+            <WordStatsCard
+              id={navigationData[0].id}
+              title={navigationData[0].title}
+              wordDimensions={wordDimensions}
+              dictionaryEntry={dictionaryEntry}
+            />
+            <WordFreqGraphsCard 
+              id={navigationData[1].id}
+              title={navigationData[1].title}
+              wordDimensions={wordDimensions}
+              selectedWorks={selectedWorks}
+              setSelectedWorks={setSelectedWorks}
+            />
+            <WordRelationshipsCard
+              id={navigationData[2].id}
+              title={navigationData[2].title}
+              word={word}
+            />
+            <WordWorksExamplesCard
+              id={navigationData[3].id}
+              title={navigationData[3].title}
+              word={word}
+              selectedWorks={selectedWorks}
+            />
+          </div>
+          <div className="invisible w-sm"></div>
         </div>
       )}
     </>
