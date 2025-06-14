@@ -44,9 +44,9 @@ const ShakespeareWorks = {
 } as const;
 
 export type TShakespeareWorkTitle = keyof typeof ShakespeareWorks;
-export type TShakespeareWorkCode = typeof ShakespeareWorks[TShakespeareWorkTitle];
+type TShakespeareWorkCode = typeof ShakespeareWorks[TShakespeareWorkTitle];
 
-const getShakespeareWorkCode
+export const getShakespeareWorkCode
     = (title: string): TShakespeareWorkCode | undefined => {
     if (title in ShakespeareWorks) {
         return ShakespeareWorks[title as TShakespeareWorkTitle]
@@ -54,7 +54,3 @@ const getShakespeareWorkCode
     return undefined;
 };
 
-export const ShakespeareWorksTitles: TShakespeareWorkTitle[]
-    = Object.keys(ShakespeareWorks) as TShakespeareWorkTitle[]
-
-export default getShakespeareWorkCode;
