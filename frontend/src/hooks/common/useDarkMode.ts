@@ -1,27 +1,27 @@
 import { useState, useEffect } from "react";
 
-const useDarkMode = () => {
-  const [isDark, setIsDark] = useState<boolean>(
-    document.documentElement.classList.contains("dark")
-  );
+interface UseDarkModeReturn {
+  isDark: boolean;
+  toggleMode: () => void;
+}
+
+
+const useDarkMode = (): UseDarkModeReturn => {
+  const defaultState = localStorage.getItem("theme") || "light";
+  const [isDark, setIsDark] = useState<boolean>(defaultState === "dark");
+
+  const toggleMode = () => setIsDark(!isDark);
 
   useEffect(() => {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === "attributes" && mutation.attributeName === "class")
-          setIsDark(document.documentElement.classList.contains("dark"));
-      });
-    });
+    const theme = isDark ? "dark" : "light";
+    localStorage.setItem("theme", theme);
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [isDark]);
 
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"]
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return isDark;
+  return {
+    isDark,
+    toggleMode
+  };
 };
 
 export default useDarkMode;
