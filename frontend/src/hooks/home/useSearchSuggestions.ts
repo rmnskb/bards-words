@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
 import axios from "axios";
 
-import { ISuggestionsItem } from "../WordInterfaces";
-import { apiUrl } from "../Constants";
+import { ISuggestionsItem } from "../../types";
+import { apiUrl } from "../../constants";
 
 interface SuggestionsApiProps {
   search: string;

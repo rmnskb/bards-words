@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 
-import { IFlatOccurrenceElement, IOccurrenceElement, IWordIndex } from "../WordInterfaces";
-import { TShakespeareWorkTitle } from "../WorksEnum";
+import { IFlatOccurrenceElement, IOccurrenceElement, IWordIndex } from "../../types";
+import { TShakespeareWorkTitle } from "../../constants";
 
 interface UseWordOccurrencesFilteringReturn {
   selectedOptions: TShakespeareWorkTitle[];
@@ -12,6 +12,7 @@ interface UseWordOccurrencesFilteringReturn {
   handleLoadMore: () => void;
   handleOptionClick: (option: TShakespeareWorkTitle) => void;
 }
+
 
 const useWordOccurrencesFiltering = (
   wordIndex: IWordIndex | null,

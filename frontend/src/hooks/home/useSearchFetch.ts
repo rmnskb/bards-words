@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
 import axios, { AxiosResponse } from "axios";
 
-import { IDocumentTokens, IWordIndex } from "../WordInterfaces.ts";
-import { apiUrl } from "../Constants.ts";
+import { IDocumentTokens, IWordIndex } from "../../types";
+import { apiUrl } from "../../constants";
 
 type DomainType = "word" | "phrase";
 type SearchResultType = IWordIndex[] | IDocumentTokens[];

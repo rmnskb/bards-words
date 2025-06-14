@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
 
-import { IDictionaryEntry } from "../WordInterfaces";
+import { IDictionaryEntry } from "../../types";
 
 
 const useDictionaryEntryFetch = (word: string): IDictionaryEntry | null => {

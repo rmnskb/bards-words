@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
 
-import { IWordDimensions } from "../WordInterfaces";
-import { apiUrl } from "../Constants.ts";
+import { IWordDimensions } from "../../types";
+import { apiUrl } from "../../constants";
 
 
 const useWordDimensionsFetch = (word: string): IWordDimensions | null => {

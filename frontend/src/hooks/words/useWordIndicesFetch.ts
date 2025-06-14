@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
 
-import { IWordIndex } from "../WordInterfaces";
-import { apiUrl } from "../Constants";
+import { IWordIndex } from "../../types";
+import { apiUrl } from "../../constants";
 
 interface UseWordIndicesFetchReturn {
   loading: boolean;
