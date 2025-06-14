@@ -14,7 +14,7 @@ interface LineChartData {
 
 
 const FreqPerYearChart = ({stats}: LineChartData) => {
-  const isDarkMode = useDarkMode();
+  const { isDark, } = useDarkMode();
 
   const fillMissingYears
     = (data: IYearFreqElement[]): IYearFreqElement[] => {
@@ -61,7 +61,7 @@ const FreqPerYearChart = ({stats}: LineChartData) => {
         />
         <YAxis label={{value: 'Frequency', angle: -90, position: 'insideLeft'}} />
         <Tooltip content={(props) => (<CustomTooltip data={adaptRechartsTooltip(props)} />)} />
-        <Line type="monotone" dataKey="frequency" stroke={isDarkMode ? "#6B4C9A" : "#8B1E3F"} />
+        <Line type="monotone" dataKey="frequency" stroke={ isDark ? "#6B4C9A" : "#8B1E3F" } />
       </LineChart>
     </ResponsiveContainer>
   );

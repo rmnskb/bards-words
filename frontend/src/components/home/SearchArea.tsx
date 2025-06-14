@@ -71,7 +71,7 @@ const SearchArea = ({
         "/>
         <h1 className="
           text-7xl font-bold text-royal-wine font-imperial
-          dark:text-crimson 
+          dark:text-crimson select-none
         ">Words Bard</h1>
       </div>
       <div className="relative w-full">
@@ -83,6 +83,7 @@ const SearchArea = ({
           inputSpacing="p-4 text-xl"
           buttonIcon="Search"
           buttonSpacing="absolute end-2.5 bottom-2.5 px-4 py-3"
+          placeholder="Search words or phrases from Shakespeare's plays..."
         />
         <AutoSuggestionsDropdown
           suggestions={suggestions}

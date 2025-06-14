@@ -21,7 +21,7 @@ interface BarChartData {
 const FreqPerDocChart = (
   { stats, selectedWorks, setSelectedWorks }: BarChartData
 ) => {
-  const isDarkMode = useDarkMode();
+  const { isDark, } = useDarkMode();
 
   const sortedStats =
     [...stats].sort((a, b) => b.frequency - a.frequency);
@@ -67,12 +67,12 @@ const FreqPerDocChart = (
                   key={index}
                   fill={
                     selectedWorks.includes(entry.document) ?
-                      (isDarkMode ? "#6B4C9A" : "#8B1E3F")
+                      (isDark ? "#6B4C9A" : "#8B1E3F")
                       : "#696969"
                   }
                 />
               ) : (
-                <Cell key={index} fill={isDarkMode ? "#6B4C9A" : "#8B1E3F"} />
+                <Cell key={index} fill={isDark ? "#6B4C9A" : "#8B1E3F"} />
               ))
             )
           }

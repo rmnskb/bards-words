@@ -7,7 +7,7 @@ interface IPortraitProps {
 
 
 const Portrait = ({ className }: IPortraitProps) => {
-  const isDarkMode = useDarkMode();
+  const { isDark, } = useDarkMode();
 
   const lightFilter = `
     brightness(0) saturate(100%) invert(14%)
@@ -25,7 +25,7 @@ const Portrait = ({ className }: IPortraitProps) => {
     <img 
       src={portrait}
       className={className}
-      style={{ filter: isDarkMode ? darkFilter : lightFilter }}
+      style={{ filter: isDark ? darkFilter : lightFilter }}
     />
   );
 };

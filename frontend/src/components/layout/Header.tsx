@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { FaRegSun, FaRegMoon } from "react-icons/fa6";
 import { SlMagnifier } from "react-icons/sl";
 
 import SearchBar from "../common/SearchBar";
@@ -9,10 +8,10 @@ import SuggestionsDropdown from "../common/SuggestionsDropdown";
 import useSearchSuggestions from "../../hooks/home/useSearchSuggestions";
 import useSearchKeyboardNavigation from "../../hooks/home/useSearchKeyboardNavigation";
 import useClickedOutside from "../../hooks/common/useClickedOutside";
+import DarkThemeButton from "../common/DarkThemeButton";
 
 
 const Header = () => {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
@@ -36,18 +35,12 @@ const Header = () => {
     setSelectedIndex(-1);
   });
 
-
   const handleButtonClick =
     (event: React.MouseEvent<HTMLButtonElement>): void => {
       event.preventDefault();
       if (search) navigate(`/?search=${encodeURIComponent(search)}`);
     };
 
-  useEffect(() => {
-    if (isDarkMode) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
-  }, [isDarkMode]);
-  
 // TODO: Style the portrait properly
   return (
     <header className="
@@ -64,12 +57,12 @@ const Header = () => {
         />
         <div className="flex items-center space-x-3">
           <Link
-            to="/?search="
+            to="/"
             className="flex items-center space-x-3 hover:opacity transition-opacity"
           >
             <span className="
               text-deep-wine font-semibold text-5xl font-imperial
-              dark:text-crimson
+              dark:text-crimson select-none
             ">Words Bard</span>
           </Link>
         </div>
@@ -93,21 +86,7 @@ const Header = () => {
             contentSpacing="absolute top-full left-0 right-0 z-50 mt-2"
           />
         </div>
-
-        <button
-          onClick={() => {setIsDarkMode(!isDarkMode)}}
-          className="
-            p-2 rounded-lg transition-colors duration-200
-            focus:outline-none focus:ring-2 focus:ring-gold-leaf
-            bg-aged-leather hover:bg-warm-taupe
-            text-vellum hover:text-soft-gold
-            dark:bg-parchment dark:hover:bg-ink
-            dark:text-quill dark:hover:text-bright-gold
-          "
-          aria-label="Toggle Dark Mode"
-        >
-          {isDarkMode ? <FaRegSun size={20} /> : <FaRegMoon size={20} />}
-        </button>
+        <DarkThemeButton />
       </div>
     </header>
   );

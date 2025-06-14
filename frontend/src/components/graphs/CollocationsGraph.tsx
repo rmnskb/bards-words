@@ -21,7 +21,8 @@ interface ICirclesPackingProps {
 
 const CollocationsGraph = ({ stats }: CollocationsGraphProps) => {
   const navigate = useNavigate();
-  const isDarkMode = useDarkMode();
+
+  const { isDark, } = useDarkMode();
 
   const data: ICirclesPackingProps = {
     name: stats.word,
@@ -38,7 +39,7 @@ const CollocationsGraph = ({ stats }: CollocationsGraphProps) => {
         margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
         id="name"
         valueFormat=" >-"
-        colors={{ scheme: (isDarkMode ? "purples" : "yellow_orange_red") }}
+        colors={{ scheme: (isDark ? "purples" : "yellow_orange_red") }}
         colorBy="id"
         padding={1}
         leavesOnly={true}

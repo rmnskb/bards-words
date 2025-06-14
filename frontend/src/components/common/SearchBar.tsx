@@ -25,7 +25,7 @@ const SearchBar = ({
     <form className="w-full">
       <label
         htmlFor={"search"}
-        className="text-sm font-medium text-gray-900 sr-only"
+        className="text-sm font-medium sr-only"
       ></label>
       <div className="relative">
         <input
@@ -45,6 +45,7 @@ const SearchBar = ({
             dark:bg-warm-taupe dark:text-moonlight
             dark:border-candlelight
             dark:focus:border-bright-gold dark:focus:outline-bright-gold
+            placeholder-gray-500
           `}
         />
       <button
