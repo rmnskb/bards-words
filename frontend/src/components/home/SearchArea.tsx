@@ -8,6 +8,7 @@ import useSearchSuggestions from "../../hooks/home/useSearchSuggestions";
 import useSearchKeyboardNavigation from "../../hooks/home/useSearchKeyboardNavigation";
 import useClickedOutside from "../../hooks/common/useClickedOutside";
 import { UseParametrisedSearchFetchReturn } from "../../hooks/home/useParametrisedSearchFetch.ts";
+import DarkThemeButton from "../common/DarkThemeButton.tsx";
 
 type SearchHookOmitted = "loading" | "domain" | "results" | "error";
 
@@ -75,16 +76,26 @@ const SearchArea = ({
         ">Words Bard</h1>
       </div>
       <div className="relative w-full">
-        <SearchBar
-          search={search}
-          onInputChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onButtonClick={handleButtonClick}
-          inputSpacing="p-4 text-xl"
-          buttonIcon="Search"
-          buttonSpacing="absolute end-2.5 bottom-2.5 px-4 py-3"
-          placeholder="Search words or phrases from Shakespeare's plays..."
-        />
+        <div className="flex flex-row items-center justify-center w-full">
+          <SearchBar
+            search={search}
+            onInputChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onButtonClick={handleButtonClick}
+            inputSpacing="p-4 text-xl"
+            buttonIcon="Search"
+            buttonSpacing="absolute end-2.5 bottom-2.5 px-4 py-3"
+            placeholder="Search words or phrases from Shakespeare's plays..."
+          />
+          <DarkThemeButton className="
+            p-3 m-3 rounded-lg transition-colors duration-200
+            focus:outline-none focus:ring-2 focus:ring-gold-leaf
+            bg-warm-taupe hover:bg-leather
+            text-vellum hover:text-soft-gold
+            dark:bg-parchment dark:hover:bg-moonlight
+            dark:text-quill dark:hover:text-bright-gold
+          "/>
+        </div>
         <AutoSuggestionsDropdown
           suggestions={suggestions}
           showSuggestions={showSuggestions}

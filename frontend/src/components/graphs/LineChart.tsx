@@ -14,7 +14,7 @@ interface LineChartData {
 
 
 const FreqPerYearChart = ({stats}: LineChartData) => {
-  const { isDark, } = useDarkMode();
+  const isDark = useDarkMode();
 
   const fillMissingYears
     = (data: IYearFreqElement[]): IYearFreqElement[] => {

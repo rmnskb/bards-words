@@ -1,25 +1,32 @@
+import { useEffect, useState } from "react";
 import { FaRegSun, FaRegMoon } from "react-icons/fa6";
 
-import useDarkMode from "../../hooks/common/useDarkMode";
+
+interface DarkThemeButtonProps {
+  className?: string;
+}
 
 
-const DarkThemeButton = () => {
-  const { isDark, toggleMode } = useDarkMode();
+const DarkThemeButton = ({
+  className = "",
+}: DarkThemeButtonProps) => {
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    const theme = isDarkMode ? "dark" : "light";
+    localStorage.setItem("theme", theme);
+
+    if (isDarkMode) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+  }, [isDarkMode]);
 
   return (
     <button
-      onClick={toggleMode}
-      className="
-        p-2 rounded-lg transition-colors duration-200
-        focus:outline-none focus:ring-2 focus:ring-gold-leaf
-        bg-aged-leather hover:bg-warm-taupe
-        text-vellum hover:text-soft-gold
-        dark:bg-parchment dark:hover:bg-ink
-        dark:text-quill dark:hover:text-bright-gold
-      "
+      onClick={() => setIsDarkMode(!isDarkMode)}
+      className={className}
       aria-label="Toggle Dark Mode"
     >
-      {isDark ? <FaRegSun size={20} /> : <FaRegMoon size={20} />}
+      {isDarkMode ? <FaRegSun size={20} /> : <FaRegMoon size={20} />}
     </button>
   );
 };

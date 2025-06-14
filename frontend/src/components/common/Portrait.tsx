@@ -7,25 +7,25 @@ interface IPortraitProps {
 
 
 const Portrait = ({ className }: IPortraitProps) => {
-  const { isDark, } = useDarkMode();
+  const isDarkMode = useDarkMode();
 
-  const lightFilter = `
+  const darkFilter = `
     brightness(0) saturate(100%) invert(14%)
     sepia(18%) saturate(1157%) hue-rotate(15deg)
     brightness(95%) contrast(90%)
   `
 
-  const darkFilter = `
-    brightness(0) saturate(100%) invert(97%)
-    sepia(8%) saturate(293%) hue-rotate(18deg)
-    brightness(102%) contrast(96%)
+  const lightFilter = `
+    brightness(0) saturate(100%) invert(93%)
+    sepia(16%) saturate(347%) hue-rotate(6deg)
+    brightness(98%) contrast(94%)
   `
 
   return (
-    <img 
+    <img
       src={portrait}
       className={className}
-      style={{ filter: isDark ? darkFilter : lightFilter }}
+      style={{ filter: isDarkMode ? lightFilter : darkFilter }}
     />
   );
 };

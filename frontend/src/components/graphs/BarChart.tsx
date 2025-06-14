@@ -21,7 +21,7 @@ interface BarChartData {
 const FreqPerDocChart = (
   { stats, selectedWorks, setSelectedWorks }: BarChartData
 ) => {
-  const { isDark, } = useDarkMode();
+  const isDark = useDarkMode();
 
   const sortedStats =
     [...stats].sort((a, b) => b.frequency - a.frequency);

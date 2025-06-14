@@ -86,7 +86,14 @@ const Header = () => {
             contentSpacing="absolute top-full left-0 right-0 z-50 mt-2"
           />
         </div>
-        <DarkThemeButton />
+        <DarkThemeButton className="
+          p-2 rounded-lg transition-colors duration-200
+          focus:outline-none focus:ring-2 focus:ring-gold-leaf
+          bg-aged-leather hover:bg-warm-taupe
+          text-vellum hover:text-soft-gold
+          dark:bg-parchment dark:hover:bg-ink
+          dark:text-quill dark:hover:text-bright-gold
+        "/>
       </div>
     </header>
   );

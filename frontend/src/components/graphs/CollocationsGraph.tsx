@@ -22,7 +22,7 @@ interface ICirclesPackingProps {
 const CollocationsGraph = ({ stats }: CollocationsGraphProps) => {
   const navigate = useNavigate();
 
-  const { isDark, } = useDarkMode();
+  const isDark = useDarkMode();
 
   const data: ICirclesPackingProps = {
     name: stats.word,
