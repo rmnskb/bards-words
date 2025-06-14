@@ -1,8 +1,8 @@
 import { FaChevronDown } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa6";
 
-import useWorkTitleDropdown from "../hooks/useWorkTitleDropdown";
-import { TShakespeareWorkTitle } from "../WorksEnum";
+import useWorkTitleDropdown from "../../hooks/words/useWorkTitleDropdown";
+import { TShakespeareWorkTitle } from "../../constants";
 
 interface FilterDropdownProps {
   availableOptions: TShakespeareWorkTitle[],

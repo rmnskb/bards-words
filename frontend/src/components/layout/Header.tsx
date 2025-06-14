@@ -3,12 +3,12 @@ import { Link, useNavigate } from "react-router";
 import { FaRegSun, FaRegMoon } from "react-icons/fa6";
 import { SlMagnifier } from "react-icons/sl";
 
-import SearchBar from "./SearchBar";
-import Portrait from "./Portrait";
-import AutoSuggestionsDropdown from "./AutoSuggestionsDropdown";
-import useSearchSuggestions from "../hooks/useSearchSuggestions";
-import useSearchKeyboardNavigation from "../hooks/useSearchKeyboardNavigation";
-import useClickedOutside from "../hooks/useClickedOutside";
+import SearchBar from "../common/SearchBar";
+import Portrait from "../common/Portrait";
+import SuggestionsDropdown from "../common/SuggestionsDropdown";
+import useSearchSuggestions from "../../hooks/home/useSearchSuggestions";
+import useSearchKeyboardNavigation from "../../hooks/home/useSearchKeyboardNavigation";
+import useClickedOutside from "../../hooks/common/useClickedOutside";
 
 
 const Header = () => {
@@ -84,7 +84,7 @@ const Header = () => {
             buttonIcon={<SlMagnifier />}
             buttonSpacing="absolute right-2.5 top-3 -translate-y-1/12 px-3 py-2"
           />
-          <AutoSuggestionsDropdown
+          <SuggestionsDropdown
             suggestions={suggestions}
             showSuggestions={showSuggestions}
             selectedIndex={selectedIndex}

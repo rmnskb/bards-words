@@ -1,4 +1,4 @@
-import { ITooltipData } from "../../types/tooltip";
+import { ITooltipData } from "../../types";
 
 interface CustomTooltipProps {
   data: ITooltipData;

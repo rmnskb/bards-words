@@ -9,6 +9,7 @@ type SearchBarProps = {
   buttonSpacing?: string;
 };
 
+
 const SearchBar = ({
   search,
   onInputChange,

@@ -4,8 +4,8 @@ import {
 } from "recharts";
 
 import CustomTooltip from "./CustomTooltip.tsx";
-import { IYearFreqElement } from "../../WordInterfaces.ts";
-import useDarkMode from "../../hooks/useDarkMode.ts";
+import { IYearFreqElement } from "../../types";
+import useDarkMode from "../../hooks/common/useDarkMode.ts";
 import { adaptRechartsTooltip } from "../../adapters/tooltipAdapters.ts";
 
 interface LineChartData {

@@ -3,12 +3,12 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Cell
 } from "recharts";
+import { CategoricalChartState } from "recharts/types/chart/types";
 
 import CustomTooltip from "./CustomTooltip.tsx";
-import { IDocumentFreqElement } from "../../WordInterfaces.ts";
-import { CategoricalChartState } from "recharts/types/chart/types";
-import useDarkMode from "../../hooks/useDarkMode.ts";
-import { TShakespeareWorkTitle } from "../../WorksEnum.ts";
+import { IDocumentFreqElement } from "../../types";
+import useDarkMode from "../../hooks/common/useDarkMode.ts";
+import { TShakespeareWorkTitle } from "../../constants";
 import { adaptRechartsTooltip } from "../../adapters/tooltipAdapters.ts";
 
 interface BarChartData {

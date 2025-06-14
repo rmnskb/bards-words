@@ -2,23 +2,20 @@ import { useNavigate } from "react-router";
 import { ResponsiveCirclePackingCanvas } from "@nivo/circle-packing";
 
 import CustomTooltip from "./CustomTooltip";
-import { ICollocationsStats } from "../../WordInterfaces";
-import useDarkMode from "../../hooks/useDarkMode";
-import { INodeEvent } from "../../types/tooltip";
+import { ICollocationsStats, INodeEvent } from "../../types";
+import useDarkMode from "../../hooks/common/useDarkMode";
 import { adaptNivoTooltip } from "../../adapters/tooltipAdapters";
 
 interface CollocationsGraphProps {
   stats: ICollocationsStats;
 }
 
-interface INode {
-  name: string;
-  value: number;
-}
-
 interface ICirclesPackingProps {
   name: string;
-  children: INode[];
+  children: {
+    name: string;
+    value: number;
+  }[];
 }
 
 

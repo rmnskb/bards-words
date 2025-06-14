@@ -1,9 +1,10 @@
-import portrait from "../images/portrait.png"
-import useDarkMode from "../hooks/useDarkMode";
+import portrait from "../../assets/portrait.png"
+import useDarkMode from "../../hooks/common/useDarkMode";
 
 interface IPortraitProps {
   className: string;
 }
+
 
 const Portrait = ({ className }: IPortraitProps) => {
   const isDarkMode = useDarkMode();

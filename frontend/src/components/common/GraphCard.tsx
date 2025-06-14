@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
 
-import { TShakespeareWorkTitle } from "../WorksEnum";
-import { IDocumentFreqElement, IYearFreqElement } from "../WordInterfaces";
-import FreqPerDocChart from "./graphs/BarChart";
-import FreqPerYearChart from "./graphs/LineChart";
+import { TShakespeareWorkTitle } from "../../constants";
+import { IDocumentFreqElement, IYearFreqElement } from "../../types";
+import FreqPerDocChart from "../graphs/BarChart";
+import FreqPerYearChart from "../graphs/LineChart";
 
 export type statsType = IDocumentFreqElement[] | IYearFreqElement[];
 

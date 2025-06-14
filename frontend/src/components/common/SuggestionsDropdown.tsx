@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 
-
-type AutoSuggestionsDropdownProps = {
+interface SuggestionsDropdownProps {
   suggestions: string[];
   showSuggestions: boolean;
   selectedIndex: number;
@@ -11,14 +10,14 @@ type AutoSuggestionsDropdownProps = {
 };
 
 
-const AutoSuggestionsDropdown = ({
+const SuggestionsDropdown = ({
   suggestions,
   showSuggestions,
   selectedIndex,
   onSuggestionClick,
   onMouseEnter,
   contentSpacing = ""
-}: AutoSuggestionsDropdownProps) => {
+}: SuggestionsDropdownProps) => {
   const suggestionsRef = useRef<HTMLUListElement>(null);
 
   // Handle scrolling the selected element into view
@@ -74,4 +73,4 @@ const AutoSuggestionsDropdown = ({
   );
 };
 
-export default AutoSuggestionsDropdown;
+export default SuggestionsDropdown;
