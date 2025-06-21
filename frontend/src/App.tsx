@@ -7,7 +7,7 @@ import PlayPage from "./pages/PlayPage";
 
 /**
  * A list of ideas that can be implemented in future iterations of the application
- * TODO: Word of the day? :D
+ * TODO: Word of the day? :D -> Wordle
  */
 
 function App() {
