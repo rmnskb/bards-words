@@ -1,39 +1,29 @@
 import { Dispatch, SetStateAction, createContext } from "react";
 
-export enum LetterStatus {
-  Unknown = 0,
-  Disabled = 1,
-  Letter = 2,
-  LetterAndPosition = 3,
+import { LetterStatus } from "../constants";
+import { AttemptType, GameOverType } from "../types";
+
+interface WordleState {
+  board: string[][];
+  boardStatus: LetterStatus[][];
+  currAttempt: AttemptType;
+  correctWord: string;
+  letterStatus: Map<string, LetterStatus>;
+  gameOver: GameOverType;
 }
 
-type AttemptType = {
-  attempt: number;
-  letterPos: number;
-};
-
-type GameOverType = {
-  gameOver: boolean;
-  guessedWord: boolean;
-};
-
-export interface IWordleContext {
-  board: string[][];
+interface WordleActions {
   setBoard: Dispatch<SetStateAction<string[][]>>;
-  boardStatus: LetterStatus[][];
   setBoardStatus: Dispatch<SetStateAction<LetterStatus[][]>>;
-  currAttempt: AttemptType;
   setCurrAttempt: Dispatch<SetStateAction<AttemptType>>;
+  setLetterStatus: Dispatch<SetStateAction<Map<string, LetterStatus>>>;
+  setGameOver: Dispatch<SetStateAction<GameOverType>>;
   onDelete: () => void;
   onEnter: () => void;
   onSelectLetter: (key: string) => void;
-  correctWord: string;
-  letterStatus: Map<string, LetterStatus>;
-  setLetterStatus: Dispatch<SetStateAction<Map<string, LetterStatus>>>;
-  gameOver: GameOverType;
-  setGameOver: Dispatch<SetStateAction<GameOverType>>;
+  onGameReset: () => void;
 }
 
-export const WordleGameContext = createContext<IWordleContext>(
-  {} as IWordleContext
-);
+export interface IWordleContext extends WordleState, WordleActions {}
+
+export const WordleGameContext = createContext<IWordleContext | null>(null);
