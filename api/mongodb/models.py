@@ -1,3 +1,5 @@
+from datetime import date
+
 from pydantic import BaseModel, Field
 from bson import ObjectId
 
@@ -53,6 +55,12 @@ class CollocationsStatsItem(MongoQueryResult):
     word: str
     collocationsStats: list[_LinkItem]
 
+
 class SuggestionsItem(MongoQueryResult):
     suggestions: list[str]
 
+
+class WordOfTheDayItem(MongoQueryResult):
+    word: str
+    date: date
+    is_random: bool
