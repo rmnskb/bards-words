@@ -7,3 +7,9 @@ export type GameOverType = {
   gameOver: boolean;
   guessedWord: boolean;
 };
+
+export interface IRandomWord {
+  word: string;
+  date: string;
+  is_random: boolean;
+}

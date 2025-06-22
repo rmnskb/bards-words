@@ -9,6 +9,7 @@ interface WordleContextProviderProps {
   children: React.ReactNode;
   correctWord: string;
   enableKeyboard?: boolean;
+  getRandomWord: (length: number) => Promise<void>;
 }
 
 
@@ -16,6 +17,7 @@ const WordleContextProvider = ({
   children,
   correctWord,
   enableKeyboard = true,
+  getRandomWord,
 }: WordleContextProviderProps) => {
   const [board, setBoard] = useState(() => structuredClone(boardDefault));
   const [boardStatus, setBoardStatus] = useState(() => structuredClone(boardStatusDefault));
@@ -65,9 +67,10 @@ const WordleContextProvider = ({
     onGameReset: () => {
       setBoard(structuredClone(boardDefault));
       setBoardStatus(structuredClone(boardStatusDefault));
-      setCurrAttempt({ attempt: 0, letterPos: 0, });
+      setCurrAttempt({ attempt: 0, letterPos: 0 });
       setLetterStatus(new Map());
       setGameOver({ gameOver: false, guessedWord: false });
+      getRandomWord(5);
     },
   }), [board, boardStatus, currAttempt, gameOver, correctWord]);
 
