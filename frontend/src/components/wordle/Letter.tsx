@@ -52,7 +52,11 @@ const Letter = ({
   };
 
   return (
-    <div className={`w-12 h-12 border-2 flex items-center justify-center text-lg font-bold ${getStatusClass()}`}>
+    <div className={`
+      w-16 h-16 border-2 rounded-lg shadow-sm
+      flex items-center justify-center
+      text-lg font-bold ${getStatusClass()}
+    `}>
       {letter}
     </div>
   );
