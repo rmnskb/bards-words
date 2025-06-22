@@ -45,19 +45,14 @@ const SearchBar = ({
             dark:bg-warm-taupe dark:text-moonlight
             dark:border-candlelight
             dark:focus:border-bright-gold dark:focus:outline-bright-gold
-            placeholder-gray-500
+            placeholder-ash-gray
           `}
         />
       <button
         type="submit"
         onClick={onButtonClick}
         className={`
-          ${buttonSpacing}
-          bg-gold-leaf hover:bg-soft-gold
-          focus:ring-1 focus:outline-none focus:ring-soft-gold
-          font-medium rounded-lg text-md shadow-sm
-          text-silk dark:text-quill
-          dark:hover:bg-bright-gold dark:focus:ring-bright-gold
+          ${buttonSpacing} btn-gold-leaf btn-md
         `}>{buttonIcon}</button>
       </div>
     </form>
