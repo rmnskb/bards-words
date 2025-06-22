@@ -18,7 +18,11 @@
   --color-soft-gold: #C4A447;
   --color-deep-wine: #7A1B38;
   --color-silk: #F8F3E6;
-  
+  --color-emerald-ink: #2D5016;
+  --color-amber-scroll: #B8860B;
+  --color-stone-gray: #6B7280;
+  --color-ivory: #FFFFF0;
+
   /* Dark Theme */
   --color-leather: #1A1410;
   --color-aged-leather: #211A16;
@@ -28,6 +32,10 @@
   --color-crimson: #6B4C9A;
   --color-warm-taupe: #3A2F26;
   --color-cafe-au-lait: #423529;
+  --color-forest-shadow: #1C3A0E;
+  --color-bronze-patina: #CD7F32;
+  --color-ash-gray: #4B5563;
+  --color-parchment-glow: #FDF6E3;
 }
 
 /* TODO: Add custom component for common elements */

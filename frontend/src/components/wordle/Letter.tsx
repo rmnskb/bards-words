@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { LetterStatus } from "../../constants";
 import useWordle from "../../hooks/wordle/useWordle";
 
@@ -17,40 +15,44 @@ const Letter = ({
     board,
     boardStatus,
     currAttempt,
-    letterStatus,
-    setLetterStatus,
   } = useWordle();
 
   const letter = board[attemptVal][letterPos];
   const isAttemptComplete = currAttempt.attempt > attemptVal;
 
-  useEffect(() => {
-    if (!isAttemptComplete || !letter) return;
- 
-    const currentStatus = boardStatus[attemptVal][letterPos];
-    const existingStatus = letterStatus.get(letter) ?? LetterStatus.Unknown;
+  const getStatusClass = (): string => {
+    if (!isAttemptComplete) return `
+      bg-ivory text-quill border-vellum
+      dark:bg-aged-leather dark:text-candlelight dark:border-warm-taupe
+    `;
 
-    if (existingStatus < currentStatus) 
-      setLetterStatus(prev => new Map(prev).set(letter, currentStatus));
-  }, [
-    isAttemptComplete,
-    letter,
-    boardStatus,
-    attemptVal,
-    letterPos,
-    letterStatus,
-    setLetterStatus,
-  ]);
+    const status = boardStatus[attemptVal][letterPos];
+    switch (status) {
+      case LetterStatus.LetterAndPosition:
+        return `
+          bg-emerald-ink text-parchment border-emerald-ink
+          dark:bg-forest-shadow dark:text-parchment-glow dark:border-forest-shadow
+        `;
+      case LetterStatus.Letter:
+        return `
+          bg-amber-scroll text-silk border-amber-scroll
+          dark:bg-bronze-patina dark:text-silk dark:border-bronze-patina
+        `;
+      case LetterStatus.Disabled:
+        return `
+          bg-stone-gray text-quill border-quill
+          dark:bg-ash-gray dark:text-moonlight dark:border-ash-gray
+        `;
+      default:
+        return `
+          bg-ivory text-quill border-vellum
+          dark:bg-aged-leather dark:text-candlelight dark:border-warm-taupe
+        `;
+    }
+  };
 
   return (
-    <div
-      className="
-        text-white text-4xl font-bold 
-        bg-gray-500 w-7 h-6 leading-6 grid
-        place-items-center mr-1 rounded 
-        border border-gray-300
-      "
-    >
+    <div className={`w-12 h-12 border-2 flex items-center justify-center text-lg font-bold ${getStatusClass()}`}>
       {letter}
     </div>
   );
