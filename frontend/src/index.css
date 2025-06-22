@@ -9,6 +9,8 @@
   --font-baskerville: "Libre Baskerville", serif;
   --font-im-fell: "IM Fell English", serif;
   --font-imperial: "Imperial Script", serif;
+
+  /* Light Theme */
   --color-parchment: #F5F0E1;
   --color-vellum: #F2EBD3;
   --color-quill: #2C1810;
@@ -38,4 +40,29 @@
   --color-parchment-glow: #FDF6E3;
 }
 
-/* TODO: Add custom component for common elements */
+.btn-gold-leaf {
+  @apply bg-gold-leaf font-medium text-silk;
+
+  @variant hover {
+    @apply bg-soft-gold;
+  }
+
+  @variant focus {
+    @apply ring-1 outline-none ring-soft-gold;
+  }
+
+  @variant dark {
+    @apply text-quill;
+    @variant hover {
+      @apply bg-bright-gold;
+    }
+    @variant focus {
+      @apply ring-bright-gold;
+    }
+  }
+}
+
+.btn-md {
+  @apply rounded-lg text-base shadow-sm;
+}
+
