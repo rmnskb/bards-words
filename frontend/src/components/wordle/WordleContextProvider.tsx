@@ -3,17 +3,19 @@ import { useMemo, useState } from "react";
 import { boardDefault, boardStatusDefault, LetterStatus } from "../../constants/";
 import { AttemptType, GameOverType } from "../../types";
 import { IWordleContext, WordleGameContext } from "../../contexts/wordleContext";
-
+import KeyboardListener from "./KeyboardListener";
 
 interface WordleContextProviderProps {
   children: React.ReactNode;
   correctWord: string;
+  enableKeyboard?: boolean;
 }
 
 
 const WordleContextProvider = ({
   children,
   correctWord,
+  enableKeyboard = true,
 }: WordleContextProviderProps) => {
   const [board, setBoard] = useState(() => structuredClone(boardDefault));
   const [boardStatus, setBoardStatus] = useState(() => structuredClone(boardStatusDefault));
@@ -81,14 +83,15 @@ const WordleContextProvider = ({
     gameOver,
     setGameOver,
     correctWord,
-    ...actions
+    ...actions,
   }), [
     board, boardStatus, currAttempt, letterStatus, 
     gameOver, correctWord, actions
-  ])
+  ]);
 
   return (
     <WordleGameContext.Provider value={contextValue}>
+      {enableKeyboard && (<KeyboardListener />)}
       {children}
     </WordleGameContext.Provider>
   );
