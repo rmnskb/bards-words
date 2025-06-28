@@ -13,3 +13,7 @@ export interface IRandomWord {
   date: string;
   is_random: boolean;
 }
+
+export interface IEligibleWords {
+  words: string[];
+}
