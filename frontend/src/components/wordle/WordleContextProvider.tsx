@@ -4,6 +4,7 @@ import { boardDefault, boardStatusDefault, LetterStatus } from "../../constants/
 import { AttemptType, GameOverType } from "../../types";
 import { IWordleContext, WordleGameContext } from "../../contexts/wordleContext";
 import KeyboardListener from "./KeyboardListener";
+import useWordValidator from "../../hooks/wordle/useWordValidator";
 
 interface WordleContextProviderProps {
   children: React.ReactNode;
@@ -25,6 +26,8 @@ const WordleContextProvider = ({
   const [letterStatus, setLetterStatus] = useState(() => new Map<string, LetterStatus>);
   const [gameOver, setGameOver] = useState<GameOverType>({ gameOver: false, guessedWord: false, });
 
+  const isValidWord = useWordValidator(5);
+
   const actions = useMemo(() => ({
     onDelete: () => {
       if (currAttempt.letterPos === 0) return;
@@ -40,6 +43,10 @@ const WordleContextProvider = ({
 
       const currentWord = board[currAttempt.attempt].join("");
       const newBoardStatus = [...boardStatus];
+
+      if (!isValidWord(currentWord)) {
+        return;
+      }
 
       for (let i = 0; i < 5; i++) {
         const letter = currentWord[i];
