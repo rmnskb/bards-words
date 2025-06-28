@@ -3,17 +3,13 @@ import random
 from datetime import date
 from typing import Optional, TypeAlias
 
-from pymongo.database import Database
-
+from .repo_service import RepoService
 from ..models import InvertedIndexItem, WordOfTheDayItem, EligibleWordsItem
 
 MongoFilterType: TypeAlias = dict[str, str]
 
 
-class WordleService:
-
-    def __init__(self, db: Database) -> None:
-        self._db = db
+class WordleService(RepoService):
 
     @staticmethod
     def _get_deterministic_seed(target_date: date) -> int:
