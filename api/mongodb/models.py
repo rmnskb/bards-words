@@ -64,3 +64,8 @@ class WordOfTheDayItem(MongoQueryResult):
     word: str
     date: date
     is_random: bool
+
+
+class EligibleWordsItem(MongoQueryResult):
+    words: list[str]
+
