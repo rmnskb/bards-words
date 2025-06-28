@@ -19,7 +19,7 @@ class WordleService(RepoService):
         return int.from_bytes(hash_obj.digest()[:8], byteorder="big")
 
     @staticmethod
-    def _build_filter(length: Optional[int]) -> Optional[dict[str, dict[str, str]]]:
+    def _build_filter(length: Optional[int]) -> Optional[dict[str, MongoFilterType]]:
         if not length:
             return {}
 
