@@ -25,6 +25,7 @@ const WordleContextProvider = ({
   const [currAttempt, setCurrAttempt] = useState<AttemptType>({ attempt: 0, letterPos: 0, });
   const [letterStatus, setLetterStatus] = useState(() => new Map<string, LetterStatus>);
   const [gameOver, setGameOver] = useState<GameOverType>({ gameOver: false, guessedWord: false, });
+  const [showInvalidWordMessage, setShowInvalidWordMessage] = useState<boolean>(false);
 
   const isValidWord = useWordValidator(5);
 
@@ -45,6 +46,7 @@ const WordleContextProvider = ({
       const newBoardStatus = [...boardStatus];
 
       if (!isValidWord(currentWord)) {
+        setShowInvalidWordMessage(true);
         return;
       }
 
@@ -92,6 +94,8 @@ const WordleContextProvider = ({
     setLetterStatus,
     gameOver,
     setGameOver,
+    showInvalidWordMessage,
+    setShowInvalidWordMessage,
     correctWord,
     ...actions,
   }), [

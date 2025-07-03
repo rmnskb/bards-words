@@ -10,6 +10,7 @@ interface WordleState {
   correctWord: string;
   letterStatus: Map<string, LetterStatus>;
   gameOver: GameOverType;
+  showInvalidWordMessage: boolean;
 }
 
 interface WordleActions {
@@ -18,6 +19,7 @@ interface WordleActions {
   setCurrAttempt: Dispatch<SetStateAction<AttemptType>>;
   setLetterStatus: Dispatch<SetStateAction<Map<string, LetterStatus>>>;
   setGameOver: Dispatch<SetStateAction<GameOverType>>;
+  setShowInvalidWordMessage: Dispatch<SetStateAction<boolean>>;
   onDelete: () => void;
   onEnter: () => void;
   onSelectLetter: (key: string) => void;
