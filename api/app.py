@@ -1,12 +1,10 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.mongodb import ShakespeareRepository
-from api.mongodb.models import TokensItem
-from api.enums import ShakespeareWork
-from api.routes import words_route, stats_route
+from api.routes import words_route, stats_route, tokens_route
 
 
 repo = ShakespeareRepository()
@@ -19,9 +17,6 @@ async def lifespan(app: FastAPI) -> None:
 
 
 app = FastAPI(lifespan=lifespan)
-
-app.include_router(words_route)
-app.include_router(stats_route)
 
 origins = [
     "http://localhost:3000",
@@ -46,43 +41,7 @@ async def health() -> dict[str, str]:
     return {'status': 'healthy'}
 
 
-@app.get('/api/v1/tokens')
-async def get_tokens(document: str = Query(None), start: int = Query(None), end: int = Query(None)) -> TokensItem:
-    if document is None or start is None or end is None:
-        raise HTTPException(status_code=400, detail='All query parameters (work, start, end) are required')
-    elif start > end:
-        raise HTTPException(status_code=400, detail='Start index is greater than end index')
-
-    limit = end - start
-    document = str(ShakespeareWork[document])
-
-    return await repo.find_tokens(document, start, limit)
-
-
-@app.get('/api/v1/phrase')
-async def find_phrase(words: list[str] = Query(None)) -> list[TokensItem]:
-    if words is None or len(words) == 0:
-        raise HTTPException(status_code=400, detail='Query parameter is required')
-
-    document_indices: dict[str, list[list[int]]] = await repo.find_phrase_indices(words)
-    phrases: list[TokensItem] = []
-
-    for document, indices in document_indices.items():
-        for sequence in indices:
-            start = min(sequence)
-            limit = len(sequence)
-            phrase_tokens = await repo.find_tokens(document=document, start=start - 10, limit=limit + 15)
-            phrases.append(phrase_tokens)
-
-    return phrases
-
-
-@app.get('/api/v1/document')
-async def get_document(search: str = Query(None)) -> TokensItem:
-    if search is None:
-        raise HTTPException(status_code=400, detail='Query parameter is required')
-
-    document = str(ShakespeareWork[search])
-
-    return await repo.get_document(document)
+app.include_router(words_route)
+app.include_router(stats_route)
+app.include_router(tokens_route)
 

@@ -3,9 +3,6 @@ import os
 from pymongo import AsyncMongoClient
 from pymongo.database import Database
 
-from .models import InvertedIndexItem, TokensItem
-from .services import TokensService, AdjacentIndicesType
-
 
 class _MongoRepository:
 
@@ -41,24 +38,4 @@ class ShakespeareRepository(_MongoRepository):
         await self._db.bronzeIndices.create_index(
             [("word", "text")]
         )
-
-    async def _find_words(self, words: list[str]) -> list[InvertedIndexItem]:
-        results: list[InvertedIndexItem] = []
-
-        for word in words:
-            if item := await self.find_word(word):
-                results.append(item)
-
-        return results
- 
-    async def find_tokens(self, document: str, start: int, limit: int) -> TokensItem:
-        return await TokensService(self._db).find_tokens(document, start, limit)
-
-    async def find_phrase_indices(self, words: list[str]) -> AdjacentIndicesType:
-        words_list = await self._find_words(words)
-
-        return await TokensService(self._db).find_phrase_indices(words_list)
- 
-    async def get_document(self, document: str) -> TokensItem:
-        return await TokensService(self._db).get_document(document)
 
