@@ -1,15 +1,13 @@
 import os
-from typing import Optional
-from datetime import date
 
 from pymongo import AsyncMongoClient
+from pymongo.database import Database
 
 from .models import (
     InvertedIndexItem, TokensItem, WordDimensionsItem,
-    CollocationsStatsItem, SuggestionsItem, WordOfTheDayItem,
-    EligibleWordsItem,
+    CollocationsStatsItem
 )
-from .services import WordleService, WordService, TokensService, StatsService, AdjacentIndicesType
+from .services import TokensService, StatsService, AdjacentIndicesType
 
 
 class _MongoRepository:
@@ -37,14 +35,15 @@ class ShakespeareRepository(_MongoRepository):
     def __init__(self):
         super().__init__()
         self._db = self.client['shakespeare']
+
+    @property
+    def db(self) -> Database:
+        return self._db
  
     async def create_indices(self) -> None:
         await self._db.bronzeIndices.create_index(
             [("word", "text")]
         )
-
-    async def find_word(self, word: str) -> InvertedIndexItem:
-        return await WordService(self._db).find_word(word)
 
     async def _find_words(self, words: list[str]) -> list[InvertedIndexItem]:
         results: list[InvertedIndexItem] = []
@@ -55,12 +54,6 @@ class ShakespeareRepository(_MongoRepository):
 
         return results
  
-    async def find_matches(self, word: str) -> list[InvertedIndexItem]:
-        return await WordService(self._db).find_matches(word)
-
-    async def get_autosuggestions(self, q: str, limit: int) -> SuggestionsItem:
-        return await WordService(self._db).get_autosuggestions(q, limit)
-
     async def find_tokens(self, document: str, start: int, limit: int) -> TokensItem:
         return await TokensService(self._db).find_tokens(document, start, limit)
 
@@ -77,13 +70,3 @@ class ShakespeareRepository(_MongoRepository):
 
     async def get_collocations_stats(self, word: str) -> CollocationsStatsItem:
         return await StatsService(self._db).get_collocations_stats(word)
-
-    async def get_random_word(
-        self,
-        target_date: Optional[date] = None,
-        length: Optional[int] = None
-    ) -> WordOfTheDayItem:
-        return await WordleService(self._db).get_random_word(target_date, length)
-
-    async def get_eligible_words(self, length: int) -> EligibleWordsItem:
-        return await WordleService(self._db).get_eligible_words(length)
