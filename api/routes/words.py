@@ -24,7 +24,6 @@ async def get_word(search: str = Query(None)) -> InvertedIndexItem:
     return await WordService(db).get_word(search)
 
 
-
 @words_route.get('/matches')
 async def get_matches(search: str = Query(None)) -> list[InvertedIndexItem]:
     if search is None:
@@ -53,9 +52,11 @@ async def get_random_word(
 
     return await WordleService(db).get_random_word(target_date=target_date, length=word_length)
 
+
 @words_route.get('/eligible')
 async def get_eligible_words(word_length: int = Query(None)) -> EligibleWordsItem:
     if word_length is None:
         raise HTTPException(status_code=400, detail='word_length parameter is required')
 
     return await WordleService(db).get_eligible_words(word_length)
+
