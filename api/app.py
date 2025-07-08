@@ -11,6 +11,7 @@ from api.mongodb import (
     SuggestionsItem, WordOfTheDayItem, EligibleWordsItem
 )
 from .enums import ShakespeareWork
+from api.routes import words_route 
 
 
 repo = ShakespeareRepository()
@@ -23,6 +24,8 @@ async def lifespan(app: FastAPI) -> None:
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(words_route)
 
 origins = [
     "http://localhost:3000",
