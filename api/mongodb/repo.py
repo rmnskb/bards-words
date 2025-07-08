@@ -3,11 +3,8 @@ import os
 from pymongo import AsyncMongoClient
 from pymongo.database import Database
 
-from .models import (
-    InvertedIndexItem, TokensItem, WordDimensionsItem,
-    CollocationsStatsItem
-)
-from .services import TokensService, StatsService, AdjacentIndicesType
+from .models import InvertedIndexItem, TokensItem
+from .services import TokensService, AdjacentIndicesType
 
 
 class _MongoRepository:
@@ -65,8 +62,3 @@ class ShakespeareRepository(_MongoRepository):
     async def get_document(self, document: str) -> TokensItem:
         return await TokensService(self._db).get_document(document)
 
-    async def get_stats(self, word: str) -> WordDimensionsItem:
-        return await StatsService(self._db).get_stats(word)
-
-    async def get_collocations_stats(self, word: str) -> CollocationsStatsItem:
-        return await StatsService(self._db).get_collocations_stats(word)

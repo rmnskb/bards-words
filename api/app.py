@@ -4,9 +4,9 @@ from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.mongodb import ShakespeareRepository
-from api.mongodb.models import TokensItem, WordDimensionsItem, CollocationsStatsItem
+from api.mongodb.models import TokensItem
 from api.enums import ShakespeareWork
-from api.routes import words_route 
+from api.routes import words_route, stats_route
 
 
 repo = ShakespeareRepository()
@@ -21,6 +21,7 @@ async def lifespan(app: FastAPI) -> None:
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(words_route)
+app.include_router(stats_route)
 
 origins = [
     "http://localhost:3000",
@@ -76,14 +77,6 @@ async def find_phrase(words: list[str] = Query(None)) -> list[TokensItem]:
     return phrases
 
 
-@app.get('/api/v1/stats')
-async def get_stats(word: str = Query(None)) -> WordDimensionsItem:
-    if word is None:
-        raise HTTPException(status_code=400, detail='Query parameter is required')
-
-    return await repo.get_stats(word)
-
-
 @app.get('/api/v1/document')
 async def get_document(search: str = Query(None)) -> TokensItem:
     if search is None:
@@ -92,12 +85,4 @@ async def get_document(search: str = Query(None)) -> TokensItem:
     document = str(ShakespeareWork[search])
 
     return await repo.get_document(document)
-
-
-@app.get('/api/v1/collocations')
-async def get_collocations_stats(search: str = Query(None)) -> CollocationsStatsItem:
-    if search is None:
-        raise HTTPException(status_code=400, detail='Query parameter is required')
-
-    return await repo.get_collocations_stats(search)
 
