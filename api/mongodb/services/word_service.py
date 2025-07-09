@@ -8,7 +8,7 @@ from ..models import InvertedIndexItem, SuggestionsItem
 
 class WordService(RepoService):
 
-    async def find_word(self, word: str) -> InvertedIndexItem:
+    async def get_word(self, word: str) -> InvertedIndexItem:
         """
         Return the best match for the given word,
         works like SQL LIKE %word% query
@@ -23,7 +23,7 @@ class WordService(RepoService):
         if result:
             return InvertedIndexItem(**result)
 
-    async def find_matches(self, word: str) -> list[InvertedIndexItem]:
+    async def get_matches(self, word: str) -> list[InvertedIndexItem]:
         """
         Find matches for a given word using mongo's built-in text search
         :param word: a textual representation of human sounds, what do you think it might be

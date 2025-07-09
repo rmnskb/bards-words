@@ -3,6 +3,7 @@ from collections import defaultdict
 from typing import Optional, TypeVar, TypeAlias, Callable
 
 from .repo_service import RepoService
+from .word_service import WordService
 from ..models import TokensItem, InvertedIndexItem
 
 T = TypeVar('T')
@@ -107,7 +108,16 @@ class TokensService(RepoService):
 
         return adjacent_indices
 
-    async def find_tokens(self, document: str, start: int, limit: int) -> TokensItem:
+    async def _get_words(self, words: list[str]) -> list[InvertedIndexItem]:
+        results: list[InvertedIndexItem] = []
+
+        for word in words:
+            if item := await WordService(self._db).get_word(word):
+                results.append(item)
+
+        return results
+
+    async def get_tokens(self, document: str, start: int, limit: int) -> TokensItem:
         """
         Get the tokens (words) from the given document
         :param document: name of the document
@@ -123,13 +133,14 @@ class TokensService(RepoService):
         if result:
             return TokensItem(**result)
 
-    async def find_phrase_indices(self, words: list[InvertedIndexItem]) -> dict[str, list[list[int]]]:
+    async def get_phrase_indices(self, words: list[str]) -> dict[str, list[list[int]]]:
         """
         Find in what documents and where in particular given words appear together
         :param words: a list of words, i.e a phrase (e.g. "All that glisters is not gold")
         :return: a dictionary with document name as key and a list of indices as value
         """
-        results = [item.model_dump() for item in words]  # Convert the pydantic models to Python dicts
+        words_indices = self._get_words(words)
+        results = [item.model_dump() for item in words_indices]  # Convert the pydantic models to Python dicts
         words_num = len(words) if isinstance(words, list) else 1
 
         common_docs = self._find_docs_intersection(attributes=results)
@@ -155,5 +166,4 @@ class TokensService(RepoService):
 
         if result:
             return TokensItem(**result)
-
 

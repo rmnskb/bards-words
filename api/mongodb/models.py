@@ -33,17 +33,21 @@ class NormalisedIndexItem(MongoQueryResult):
     positionIdx: int
 
 
-class WordDimensionsItem(MongoQueryResult):
+class DocumentFrequencyItem(MongoQueryResult):
     class _DocumentFrequencyElement(BaseModel):
         document: str
         frequency: int
 
+    word: str
+    documentFrequencies: list[_DocumentFrequencyElement]
+
+
+class YearFrequencyItem(MongoQueryResult):
     class _YearFrequencyElement(BaseModel):
         year: int
         frequency: int
 
     word: str
-    documentFrequencies: list[_DocumentFrequencyElement]
     yearFrequencies: list[_YearFrequencyElement]
 
 
