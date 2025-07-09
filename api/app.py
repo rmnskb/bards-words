@@ -16,7 +16,12 @@ async def lifespan(app: FastAPI) -> None:
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title='Shakespeare API',
+    version='1.0.0',
+    docs_url='/api/v1/docs',
+    lifespan=lifespan,
+)
 
 origins = [
     "http://localhost:3000",
