@@ -16,6 +16,7 @@ export default defineConfig({
         port: 3000,
         hmr: {
             clientPort: 3000,
-        }
+        },
+        allowedHosts: ['v2202508291873369639.ultrasrv.de', '.bards-words.dev'],
     }
 })
