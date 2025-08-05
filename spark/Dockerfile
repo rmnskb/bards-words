@@ -25,18 +25,18 @@ ENV HADOOP_HOME=${HADOOP_HOME:-"/opt/hadoop"}
 RUN mkdir -p ${HADOOP_HOME} && mkdir -p ${SPARK_HOME}
 WORKDIR ${SPARK_HOME}
 
-ENV SPARK_VERSION=3.5.5
+ENV SPARK_VERSION=3.5.6
 
 # Download spark
 RUN mkdir -p ${SPARK_HOME} \
-  && curl https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz -o spark-${SPARK_VERSION}-bin-hadoop3.tgz \
+  && curl -lF https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz -o spark-${SPARK_VERSION}-bin-hadoop3.tgz \
   && tar xvzf spark-${SPARK_VERSION}-bin-hadoop3.tgz --directory /opt/spark --strip-components 1 \
   && rm -rf spark-${SPARK_VERSION}-bin-hadoop3.tgz
 
 
 # Install Python dependencies
 COPY requirements.spark.txt .
-RUN pip install -r requirements.spark.txt
+RUN pip install --no-cache-dir -r requirements.spark.txt
 
 # Environment variables for Spark
 ENV PATH="/opt/spark/sbin:/opt/spark/bin:${PATH}"
