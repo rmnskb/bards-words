@@ -4,8 +4,10 @@ __pycache__
 
 /data/
 /db/
+/certbot/
 
 .env
 .env.spark
 
 *.zip
+./*.sh
