@@ -1,15 +1,31 @@
-start-web:
-	sudo docker compose -f docker-compose.yml up -d --build
+COMPOSE_CMD := docker compose
+BASE_FILE := docker-compose.yml
+SPARK_FILE := docker-compose.spark.yml
+FLAGS := -d --build
 
-stop-web:
-	sudo docker compose -f docker-compose.yml down
+WEB_FILES := -f $(BASE_FILE)
+SPARK_FILES := -f $(BASE_FILE) -f $(SPARK_FILE)
 
-start-spark:
-	sudo docker compose -f docker-compose.yml -f docker-compose.spark.yml up -d --build
+web-start:
+	$(COMPOSE_CMD) $(WEB_FILES) up $(FLAGS)
 
-stop-spark:
-	sudo docker compose -f docker-compose.yml -f docker-compose.spark.yml down
+web-stop:
+	$(COMPOSE_CMD) $(WEB_FILES) down
+
+web-restart:
+	web-stop web-start
+
+spark-start:
+	$(COMPOSE_CMD) $(SPARK_FILES) up $(FLAGS)
+
+spark-stop:
+	$(COMPOSE_CMD) $(SPARK_FILES) down
+
+spark-restart:
+	spark-stop spark-start
 
 stop:
-	sudo docker compose down 
+	$(COMPOSE_CMD) down
 
+clean: stop
+	$(COMPOSE_CMD) down -v --remove-orphans
