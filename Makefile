@@ -12,17 +12,11 @@ web-start:
 web-stop:
 	$(COMPOSE_CMD) $(WEB_FILES) down
 
-web-restart:
-	web-stop web-start
-
 spark-start:
 	$(COMPOSE_CMD) $(SPARK_FILES) up $(FLAGS)
 
 spark-stop:
 	$(COMPOSE_CMD) $(SPARK_FILES) down
-
-spark-restart:
-	spark-stop spark-start
 
 stop:
 	$(COMPOSE_CMD) down

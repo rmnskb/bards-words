@@ -29,7 +29,7 @@ ENV SPARK_VERSION=3.5.6
 
 # Download spark
 RUN mkdir -p ${SPARK_HOME} \
-  && curl -lF https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz -o spark-${SPARK_VERSION}-bin-hadoop3.tgz \
+  && curl https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz -o spark-${SPARK_VERSION}-bin-hadoop3.tgz \
   && tar xvzf spark-${SPARK_VERSION}-bin-hadoop3.tgz --directory /opt/spark --strip-components 1 \
   && rm -rf spark-${SPARK_VERSION}-bin-hadoop3.tgz
 
