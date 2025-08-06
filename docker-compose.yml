@@ -31,12 +31,12 @@ services:
     expose:
       - "80"
     restart: on-failure
-      # healthcheck:
-      # test: ["CMD", "curl", "-f", "http://localhost:80/api/v1/health"]
-      # interval: 30s
-      # timeout: 5s
-      # retries: 3
-      # start_period: 10s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     depends_on:
       mongodb:
         condition: service_healthy
@@ -56,15 +56,15 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
     restart: on-failure
-      # healthcheck:
-      # test: ["CMD", "curl", "-f", "http://localhost:3000/"]
-      # interval: 30s
-      # timeout: 5s
-      # retries: 3
-      # start_period: 20s
-      # depends_on:
-      # fast-api:
-      # condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      fast-api:
+        condition: service_healthy
     networks:
       - web-spark-ntwrk
 
@@ -75,15 +75,13 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./certbot/conf:/etc/letsencrypt:ro
-      - ./certbot/www:/var/www/certbot:ro
-        # depends_on:
-        # react-ts:
-        # condition: service_healthy
-        # fast-api:
-        # condition: service_healthy
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - react-ts
+      - fast-api
     restart: unless-stopped
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
     networks:
@@ -94,8 +92,8 @@ services:
     image: certbot/certbot
     restart: unless-stopped
     volumes:
-      - ./certbot/conf:/etc/letsencrypt:ro
-      - ./certbot/www:/var/www/certbot:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     networks:
       - web-spark-ntwrk
