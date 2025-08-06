@@ -27,10 +27,8 @@ def main() -> None:
     works_years = works_years.select(col('document'), col('year').cast(IntegerType()).alias('year'))
 
     collocations_stats_rdd = transformer.transform(data=raw_idx_tokens, to='collocations_stats')
-    print(collocations_stats_rdd.take(5))
     collocations_stats_schema = CollocationsStatsSchema.get()
     collocations_stats_df = spark.createDataFrame(collocations_stats_rdd, schema=collocations_stats_schema)
-    print(collocations_stats_df.show(5, truncate=False))
 
     # L
     for collection, dataframe in {
