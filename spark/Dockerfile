@@ -29,10 +29,9 @@ ENV SPARK_VERSION=3.5.6
 
 # Download spark
 RUN mkdir -p ${SPARK_HOME} \
-  && curl -lF https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz -o spark-${SPARK_VERSION}-bin-hadoop3.tgz \
+  && curl https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz -o spark-${SPARK_VERSION}-bin-hadoop3.tgz \
   && tar xvzf spark-${SPARK_VERSION}-bin-hadoop3.tgz --directory /opt/spark --strip-components 1 \
   && rm -rf spark-${SPARK_VERSION}-bin-hadoop3.tgz
-
 
 # Install Python dependencies
 COPY requirements.spark.txt .
@@ -52,12 +51,6 @@ RUN chmod u+x /opt/spark/sbin/* && \
   chmod u+x /opt/spark/bin/*
 
 ENV PYTHONPATH=$SPARK_HOME/python/:$PYTHONPATH
-
-# COPY entrypoint.sh .
-# RUN chmod u+x /opt/spark/entrypoint.sh
-# 
-# ENTRYPOINT [ "./entrypoint.sh" ]
-# CMD [ "bash" ]
 
 ENTRYPOINT ["/bin/bash"]
 
