@@ -1,6 +1,6 @@
 # Courtesy of https://karlchris.github.io/data-engineering/projects/spark-docker
 
-FROM python:3.11-bullseye AS spark-base
+FROM python:3.13-bullseye AS spark-base
 
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
@@ -10,7 +10,7 @@ RUN apt-get update && \
   zip \
   unzip \
   rsync \
-  openjdk-11-jdk \
+  openjdk-17-jdk \
   build-essential \
   software-properties-common \
   awscli \
