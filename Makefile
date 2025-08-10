@@ -1,10 +1,10 @@
 COMPOSE_CMD := docker compose
-BASE_FILE := docker-compose.yml
-SPARK_FILE := docker-compose.spark.yml
+BASE_FILE := web-compose.yml
+SPARK_FILE := spark-compose.yml
 FLAGS := -d --build
 
 WEB_FILES := -f $(BASE_FILE)
-SPARK_FILES := -f $(BASE_FILE) -f $(SPARK_FILE)
+SPARK_FILES := -f $(SPARK_FILE)
 
 web-start:
 	$(COMPOSE_CMD) $(WEB_FILES) up $(FLAGS)

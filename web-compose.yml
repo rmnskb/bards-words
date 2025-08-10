@@ -17,7 +17,7 @@ services:
     volumes:
       - "./db:/data/db:rw"
     networks:
-      - web-spark-ntwrk
+      - web-ntwrk
 
   fast-api:
     container_name: fast-api
@@ -43,7 +43,7 @@ services:
       mongodb:
         condition: service_healthy
     networks:
-      - web-spark-ntwrk
+      - web-ntwrk
 
   react-ts:
     container_name: react-ts
@@ -68,7 +68,7 @@ services:
       fast-api:
         condition: service_healthy
     networks:
-      - web-spark-ntwrk
+      - web-ntwrk
 
   nginx:
     container_name: nginx
@@ -87,7 +87,7 @@ services:
     restart: unless-stopped
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
     networks:
-      - web-spark-ntwrk
+      - web-ntwrk
 
   certbot:
     container_name: certbot
@@ -98,7 +98,7 @@ services:
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     networks:
-      - web-spark-ntwrk
+      - web-ntwrk
 
 volumes:
   db:
@@ -107,5 +107,5 @@ volumes:
 
 networks:
   web-spark-ntwrk:
-    name: web-spark-ntwrk
+    name: web-ntwrk
     driver: bridge
