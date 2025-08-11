@@ -1,12 +1,10 @@
-from pydantic import BaseModel, Field
 from bson import ObjectId
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class MongoQueryResult(BaseModel):
     id: ObjectId = Field(..., exclude=True, alias="_id")
-
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class TokensItem(MongoQueryResult):
