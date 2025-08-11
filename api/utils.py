@@ -13,7 +13,7 @@ def require_param(q: Optional[T] = Query(None)) -> T:
 
 
 async def validate_response(
-    func: Callable[[Any], Awaitable[Optional[T]]],
+    func: Callable[..., Awaitable[Optional[T]]],
     *args: Any,
     err_msg = 'Resource not found',
 ) -> T:

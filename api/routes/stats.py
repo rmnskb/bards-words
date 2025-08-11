@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends
 
 from api.mongodb import ShakespeareRepository
-from api.mongodb.models import DocumentFrequencyItem, YearFrequencyItem, CollocationsStatsItem
+from api.mongodb.models import (
+    CollocationsStatsItem,
+    DocumentFrequencyItem,
+    YearFrequencyItem,
+)
 from api.mongodb.services import StatsService
 from api.utils import require_param, validate_response
-
 
 db = ShakespeareRepository().db
 stats_route = APIRouter(prefix='/api/v1/stats')

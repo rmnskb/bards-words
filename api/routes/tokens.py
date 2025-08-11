@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 
+from api.enums import ShakespeareWork
 from api.mongodb import ShakespeareRepository
 from api.mongodb.models import TokensItem
-from api.mongodb.services import TokensService, AdjacentIndicesType
-from api.enums import ShakespeareWork
+from api.mongodb.services import AdjacentIndicesType, TokensService
 from api.utils import require_param, validate_response
-
 
 db = ShakespeareRepository().db
 tokens_route = APIRouter(prefix='/api/v1/tokens')

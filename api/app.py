@@ -11,7 +11,7 @@ repo = ShakespeareRepository()
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> None:
+async def lifespan(app: FastAPI):
     await repo.create_indices()
     yield
 
