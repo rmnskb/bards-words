@@ -1,7 +1,12 @@
 import os
 
 from pymongo import AsyncMongoClient
-from pymongo.database import Database
+from pymongo.asynchronous.database import AsyncDatabase
+
+if not os.getenv("HOST"):
+    # Local Dev Workaround
+    from dotenv import load_dotenv
+    load_dotenv()
 
 
 class _MongoRepository:
@@ -14,8 +19,8 @@ class _MongoRepository:
     def _get_conn_uri() -> str:
         user = os.getenv("DB_API_USER")
         pwd = os.getenv("DB_API_PWD")
-        host = "mongodb"
-        port = 27017
+        host = os.getenv("HOST")
+        port = os.getenv("MONGODB_PORT")
 
         return f"mongodb://{user}:{pwd}@{host}:{port}/shakespeare?authSource=shakespeare"
 
@@ -31,7 +36,7 @@ class ShakespeareRepository(_MongoRepository):
         self._db = self.client['shakespeare']
 
     @property
-    def db(self) -> Database:
+    def db(self) -> AsyncDatabase:
         return self._db
  
     async def create_indices(self) -> None:
