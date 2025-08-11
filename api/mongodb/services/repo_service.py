@@ -1,8 +1,8 @@
-from pymongo.database import Database
+from pymongo.asynchronous.database import AsyncDatabase
 
 
 class RepoService:
 
-    def __init__(self, db: Database) -> None:
-        self._db = db
+    def __init__(self, db: AsyncDatabase) -> None:
+        self._db: AsyncDatabase = db
 

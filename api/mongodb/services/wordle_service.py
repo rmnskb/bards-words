@@ -1,12 +1,13 @@
 import hashlib
 import random
 from datetime import date
-from typing import Optional, TypeAlias
+from typing import Optional
 
 from .repo_service import RepoService
 from ..models import InvertedIndexItem, WordOfTheDayItem, EligibleWordsItem
 
-MongoFilterType: TypeAlias = dict[str, str]
+type MongoFilterType = dict[str, str]
+type MongoFieldFilterType = dict[str, MongoFilterType]
 
 
 class WordleService(RepoService):
@@ -19,7 +20,7 @@ class WordleService(RepoService):
         return int.from_bytes(hash_obj.digest()[:8], byteorder="big")
 
     @staticmethod
-    def _build_filter(length: Optional[int]) -> Optional[dict[str, MongoFilterType]]:
+    def _build_filter(length: Optional[int]) -> MongoFieldFilterType:
         if not length:
             return {}
 
@@ -27,13 +28,13 @@ class WordleService(RepoService):
 
         return {'word': {'$regex': pattern}}
 
-    async def _get_total_word_count(self, filter: Optional[MongoFilterType] = {}) -> int:
+    async def _get_total_word_count(self, filter: MongoFieldFilterType = {}) -> int:
         return await self._db.bronzeIndices.count_documents(filter)
 
     async def _get_word_by_index(
         self,
         idx: int,
-        filter: Optional[MongoFilterType] = {},
+        filter: Optional[MongoFieldFilterType] = {},
     ) -> Optional[InvertedIndexItem]:
         cursor = self._db.bronzeIndices.find(filter).skip(idx).limit(1)
         document = await cursor.to_list(length=1)
@@ -43,17 +44,23 @@ class WordleService(RepoService):
 
         return InvertedIndexItem(**document[0])
 
-    async def get_eligible_words(self, length: int) -> EligibleWordsItem:
+    async def get_eligible_words(self, length: int) -> Optional[EligibleWordsItem]:
         filter = self._build_filter(length)
 
         results = await self._db.bronzeIndices.find(filter).to_list(None)
 
         eligible_words = [result['word'] for result in results if 'word' in result]
 
-        if results:
-            return EligibleWordsItem(words=eligible_words)
+        if not results:
+            return None
 
-    async def get_random_word(self, target_date: Optional[date] = None, length: Optional[int] = None) -> WordOfTheDayItem:
+        return EligibleWordsItem(words=eligible_words)
+
+    async def get_random_word(
+            self,
+            target_date: Optional[date] = None,
+            length: Optional[int] = None,
+    ) -> Optional[WordOfTheDayItem]:
         filter = self._build_filter(length)
         is_random = target_date is None
         total_cnt = await self._get_total_word_count(filter=filter)
@@ -65,12 +72,15 @@ class WordleService(RepoService):
             word_idx = random.randint(0, total_cnt - 1)
             random.seed()
 
-            response_date = target_date
+            response_date = target_date.isoformat()
         else:
             word_idx = random.randint(0, int(total_cnt) - 1)
             response_date = date.today().isoformat()
 
         document = await self._get_word_by_index(word_idx, filter=filter)
+
+        if not document or not document.word:
+            return None
 
         return WordOfTheDayItem(
             word=document.word,

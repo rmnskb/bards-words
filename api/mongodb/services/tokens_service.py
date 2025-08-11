@@ -1,20 +1,26 @@
 from itertools import groupby
 from collections import defaultdict
-from typing import Optional, TypeVar, TypeAlias, Callable
+from typing import Optional, Callable, Any
+
+from pymongo.asynchronous.collection import AsyncCollection
+from pymongo.asynchronous.database import AsyncDatabase
 
 from .repo_service import RepoService
 from .word_service import WordService
 from ..models import TokensItem, InvertedIndexItem
 
-T = TypeVar('T')
-DocumentOccurrencesType: TypeAlias = dict[str, list[int]]
-AdjacentIndicesType: TypeAlias = dict[str, list[list[int]]]
+type DocumentOccurrencesType = dict[str, list[int]]
+type AdjacentIndicesType = dict[str, list[list[int]]]
 
 
 class TokensService(RepoService):
 
+    def __init__(self, db: AsyncDatabase) -> None:
+        super().__init__(db)
+        self._collection: AsyncCollection = self._db.bronzeTokens
+
     @staticmethod
-    def _find_docs_intersection(attributes: list[dict[str, ...]]) -> Optional[set[str]]:
+    def _find_docs_intersection(attributes: list[dict[str, Any]]) -> Optional[set[str]]:
         """
         Traverse the list of given words,
         find the documents that are common for all documents
@@ -34,7 +40,7 @@ class TokensService(RepoService):
         return docs
 
     @staticmethod
-    def _get_consecutive_subsequences(sequence: list[T], length: int) -> list[list[T]]:
+    def _get_consecutive_subsequences(sequence: list[int], length: int) -> list[list[int]]:
         """
         Divide the list into subsequences of length n, if there are no subsequences, return an empty list
         :param sequence: a list to draw the subsequences from
@@ -68,7 +74,7 @@ class TokensService(RepoService):
         return outcome
 
     @staticmethod
-    def _calculate_adjacent_diff(array: list[T]) -> list[T]:
+    def _calculate_adjacent_diff(array: list[int]) -> list[int]:
         # Courtesy of https://stackoverflow.com/questions/42868875
         return [(array[i] - array[i + 1]) for i in range(0, len(array) - 1)]
 
@@ -76,8 +82,8 @@ class TokensService(RepoService):
     def _get_adjacent_indices(
         docs_occur: DocumentOccurrencesType,
         n: int,
-        calculate_adjacent_diff: Callable[[list[T]], T],
-        get_consecutive_subsequences: Callable[[list[T], int], list[list[T]]],
+        calculate_adjacent_diff: Callable[[list[int]], list[int]],
+        get_consecutive_subsequences: Callable[[list[int], int], list[list[int]]],
     ) -> AdjacentIndicesType:
         """
         Get the indices of words that are adjacent in the given documents
@@ -104,7 +110,7 @@ class TokensService(RepoService):
             indices = [(i, i + 1) for i, val in enumerate(adjacent_diff) if val == -1]
             flat_indices = list(sum(indices, ()))  # Flatten the list of indices
             adjacent_occurrences = list(set([unique_occurs[i] for i in flat_indices]))
-            adjacent_indices[document] = get_consecutive_subsequences(adjacent_occurrences, length=n)
+            adjacent_indices[document] = get_consecutive_subsequences(adjacent_occurrences, n)
 
         return adjacent_indices
 
@@ -117,7 +123,7 @@ class TokensService(RepoService):
 
         return results
 
-    async def get_tokens(self, document: str, start: int, limit: int) -> TokensItem:
+    async def get_tokens(self, document: str, start: int, limit: int) -> Optional[TokensItem]:
         """
         Get the tokens (words) from the given document
         :param document: name of the document
@@ -125,13 +131,15 @@ class TokensService(RepoService):
         :param limit: number of tokens to return
         :return: a hash map of document and respective tokens within given range
         """
-        result = await self._db.bronzeTokens.find_one(
+        result = await self._collection.find_one(
             {"document": document}
             , {"occurrences": {"$slice": [start, limit]}}
         )
 
-        if result:
-            return TokensItem(**result)
+        if not result:
+            return None
+
+        return TokensItem(**result)
 
     async def get_phrase_indices(self, words: list[str]) -> dict[str, list[list[int]]]:
         """
@@ -139,7 +147,7 @@ class TokensService(RepoService):
         :param words: a list of words, i.e a phrase (e.g. "All that glisters is not gold")
         :return: a dictionary with document name as key and a list of indices as value
         """
-        words_indices = self._get_words(words)
+        words_indices = await self._get_words(words)
         results = [item.model_dump() for item in words_indices]  # Convert the pydantic models to Python dicts
         words_num = len(words) if isinstance(words, list) else 1
 
@@ -161,9 +169,11 @@ class TokensService(RepoService):
 
         return adjacent_indices
 
-    async def get_document(self, document: str) -> TokensItem:
-        result = await self._db.bronzeTokens.find_one({"document": document})
+    async def get_document(self, document: str) -> Optional[TokensItem]:
+        result = await self._collection.find_one({"document": document})
 
-        if result:
-            return TokensItem(**result)
+        if not result:
+            return None
+
+        return TokensItem(**result)
 

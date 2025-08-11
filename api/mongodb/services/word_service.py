@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 
 from pymongo import ASCENDING
 
@@ -8,7 +9,7 @@ from ..models import InvertedIndexItem, SuggestionsItem
 
 class WordService(RepoService):
 
-    async def get_word(self, word: str) -> InvertedIndexItem:
+    async def get_word(self, word: str) -> Optional[InvertedIndexItem]:
         """
         Return the best match for the given word,
         works like SQL LIKE %word% query
@@ -20,10 +21,12 @@ class WordService(RepoService):
 
         result = await self._db.bronzeIndices.find_one({"word": regexp})
 
-        if result:
-            return InvertedIndexItem(**result)
+        if not result:
+            return None
 
-    async def get_matches(self, word: str) -> list[InvertedIndexItem]:
+        return InvertedIndexItem(**result)
+
+    async def get_matches(self, word: str) -> Optional[list[InvertedIndexItem]]:
         """
         Find matches for a given word using mongo's built-in text search
         :param word: a textual representation of human sounds, what do you think it might be
@@ -37,10 +40,12 @@ class WordService(RepoService):
             .sort("score", ASCENDING) \
             .to_list(None)
 
-        if results:
-            return results
+        if not results:
+            return None
 
-    async def get_autosuggestions(self, q: str, limit: int) -> SuggestionsItem:
+        return results
+
+    async def get_autosuggestions(self, q: str, limit: int) -> Optional[SuggestionsItem]:
         pattern = re.escape(q)
 
         results = await self._db.bronzeIndices.find(
@@ -54,6 +59,8 @@ class WordService(RepoService):
 
         suggestions = [result['word'] for result in results if 'word' in result]
  
-        if results:
-            return SuggestionsItem(suggestions=suggestions)
+        if not results:
+            return None
+
+        return SuggestionsItem(suggestions=suggestions)
 

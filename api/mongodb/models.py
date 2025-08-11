@@ -1,11 +1,9 @@
-from datetime import date
-
 from pydantic import BaseModel, Field
 from bson import ObjectId
 
 
 class MongoQueryResult(BaseModel):
-    id: ObjectId = Field(None, exclude=True, alias="_id")
+    id: ObjectId = Field(..., exclude=True, alias="_id")
 
     class Config:
         arbitrary_types_allowed = True
@@ -60,16 +58,16 @@ class CollocationsStatsItem(MongoQueryResult):
     collocationsStats: list[_LinkItem]
 
 
-class SuggestionsItem(MongoQueryResult):
+class SuggestionsItem(BaseModel):
     suggestions: list[str]
 
 
-class WordOfTheDayItem(MongoQueryResult):
+class WordOfTheDayItem(BaseModel):
     word: str
-    date: date
+    date: str
     is_random: bool
 
 
-class EligibleWordsItem(MongoQueryResult):
+class EligibleWordsItem(BaseModel):
     words: list[str]
 
