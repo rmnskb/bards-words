@@ -3,21 +3,23 @@ services:
     # Access mongosh from inside the container: docker exec -it mongodb mongosh
     container_name: mongodb
     image: mongo:8.0.6
-    env_file: .env
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 5
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: /run/secrets/db_root
+      MONGO_INITDB_ROOT_PASSWORD: /run/secrets/db_pass
     ports:
       - 27017:27017
     volumes:
       - "./db:/data/db:rw"
     networks:
       - web-ntwrk
+    secrets:
+      - db_pass
+      - db_root
 
   fast-api:
     container_name: fast-api
@@ -96,6 +98,12 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     networks:
       - web-ntwrk
+
+secrets:
+  db_pass:
+    file: ./secrets/db_pass.txt
+  db_root:
+    file: ./secrets/db_root.txt
 
 volumes:
   db:
