@@ -19,7 +19,7 @@ const useWordValidator = (wordLength: number): UseWordValidatorReturn => {
 
   const fetchEligibleWords = useCallback(
     async (wordLength: number): Promise<IEligibleWords | null> => {
-      const url = new URL(`${apiUrl}/eligibleWords`);
+      const url = new URL(`${apiUrl}/words/eligible`);
       url.searchParams.set("word_length", wordLength.toString());
 
       try {

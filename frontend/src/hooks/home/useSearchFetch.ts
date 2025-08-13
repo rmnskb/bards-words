@@ -30,14 +30,14 @@ const useSearchFetch = (): UseSearchFetchReturn => {
       const searchArray: string[] = search.split(" ");
 
       if (searchArray.length === 1) {
-        response = await axios.get<IWordIndex[]>(`${apiUrl}/matches?search=${search}`);
+        response = await axios.get<IWordIndex[]>(`${apiUrl}/words/matches?search=${search}`);
         setDomain("word");
       } else if (searchArray.length > 1) {
         const params = new URLSearchParams();
         searchArray.forEach((token: string) => {
             params.append("words", token);
         });
-        const url = `${apiUrl}/phrase?${params.toString()}`;
+        const url = `${apiUrl}/tokens/phrase?${params.toString()}`;
 
         response = await axios.get<IDocumentTokens[]>(url);
         setDomain("phrase");

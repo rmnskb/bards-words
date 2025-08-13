@@ -26,6 +26,7 @@ export interface IWordIndex {
   occurrences: IOccurrenceElement[];
 }
 
+// TODO:Split the interface
 export interface IWordDimensions {
   word: string;
   documentFrequencies: IDocumentFreqElement[];

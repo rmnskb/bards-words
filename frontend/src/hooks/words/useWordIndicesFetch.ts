@@ -20,7 +20,7 @@ const useWordIndicesFetch = (word: string): UseWordIndicesFetchReturn => {
     = async (word: string): Promise<IWordIndex | null> => {
     try {
       const response: AxiosResponse<IWordIndex> =
-        await axios.get<IWordIndex>(`${apiUrl}/word?search=${word}`)
+        await axios.get<IWordIndex>(`${apiUrl}/words?search=${word}`)
       return response.data;
     } catch (e) {
       console.error(e);

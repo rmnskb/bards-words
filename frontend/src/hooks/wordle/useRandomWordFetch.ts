@@ -22,7 +22,7 @@ const useRandomWordFetch = ({
 
   const fetchRandomWord = useCallback(
     async (isWordOfTheDay: boolean, length: number): Promise<IRandomWord | null> => {
-      const url = new URL(`${apiUrl}/randomWord`);
+      const url = new URL(`${apiUrl}/words/random`);
       url.searchParams.set("word_length", length.toString());
 
       if (isWordOfTheDay) {

@@ -27,7 +27,7 @@ const useSearchSuggestions = ({
 
   const fetchSuggestions = async ({search, limit}: SuggestionsApiProps) => {
     try {
-      const response = await axios.get<ISuggestionsItem>(`${apiUrl}/suggestions?q=${search}&limit=${limit}`);
+      const response = await axios.get<ISuggestionsItem>(`${apiUrl}/words/suggestions?q=${search}&limit=${limit}`);
       return response.data;
     } catch (e) {
       console.error(e);
