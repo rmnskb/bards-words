@@ -24,7 +24,9 @@ app = FastAPI(
 )
 
 origins = [
+    "https://react-ts",
     "http://localhost:3000",
+    "https://bards-words.dev",
 ]
 
 app.add_middleware(
