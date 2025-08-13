@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Annotated
+
+from fastapi import APIRouter, HTTPException
+from pydantic import AfterValidator
 
 from api.enums import ShakespeareWork
 from api.mongodb import ShakespeareRepository
@@ -12,9 +15,9 @@ tokens_route = APIRouter(prefix='/api/v1/tokens')
 
 @tokens_route.get('/')
 async def get_tokens(
-    document: str = Depends(require_param),
-    start: int = Depends(require_param),
-    end: int = Depends(require_param),
+    document: Annotated[str, AfterValidator(require_param)],
+    start: Annotated[int, AfterValidator(require_param)],
+    end: Annotated[int, AfterValidator(require_param)],
 ) -> TokensItem:
     if start > end:
         raise HTTPException(status_code=400, detail='Start index is greater than end index')
@@ -29,8 +32,11 @@ async def get_tokens(
 
 @tokens_route.get('/phrase')
 async def get_phrase(
-        words: list[str] = Depends(require_param)) -> list[TokensItem]:
-    document_indices: AdjacentIndicesType = await TokensService(db).get_phrase_indices(words)
+    words: Annotated[list[str], AfterValidator(require_param)],
+) -> list[TokensItem]:
+    document_indices: AdjacentIndicesType = await TokensService(db) \
+        .get_phrase_indices(words)
+
     phrases: list[TokensItem] = []
 
     for document, indices in document_indices.items():
@@ -48,7 +54,9 @@ async def get_phrase(
 
 # TODO: Implement paginating and caching
 @tokens_route.get('/document')
-async def get_document(search: str = Depends(require_param)) -> TokensItem:
+async def get_document(
+    search: Annotated[str, AfterValidator(require_param)],
+) -> TokensItem:
     document = str(ShakespeareWork[search])
 
     return await validate_response(

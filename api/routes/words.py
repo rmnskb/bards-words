@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import AfterValidator
 
 from api.mongodb import ShakespeareRepository
 from api.mongodb.models import (
@@ -19,7 +20,9 @@ words_route = APIRouter(prefix='/api/v1/words')
 
 
 @words_route.get('/')
-async def get_word(search: str = Depends(require_param)) -> InvertedIndexItem:
+async def get_word(
+    search: Annotated[str, AfterValidator(require_param)],
+) -> InvertedIndexItem:
     return await validate_response(
         WordService(db).get_word,
         search,
@@ -27,7 +30,8 @@ async def get_word(search: str = Depends(require_param)) -> InvertedIndexItem:
 
 @words_route.get('/matches')
 async def get_matches(
-        search: str = Depends(require_param)) -> list[InvertedIndexItem]:
+    search: Annotated[str, AfterValidator(require_param)],
+) -> list[InvertedIndexItem]:
     return await validate_response(
         WordService(db).get_matches,
         search,
@@ -36,8 +40,8 @@ async def get_matches(
 
 @words_route.get('/suggestions')
 async def get_autosuggestions(
-        q: str = Depends(require_param),
-        limit: int = Depends(require_param),
+    q: Annotated[str, AfterValidator(require_param)],
+    limit: Annotated[int, AfterValidator(require_param)],
 ) -> SuggestionsItem:
     return await validate_response(
         WordService(db).get_autosuggestions,
@@ -48,7 +52,7 @@ async def get_autosuggestions(
 @words_route.get('/random')
 async def get_random_word(
     date: Optional[str] = Query(None),
-    word_length: Optional[int] = Query(None)
+    word_length: Optional[int] = Query(None),
 ) -> WordOfTheDayItem:
     try:
         target_date = datetime.strptime(date, "%Y-%m-%d").date() if date else None
@@ -62,7 +66,9 @@ async def get_random_word(
 
 
 @words_route.get('/eligible')
-async def get_eligible_words(word_length: int = Depends(require_param)) -> EligibleWordsItem:
+async def get_eligible_words(
+    word_length: Annotated[int, AfterValidator(require_param)],
+) -> EligibleWordsItem:
     return await validate_response(
         WordleService(db).get_eligible_words,
         word_length,

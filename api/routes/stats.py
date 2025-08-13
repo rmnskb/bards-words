@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Depends
+from typing import Annotated
+
+from fastapi import APIRouter
+from pydantic import AfterValidator
 
 from api.mongodb import ShakespeareRepository
 from api.mongodb.models import (
@@ -15,7 +18,8 @@ stats_route = APIRouter(prefix='/api/v1/stats')
 
 @stats_route.get('/documents')
 async def get_doc_freqs(
-        word: str = Depends(require_param)) -> DocumentFrequencyItem:
+    word: Annotated[str, AfterValidator(require_param)],
+) -> DocumentFrequencyItem:
     return await validate_response(
         StatsService(db).get_doc_freqs,
         word,
@@ -24,7 +28,8 @@ async def get_doc_freqs(
 
 @stats_route.get('/years')
 async def get_year_freqs(
-        word: str = Depends(require_param)) -> YearFrequencyItem:
+    word: Annotated[str, AfterValidator(require_param)],
+) -> YearFrequencyItem:
     return await validate_response(
         StatsService(db).get_year_freqs,
         word,
@@ -33,7 +38,8 @@ async def get_year_freqs(
 
 @stats_route.get('/collocations')
 async def get_collocations_stats(
-        search: str = Depends(require_param)) -> CollocationsStatsItem:
+    search: Annotated[str, AfterValidator(require_param)],
+) -> CollocationsStatsItem:
     return await validate_response(
         StatsService(db).get_collocations_stats,
         search,
