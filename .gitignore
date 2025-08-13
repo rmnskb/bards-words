@@ -5,9 +5,11 @@ __pycache__
 /data/
 /db/
 /certbot/
+/secrets/
 
 .env
 .env.spark
 
 *.zip
-./*.sh
+*.sh
+
