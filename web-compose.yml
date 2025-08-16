@@ -46,6 +46,8 @@ services:
     container_name: react-ts
     image: ghcr.io/rmnskb/bards-words-frontend
     restart: on-failure
+    volumes: 
+      - react-app:/app:rw
     networks:
       - web-ntwrk
 
@@ -60,6 +62,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+      - react-app:/app:ro
     volumes_from:
       - react-ts
     depends_on:
@@ -85,6 +88,7 @@ volumes:
   db:
     driver: local
     name: db
+  react-app:
 
 networks:
   web-ntwrk:
