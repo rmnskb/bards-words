@@ -33,6 +33,16 @@ export interface IWordDimensions {
   yearFrequencies: IYearFreqElement[];
 }
 
+export interface IDocumentFrequencies {
+  word: string;
+  documentFrequencies: IDocumentFreqElement[];
+}
+
+export interface IYearFrequencies {
+  word: string;
+  yearFrequencies: IYearFreqElement[];
+}
+
 export interface IDocumentTokens {
   document: TShakespeareWorkTitle;
   occurrences: string[];

@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
+import { useEffect, useState } from "react";
 
+import { API_URL } from "../../constants";
 import { ICollocationsStats, INavigationData } from "../../types";
-import { apiUrl } from "../../constants";
 import LoadingSpinner from "../common/LoadingSpinner.tsx";
 import CollocationsGraph from "../graphs/CollocationsGraph.tsx";
 
@@ -21,7 +21,8 @@ const WordRelationshipsCard = ({
 
   const fetchCollocationsStats = async (word: string): Promise<ICollocationsStats | null> => {
     try {
-      const response: AxiosResponse<ICollocationsStats> = await axios.get(`${apiUrl}/collocations?search=${word}`);
+      const response: AxiosResponse<ICollocationsStats> =
+        await axios.get(`${API_URL}/stats/collocations?search=${word}`);
       return response.data;
     } catch (errorMsg) {
       console.error('Error fetching the collocations', errorMsg)

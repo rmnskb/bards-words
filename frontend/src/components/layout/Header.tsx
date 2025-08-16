@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
 import { SlMagnifier } from "react-icons/sl";
+import { Link, useNavigate } from "react-router";
 
-import SearchBar from "../common/SearchBar";
-import Portrait from "../common/Portrait";
-import SuggestionsDropdown from "../common/SuggestionsDropdown";
-import useSearchSuggestions from "../../hooks/home/useSearchSuggestions";
-import useSearchKeyboardNavigation from "../../hooks/home/useSearchKeyboardNavigation";
 import useClickedOutside from "../../hooks/common/useClickedOutside";
+import useSearchKeyboardNavigation from "../../hooks/home/useSearchKeyboardNavigation";
+import useSearchSuggestions from "../../hooks/home/useSearchSuggestions";
 import DarkThemeButton from "../common/DarkThemeButton";
+import Portrait from "../common/Portrait";
+import SearchBar from "../common/SearchBar";
+import SuggestionsDropdown from "../common/SuggestionsDropdown";
 
 
 const Header = () => {
@@ -63,7 +63,7 @@ const Header = () => {
             <span className="
               text-deep-wine font-semibold text-5xl font-imperial
               dark:text-crimson select-none
-            ">Words Bard</span>
+            ">Bard's Words</span>
           </Link>
         </div>
 
