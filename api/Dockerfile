@@ -10,13 +10,13 @@ RUN apt-get update && \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-WORKDIR /api
+WORKDIR /app
 
-COPY . /api/
-RUN pip install --no-cache-dir --upgrade -r /api/requirements.api.txt
+COPY . /app/api/
+RUN pip install --no-cache-dir --upgrade -r /app/api/requirements.api.txt
 
 EXPOSE 80
 
-CMD [ "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80", "--workers", "5" ]
+CMD [ "uvicorn", "api.app:app", "--host", "0.0.0.0", "--port", "80", "--workers", "5" ]
 
 LABEL org.opencontainers.image.source=https://github.com/rmnskb/bards-words
