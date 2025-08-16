@@ -5,8 +5,8 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [
-        react()
-        , tailwindcss()
+        react(),
+	tailwindcss(),
     ],
     server: {
         watch: {
@@ -17,6 +17,6 @@ export default defineConfig({
         hmr: {
             clientPort: 3000,
         },
-        allowedHosts: ['v2202508291873369639.ultrasrv.de', '.bards-words.dev'],
+	allowedHosts: ['bards-words.dev'],
     }
 })
