@@ -7,15 +7,12 @@ COPY . .
 
 RUN npm run build
 
-FROM nginx:alpine AS prod
+FROM alpine:3.14 AS prod
 
-COPY --from=build /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-# Install curl for healthcheck
-RUN apk add --no-cache curl
+COPY --from=build /app/dist /app/dist
 
-EXPOSE 3000
-
-CMD [ "nginx", "-g", "daemon off;" ]
+CMD ["tail", "-f", "/dev/null"]
 
 LABEL org.opencontainers.image.source=https://github.com/rmnskb/bards-words

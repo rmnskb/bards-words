@@ -45,23 +45,7 @@ services:
   react-ts:
     container_name: react-ts
     image: ghcr.io/rmnskb/bards-words-frontend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    expose:
-      - "3000"
-    environment:
-      - CHOKIDAR_USEPOLLING=true
     restart: on-failure
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 20s
-    depends_on:
-      fast-api:
-        condition: service_healthy
     networks:
       - web-ntwrk
 
@@ -76,6 +60,8 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+    volumes_from:
+      - react-ts
     depends_on:
       - react-ts
       - fast-api
