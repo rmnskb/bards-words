@@ -19,4 +19,4 @@ EXPOSE 80
 
 CMD [ "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80", "--workers", "5" ]
 
-LABEL org.opencontainers.image.source https://github.com/rmnskb/bards-words
+LABEL org.opencontainers.image.source=https://github.com/rmnskb/bards-words
