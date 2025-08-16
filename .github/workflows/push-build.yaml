@@ -1,0 +1,43 @@
+name: Docker Build and Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  detect-changes:
+    runs-on: "ubuntu-22.04"
+    outputs:
+      changed: ${{ stesp.detect.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Detect Changes
+        id: detect
+        uses: tchupp/actions-detect-directory-changes@v1
+
+  build:
+    name: "Build Sub-Projects"
+    runs-on: "ubuntu-22.04"
+    strategy:
+      matrix:
+        project: ${{ fromJSON(needs.detect-changes.outputs.changed) }}
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: "Build and publish bards-words/${{ matrix.project }}"
+        uses: macbre/push-to-ghcr@master
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          image_name: bards-words/${{ matrix.project }}
+          dockerfile: ./${{ matrix.project }}/Dockerfile
+          context: ./${{ matrix.project }}
+          image_tag: latest
