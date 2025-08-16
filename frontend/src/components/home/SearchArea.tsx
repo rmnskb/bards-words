@@ -1,14 +1,14 @@
-import { useEffect, Dispatch, SetStateAction } from "react";
 import { AxiosResponse } from "axios";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
-import SearchBar from "../common/SearchBar.tsx";
-import Portrait from "../common/Portrait.tsx";
-import AutoSuggestionsDropdown from "../common/SuggestionsDropdown.tsx";
-import useSearchSuggestions from "../../hooks/home/useSearchSuggestions";
-import useSearchKeyboardNavigation from "../../hooks/home/useSearchKeyboardNavigation";
 import useClickedOutside from "../../hooks/common/useClickedOutside";
 import { UseParametrisedSearchFetchReturn } from "../../hooks/home/useParametrisedSearchFetch.ts";
+import useSearchKeyboardNavigation from "../../hooks/home/useSearchKeyboardNavigation";
+import useSearchSuggestions from "../../hooks/home/useSearchSuggestions";
 import DarkThemeButton from "../common/DarkThemeButton.tsx";
+import Portrait from "../common/Portrait.tsx";
+import SearchBar from "../common/SearchBar.tsx";
+import AutoSuggestionsDropdown from "../common/SuggestionsDropdown.tsx";
 
 type SearchHookOmitted = "loading" | "domain" | "results" | "error";
 
@@ -73,7 +73,7 @@ const SearchArea = ({
         <h1 className="
           text-7xl font-bold text-royal-wine font-imperial
           dark:text-crimson select-none
-        ">Words Bard</h1>
+        ">Bard's Words</h1>
       </div>
       <div className="relative w-full">
         <div className="flex flex-row items-center justify-center w-full">

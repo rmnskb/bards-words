@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
+import { useEffect, useState } from "react";
 
+import { API_URL } from "../../constants";
 import { IWordIndex } from "../../types";
-import { apiUrl } from "../../constants";
 
 interface UseWordIndicesFetchReturn {
   loading: boolean;
@@ -20,7 +20,7 @@ const useWordIndicesFetch = (word: string): UseWordIndicesFetchReturn => {
     = async (word: string): Promise<IWordIndex | null> => {
     try {
       const response: AxiosResponse<IWordIndex> =
-        await axios.get<IWordIndex>(`${apiUrl}/words?search=${word}`)
+        await axios.get<IWordIndex>(`${API_URL}/words?search=${word}`)
       return response.data;
     } catch (e) {
       console.error(e);

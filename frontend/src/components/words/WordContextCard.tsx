@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
+import { API_URL, getShakespeareWorkCode } from "../../constants";
 import { IDocumentTokens } from "../../types";
-import { apiUrl, getShakespeareWorkCode } from "../../constants";
 import LoadingSpinner from "../common/LoadingSpinner.tsx";
 
 interface WordContextCardProps {
@@ -27,7 +27,7 @@ const WordContextCard
     try {
       const response: AxiosResponse<IDocumentTokens> =
         await axios.get<IDocumentTokens>(
-          `${apiUrl}/tokens?document=${work}&start=${startIndex}&end=${endIndex}`
+          `${API_URL}/tokens?document=${work}&start=${startIndex}&end=${endIndex}`
         )
       return response.data;
     } catch (e) {

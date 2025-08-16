@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
 import axios from "axios";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
+import { API_URL } from "../../constants";
 import { ISuggestionsItem } from "../../types";
-import { apiUrl } from "../../constants";
 
 interface SuggestionsApiProps {
   search: string;
@@ -27,7 +27,7 @@ const useSearchSuggestions = ({
 
   const fetchSuggestions = async ({search, limit}: SuggestionsApiProps) => {
     try {
-      const response = await axios.get<ISuggestionsItem>(`${apiUrl}/words/suggestions?q=${search}&limit=${limit}`);
+      const response = await axios.get<ISuggestionsItem>(`${API_URL}/words/suggestions?q=${search}&limit=${limit}`);
       return response.data;
     } catch (e) {
       console.error(e);

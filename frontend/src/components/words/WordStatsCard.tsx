@@ -1,9 +1,9 @@
 import {
-  IWordDimensions,
-  IDictionaryEntry,
-  IYearFreqElement,
-  IDocumentFreqElement,
-  INavigationData,
+    IDictionaryEntry,
+    IDocumentFreqElement,
+    INavigationData,
+    IWordDimensions,
+    IYearFreqElement,
 } from "../../types";
 
 interface WordStatsProps extends INavigationData {
@@ -29,8 +29,8 @@ interface IStatsDisplayProps {
 
 const WordStatsCard = ({
   id = "stats",
-  wordDimensions, 
-  dictionaryEntry 
+  wordDimensions,
+  dictionaryEntry
 }: WordStatsProps) => {
   const wordTitle = wordDimensions.word.replace(
     wordDimensions.word, (word => word[0].toUpperCase() + word.substring(1).toLowerCase())

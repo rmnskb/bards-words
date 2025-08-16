@@ -1,8 +1,8 @@
-import { useCallback, useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
+import { useCallback, useEffect, useState } from "react";
 
+import { API_URL } from "../../constants";
 import { IRandomWord } from "../../types";
-import { apiUrl } from "../../constants";
 
 export interface UseRandomWordFetchProps {
   wordLength?: number;
@@ -22,7 +22,7 @@ const useRandomWordFetch = ({
 
   const fetchRandomWord = useCallback(
     async (isWordOfTheDay: boolean, length: number): Promise<IRandomWord | null> => {
-      const url = new URL(`${apiUrl}/words/random`);
+      const url = new URL(`${API_URL}/words/random`);
       url.searchParams.set("word_length", length.toString());
 
       if (isWordOfTheDay) {

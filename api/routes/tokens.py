@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import AfterValidator
 
 from api.enums import ShakespeareWork
@@ -30,9 +30,10 @@ async def get_tokens(
         document, start, limit,
     )
 
+
 @tokens_route.get('/phrase')
 async def get_phrase(
-    words: Annotated[list[str], AfterValidator(require_param)],
+    words: Annotated[list[str], AfterValidator(require_param)] = Query(None),
 ) -> list[TokensItem]:
     document_indices: AdjacentIndicesType = await TokensService(db) \
         .get_phrase_indices(words)
