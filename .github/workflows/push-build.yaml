@@ -9,7 +9,7 @@ jobs:
   detect-changes:
     runs-on: "ubuntu-22.04"
     outputs:
-      changed: ${{ stesp.detect.outputs.changed }}
+      changed: ${{ steps.detect.outputs.changed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
