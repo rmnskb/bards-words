@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   detect-changes:
     runs-on: "ubuntu-22.04"
@@ -19,25 +23,23 @@ jobs:
         uses: tchupp/actions-detect-directory-changes@v1
 
   build:
-    name: "Build Sub-Projects"
+    name: "Build Sub-Project"
     runs-on: "ubuntu-22.04"
     strategy:
       matrix:
         project: ${{ fromJSON(needs.detect-changes.outputs.changed) }}
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: "Build and publish bards-words/${{ matrix.project }}"
-        uses: macbre/push-to-ghcr@master
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          image_name: bards-words/${{ matrix.project }}
-          dockerfile: ./${{ matrix.project }}/Dockerfile
-          context: ./${{ matrix.project }}
-          image_tag: latest
+      - name: Log into GitHub Container Registry
+        run: echo ${{ secrets.GH_PAT }} | docker login ghcr.io -u rmnskb --password-stdin
+
+      - name: Build Docker Image for ${{ matrix.project }}
+        run: |
+          docker build ./${{ matrix.project }} --file Dockerfile \
+          --tag ghcr.io/rmnskb/bards-words-${{ matrix.project }}:latest
+
+      - name: Push Docker Image for ${{ matrix.project }}
+        run: |
+          docker push ghcr.io/rmnskb/bards-words-${{ matrix.project }}:latest
