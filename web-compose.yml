@@ -21,9 +21,7 @@ services:
 
   fast-api:
     container_name: fast-api
-    build:
-      context: ./api
-      dockerfile: Dockerfile
+    image: ghcr.io/rmnskb/bards-words-api
     env_file: .env
     environment:
       DB_API_USER: ${DB_API_USER}
@@ -46,9 +44,7 @@ services:
 
   react-ts:
     container_name: react-ts
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: ghcr.io/rmnskb/bards-words-frontend
     volumes:
       - ./frontend:/app
       - /app/node_modules
