@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router";
 import axios, { AxiosResponse } from "axios";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 
-import { IDocumentTokens } from "../types/";
-import { apiUrl } from "../constants";
 import LoadingSpinner from "../components/common/LoadingSpinner.tsx";
+import { API_URL } from "../constants";
+import { IDocumentTokens } from "../types/";
 
 /**
  * TODO: Create visual hierarchy with distinct styling for play titles, character names, dialogues, etc.
@@ -30,9 +30,7 @@ const PlayPage = () => {
     = async (document: string): Promise<IDocumentTokens | null> => {
     try {
       const response: AxiosResponse<IDocumentTokens>
-        = await axios.get<IDocumentTokens>(
-`${apiUrl}/tokens?document=${document}&start=0&end=10000`
-        );
+        = await axios.get<IDocumentTokens>(`${API_URL}/tokens?document=${document}&start=0&end=10000`);
       return response.data;
     } catch (e) {
       console.error(e);

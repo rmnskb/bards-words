@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
 import axios, { AxiosResponse } from "axios";
+import { useCallback, useEffect, useState } from "react";
 
-import { apiUrl } from "../../constants";
+import { API_URL } from "../../constants";
 import { IEligibleWords } from "../../types";
 
 type UseWordValidatorReturn = (word: string) => boolean;
@@ -19,7 +19,7 @@ const useWordValidator = (wordLength: number): UseWordValidatorReturn => {
 
   const fetchEligibleWords = useCallback(
     async (wordLength: number): Promise<IEligibleWords | null> => {
-      const url = new URL(`${apiUrl}/words/eligible`);
+      const url = new URL(`${API_URL}/words/eligible`);
       url.searchParams.set("word_length", wordLength.toString());
 
       try {
