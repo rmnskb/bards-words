@@ -1,6 +1,5 @@
 services:
   mongodb:
-    # Access mongosh from inside the container: docker exec -it mongodb mongosh
     container_name: mongodb
     image: mongo:8.0.6
     env_file: .env
@@ -33,6 +32,8 @@ services:
     expose:
       - "80"
     restart: on-failure
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/api/v1/health"]
       interval: 30s
@@ -46,6 +47,8 @@ services:
     container_name: react-ts
     image: ghcr.io/rmnskb/bards-words-frontend
     restart: on-failure
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     volumes: 
       - react-app:/app:rw
     networks:
@@ -81,6 +84,15 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - web-ntwrk
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.docker/config.json:/config.json
+    command: --interval 30
     networks:
       - web-ntwrk
 
