@@ -1,21 +1,20 @@
 import re
-from typing import TypeAlias, Literal, overload
+from typing import Literal, overload
 
-from pyspark import SparkContext, RDD
+from pyspark import RDD, SparkContext
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, explode, broadcast, struct, collect_list
-from pyspark.sql.types import IntegerType
+from pyspark.sql import functions as F
+from pyspark.sql import types as T
 from stop_words import get_stop_words
 
-DocumentTextType: TypeAlias = tuple[str, str]
-DocumentTokensType: TypeAlias = tuple[str, list[str]]
-DocumentIndexedTokensType: TypeAlias = tuple[tuple[str, str], list[int]]
-DocumentFlatIndexedTokensType: TypeAlias = tuple[str, str, int]
-NameLinesType: TypeAlias = tuple[str, list[str, str]]
-WordDocumentType: TypeAlias = tuple[str, str]
-InvertedIndexType: TypeAlias = tuple[str, list[tuple[str, int, list[int]]]]
-CollocationsType: TypeAlias = tuple[tuple[str, int], tuple[str, str]]
-CollocationsStatsType: TypeAlias = tuple[str, list[tuple[str, int]]]
+type DocumentTextType = tuple[str, str]
+type DocumentTokensType = tuple[str, list[str]]
+type DocumentIndexedTokensType = tuple[tuple[str, str], list[int]]
+type DocumentFlatIndexedTokensType = tuple[str, str, int]
+type WordDocumentType = tuple[str, str]
+type InvertedIndexType = tuple[str, list[tuple[str, int, list[int]]]]
+type CollocationsType = tuple[tuple[str, int], tuple[str, str]]
+type CollocationsStatsType = tuple[str, list[tuple[str, int]]]
 
 
 # TODO: Add another transformation to separate by sentences for sentiment analysis purposes
@@ -31,32 +30,32 @@ class BronzeDataTransformer:
 
     @overload
     def transform(
-            self
-            , to: Literal['tokens']
-            , data: RDD[DocumentTextType]
+        self,
+        to: Literal['tokens'],
+        data: RDD[DocumentTextType],
     ) -> RDD[DocumentTokensType]:
         ...
 
     @overload
     def transform(
-        self
-        , to: Literal['indexed_tokens']
-        , data: RDD[DocumentTokensType]
+        self,
+        to: Literal['indexed_tokens'],
+        data: RDD[DocumentTokensType]
     ) -> RDD[DocumentFlatIndexedTokensType]:
         ...
 
     @overload
     def transform(
-            self
-            , to: Literal['inverted_index']
-            , data: RDD[DocumentTokensType]
+        self,
+        to: Literal['inverted_index'],
+        data: RDD[DocumentTokensType],
     ) -> RDD[InvertedIndexType]:
         ...
 
     def transform(
-            self
-            , to: Literal['tokens', 'indexed_tokens', 'inverted_index']
-            , data: RDD[DocumentTextType | DocumentTokensType]
+        self,
+        to: Literal['tokens', 'indexed_tokens', 'inverted_index'],
+        data: RDD[DocumentTextType | DocumentTokensType],
     ) -> RDD[DocumentTokensType | DocumentFlatIndexedTokensType | InvertedIndexType]:
         """
         Conduct data transformation step (RDD -> RDD)
@@ -76,7 +75,8 @@ class BronzeDataTransformer:
             case _:
                 raise ValueError(f'Invalid transformation target: {to}')
 
-    def _transform_text_to_tokens(self, data: RDD[DocumentTextType]) -> RDD[DocumentTokensType]:
+    def _transform_text_to_tokens(
+            self, data: RDD[DocumentTextType]) -> RDD[DocumentTokensType]:
         """
         Tokenise the .txt file
         :param data: RDD with the document name and text as tuples
@@ -89,18 +89,28 @@ class BronzeDataTransformer:
             .map(self._tokenise)  # => RDD[tuple[str, list[str]]]
         )
 
-    def _transform_tokens_to_indexed_tokens(self, data: RDD[DocumentTokensType]) -> RDD[DocumentIndexedTokensType]:
+    def _transform_tokens_to_indexed_tokens(
+        self,
+        data: RDD[DocumentTokensType],
+    ) -> RDD[DocumentIndexedTokensType]:
         return (
             data
             .flatMap(self._create_index_pairs)  # => RDD[list[tuple[tuple[str, str], list[int]]]]
             .map(lambda entry: ((entry[0][0], entry[0][1].strip()), entry[1]))
             .map(lambda entry: ((entry[0][0], entry[0][1].lower()), entry[1]))
-            .map(lambda entry: ((entry[0][0], self._remove_punctuation(entry[0][1])), entry[1]))
-            .map(lambda entry: ((entry[0][0], self._remove_suffix(entry[0][1])), entry[1]))
+            .map(lambda entry: (
+                (entry[0][0], self._remove_punctuation(entry[0][1])), entry[1]
+            ))
+            .map(lambda entry: (
+                (entry[0][0], self._remove_suffix(entry[0][1])), entry[1]
+            ))
             .filter(lambda entry: bool(entry[0][1]))  # check if the word is not an empty string
         )
 
-    def _flatten_indexed_tokens(self, data: RDD[DocumentTokensType]) -> RDD[DocumentFlatIndexedTokensType]:
+    def _flatten_indexed_tokens(
+        self,
+        data: RDD[DocumentTokensType],
+    ) -> RDD[DocumentFlatIndexedTokensType]:
         """
         Flatten the indices (since there is 1 element per list it is a simple list -> integer transformation)
         """
@@ -109,7 +119,8 @@ class BronzeDataTransformer:
             .map(lambda entry: (entry[0][0], entry[0][1], entry[1][0]))
         )
 
-    def _transform_tokens_to_inverted_idx(self, data: RDD[DocumentTokensType]) -> RDD[InvertedIndexType]:
+    def _transform_tokens_to_inverted_idx(
+            self, data: RDD[DocumentTokensType]) -> RDD[InvertedIndexType]:
         """
         Transform a tokenised array to an inverted index data structure,
         where a word acts as a key, and points to a list of occurrences in the given documents,
@@ -150,7 +161,10 @@ class BronzeDataTransformer:
         :param name: string with the play's beginning
         :return: the matched name
         """
-        return re.match(r'^.*?(?=\n)', name)[0]
+        if match := re.match(r'^.*?(?=\n)', name):
+            return match[0]
+
+        raise ValueError("No name was found in the string")
 
     @staticmethod
     def _remove_punctuation(word: str) -> str:
@@ -172,7 +186,8 @@ class BronzeDataTransformer:
         return word.lower() in stop_words
 
     @staticmethod
-    def _create_index_pairs(entry: DocumentTokensType) -> list[DocumentIndexedTokensType]:
+    def _create_index_pairs(
+            entry: DocumentTokensType) -> list[DocumentIndexedTokensType]:
         """
         Create a data structure where each word in the document is indexed with its
         absolute position in the document.
@@ -221,11 +236,14 @@ class SilverDataTransformer:
     def _normalise_words(data: DataFrame) -> DataFrame: 
         return (
             data
-            .select(col('word'), explode(col('occurrences')).alias('occurrences'))  # Flatten the array of occurrences
+            .select(
+                F.col('word'),
+                F.explode(F.col('occurrences')).alias('occurrences'),
+            )  # Flatten the array of occurrences
             .select(  # Flatten the struct with three fields inside, retain only document and the freq in it
-                col('word')
-                , col("occurrences").getField("document").alias("document")
-                , col("occurrences").getField("frequency").alias("frequency")
+                F.col('word'),
+                F.col("occurrences").getField("document").alias("document"),
+                F.col("occurrences").getField("frequency").alias("frequency"),
             )
         )
 
@@ -243,14 +261,15 @@ class SilverDataTransformer:
         )
 
     @staticmethod 
-    def _calculate_collocations_stats(data: RDD[CollocationsType]) -> RDD[CollocationsStatsType]:
+    def _calculate_collocations_stats(
+            data: RDD[CollocationsType]) -> RDD[CollocationsStatsType]:
         """
         Calculate frequency statistics for two words collocations
         """
 
-        # TODO: Potentially expand the algorithm to more words 
-        return (  
-            data 
+        # TODO: Potentially expand the algorithm to more words
+        return (
+            data
             .map(
                 lambda entry: (tuple(sorted([entry[1][0], entry[1][1]])), 1)
             )  # => RDD[tuple[tuple[str, str], int]]
@@ -271,10 +290,10 @@ class GoldDataTransformer:
     def transform(cls, words: DataFrame, chronology: DataFrame) -> DataFrame:
         joined_df = (
             words
-            .join(broadcast(chronology), on='document', how='left')
+            .join(F.broadcast(chronology), on='document', how='left')
         )
 
-        distinct_words = words.select(col('word')).distinct()
+        distinct_words = words.select(F.col('word')).distinct()
         doc_freq = cls._get_freq_per_dimension(df=joined_df, dimension='document')
         year_freq = cls._get_freq_per_dimension(df=joined_df, dimension='year')
 
@@ -285,16 +304,33 @@ class GoldDataTransformer:
         )
 
     @staticmethod
-    def _get_freq_per_dimension(df: DataFrame, dimension: Literal['document', 'year']) -> DataFrame:
+    def _get_freq_per_dimension(
+        df: DataFrame,
+        dimension: Literal['document', 'year'],
+    ) -> DataFrame:
         return (
             df
-            .groupBy([col('word'), col(dimension)])
+            .groupBy([F.col('word'), F.col(dimension)])
             .agg(
                 {'frequency': 'sum'}
             )
-            .select(col('word'), col(dimension), col('sum(frequency)').cast(IntegerType()).alias('frequency'))
-            .select(col('word'), struct(col(dimension), col('frequency')).alias(f'{dimension}_freq'))
-            .groupBy(col('word'))
+            .select(
+                F.col('word'),
+                F.col(dimension),
+                F.col('sum(frequency)').cast(T.IntegerType()).alias('frequency'),
+            )
+            .select(
+                F.col('word'),
+                F.struct(
+                    F.col(dimension),
+                    F.col('frequency'),
+                ).alias(f'{dimension}_freq'),
+            )
+            .groupBy(F.col('word'))
             # Implode the struct, so there is only one array entry per word
-            .agg(collect_list(col(f'{dimension}_freq')).alias(f'{dimension}Frequencies'))
+            .agg(
+                F.collect_list(
+                    F.col(f'{dimension}_freq')
+                ).alias(f'{dimension}Frequencies')
+            )
         )

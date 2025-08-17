@@ -4,17 +4,16 @@ from pathlib import Path
 from typing import Literal, Optional
 
 import boto3
-
 from pyspark.sql import DataFrame, SparkSession
 
 
 class _MongoDataExtractor:
 
     def __init__(
-            self
-            , spark: SparkSession
-            , collection: str
-            , database: Optional[str] = None
+        self,
+        spark: SparkSession,
+        collection: str,
+        database: Optional[str] = None,
     ) -> None:
         self._spark = spark
         self._collection = collection

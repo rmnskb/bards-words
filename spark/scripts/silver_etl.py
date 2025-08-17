@@ -3,7 +3,12 @@ from pyspark.sql.functions import col
 from pyspark.sql.types import IntegerType
 
 from utils import (
-    get_etl_conn_uri, SilverDataExtractor, SilverDataTransformer, DataLoader, SparkBase, CollocationsStatsSchema
+    CollocationsStatsSchema,
+    DataLoader,
+    SilverDataExtractor,
+    SilverDataTransformer,
+    SparkBase,
+    get_etl_conn_uri,
 )
 
 

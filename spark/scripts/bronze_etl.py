@@ -1,13 +1,19 @@
-from pyspark import SparkContext, RDD
-from pyspark.sql import SparkSession, DataFrame
+from pyspark import RDD, SparkContext
+from pyspark.sql import DataFrame, SparkSession
 
 # Spark's dependency management guide suggests
 # decompressing the local dependency directories into .zip files
 # and then submitting them along with the actual job as a dependency
 # via spark-submit --py-files <dependency>.zip shakespeare_etl.py
 from utils import (
-    get_etl_conn_uri, BronzeDataExtractor, BronzeDataTransformer, DataLoader, SparkBase, TokensSchema,
-    InvertedIndexSchema, IndexedTokensSchema
+    BronzeDataExtractor,
+    BronzeDataTransformer,
+    DataLoader,
+    IndexedTokensSchema,
+    InvertedIndexSchema,
+    SparkBase,
+    TokensSchema,
+    get_etl_conn_uri,
 )
 
 

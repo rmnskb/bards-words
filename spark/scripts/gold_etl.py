@@ -1,7 +1,11 @@
 from pyspark.sql import SparkSession
 
 from utils import (
-    get_etl_conn_uri, GoldDataExtractor, GoldDataTransformer, DataLoader, SparkBase
+    DataLoader,
+    GoldDataExtractor,
+    GoldDataTransformer,
+    SparkBase,
+    get_etl_conn_uri,
 )
 
 

@@ -9,6 +9,3 @@ def get_etl_conn_uri() -> str:
 
     return f"mongodb://{user}:{pwd}@{host}:{port}/shakespeare?authSource=shakespeare"
 
-
-if __name__ == "__main__":
-    print(get_etl_conn_uri())

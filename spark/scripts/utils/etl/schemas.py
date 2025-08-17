@@ -1,6 +1,12 @@
 from typing import Any
 
-from pyspark.sql.types import StructType, StructField, ArrayType, StringType, IntegerType
+from pyspark.sql.types import (
+    ArrayType,
+    IntegerType,
+    StringType,
+    StructField,
+    StructType,
+)
 
 
 class SparkSchema:
